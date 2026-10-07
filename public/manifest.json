@@ -1,0 +1,16 @@
+{
+  "name": "Pakistani Universities Merit Calculator & Predictor",
+  "short_name": "PakMerit",
+  "description": "Multi-university aggregate calculator & 2016-2026 historical closing merit cutoffs for Pakistani students.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#115e59",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml"
+    }
+  ]
+}

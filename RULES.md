@@ -23,7 +23,8 @@
 
 ## 5. Development & Project Constraints
 - **Budget:** Strict $0 budget. The app must be 100% client-side, hosted on free tiers (GitHub Pages or Cloudflare Pages). Zero API costs. Zero backend. All data must reside in static JSON files.
-- **Code Management:** Use `graphify` for context tracking and file management as the codebase evolves.
+- **Ponytail Minimalism:** Zero bloat architecture. Pure deterministic mathematical functions for all formulas. Native HTML5 canvas for WhatsApp share image generation. Total bundle under 80KB gzipped. No external state management libraries (React state is sufficient).
+- **Code Management:** Use `graphify` for context tracking, dependency mapping, and file navigation as the codebase evolves.
 
 ## 6. Prohibited Practices
 - No user accounts or authentication.

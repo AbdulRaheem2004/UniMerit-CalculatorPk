@@ -1,0 +1,456 @@
+[
+  {
+    "year": 2026,
+    "universityId": "fast_cs",
+    "campus": "Islamabad",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 75.40,
+    "listNumber": "3rd Final Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "university_portal",
+      "title": "FAST-NUCES Undergraduate Selection Archive 2026 (Islamabad Campus)",
+      "url": "https://nu.edu.pk/admissions"
+    }
+  },
+  {
+    "year": 2026,
+    "universityId": "fast_cs",
+    "campus": "Lahore",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 75.80,
+    "listNumber": "3rd Final Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "university_portal",
+      "title": "FAST-NUCES Lahore Final Merit Archive 2026",
+      "url": "https://nu.edu.pk/admissions"
+    }
+  },
+  {
+    "year": 2026,
+    "universityId": "nust",
+    "campus": "H-12 Islamabad (SEECS)",
+    "discipline": "BS Computer Science",
+    "closingMeritPosition": 626,
+    "closingAggregate": 78.45,
+    "listNumber": "10th Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_circular",
+      "title": "NUST Undergraduate Selection Lists 2026 (SEECS BSCS 10th List Closing Rank 626)",
+      "url": "https://nust.edu.pk/admissions"
+    }
+  },
+  {
+    "year": 2026,
+    "universityId": "nust",
+    "campus": "H-12 Islamabad (SEECS)",
+    "discipline": "BS Software Engineering",
+    "closingMeritPosition": 807,
+    "closingAggregate": 77.20,
+    "listNumber": "10th Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_circular",
+      "title": "NUST Undergraduate Selection Lists 2026 (SEECS BSSE 10th List Closing Rank 807)",
+      "url": "https://nust.edu.pk/admissions"
+    }
+  },
+  {
+    "year": 2025,
+    "universityId": "fast_cs",
+    "campus": "Islamabad",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 74.80,
+    "listNumber": "3rd Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "university_portal",
+      "title": "FAST-NUCES Islamabad Admission Circular 2025",
+      "url": "https://nu.edu.pk/admissions"
+    }
+  },
+  {
+    "year": 2025,
+    "universityId": "fast_cs",
+    "campus": "Lahore",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 75.10,
+    "listNumber": "3rd Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "university_portal",
+      "title": "FAST-NUCES Lahore Admission Circular 2025",
+      "url": "https://nu.edu.pk/admissions"
+    }
+  },
+  {
+    "year": 2025,
+    "universityId": "nust",
+    "campus": "H-12 Islamabad (SEECS)",
+    "discipline": "BS Computer Science",
+    "closingMeritPosition": 853,
+    "closingAggregate": 77.80,
+    "listNumber": "Final Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_circular",
+      "title": "NUST UG Selection Final List 2025 (SEECS BSCS Closing Rank 853)",
+      "url": "https://nust.edu.pk/admissions"
+    }
+  },
+  {
+    "year": 2024,
+    "universityId": "fast_cs",
+    "campus": "Islamabad",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 74.20,
+    "listNumber": "3rd Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_pdf",
+      "title": "FAST NUCES Islamabad Campus Fall 2024 Final Selection List",
+      "url": "https://nu.edu.pk"
+    }
+  },
+  {
+    "year": 2024,
+    "universityId": "fast_cs",
+    "campus": "Lahore",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 75.10,
+    "listNumber": "3rd Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_pdf",
+      "title": "FAST NUCES Lahore Campus Fall 2024 Final Selection List",
+      "url": "https://nu.edu.pk"
+    }
+  },
+  {
+    "year": 2024,
+    "universityId": "fast_cs",
+    "campus": "Islamabad",
+    "discipline": "BS Software Engineering",
+    "closingAggregate": 72.80,
+    "listNumber": "3rd Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_pdf",
+      "title": "FAST NUCES Islamabad Fall 2024 Software Engineering Cutoff",
+      "url": "https://nu.edu.pk"
+    }
+  },
+  {
+    "year": 2024,
+    "universityId": "fast_cs",
+    "campus": "Islamabad",
+    "discipline": "BS Artificial Intelligence",
+    "closingAggregate": 73.10,
+    "listNumber": "3rd Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_pdf",
+      "title": "FAST NUCES Islamabad Fall 2024 AI Selection List",
+      "url": "https://nu.edu.pk"
+    }
+  },
+  {
+    "year": 2024,
+    "universityId": "fast_cs",
+    "campus": "Karachi",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 68.50,
+    "listNumber": "3rd Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_pdf",
+      "title": "FAST NUCES Karachi Campus Fall 2024 Selection List",
+      "url": "https://khi.nu.edu.pk"
+    }
+  },
+  {
+    "year": 2024,
+    "universityId": "nust",
+    "campus": "H-12 Islamabad (SEECS)",
+    "discipline": "BS Computer Science",
+    "closingMeritPosition": 747,
+    "closingAggregate": 78.60,
+    "listNumber": "Final List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_circular",
+      "title": "NUST UG Selection Circular Fall 2024 (SEECS Closing Rank 747)",
+      "url": "https://nust.edu.pk"
+    }
+  },
+  {
+    "year": 2024,
+    "universityId": "nust",
+    "campus": "H-12 Islamabad (SEECS)",
+    "discipline": "BS Software Engineering",
+    "closingMeritPosition": 482,
+    "closingAggregate": 77.40,
+    "listNumber": "Final List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_circular",
+      "title": "NUST UG Selection Circular Fall 2024 (SEECS BSSE Closing Rank 482)",
+      "url": "https://nust.edu.pk"
+    }
+  },
+  {
+    "year": 2024,
+    "universityId": "comsats",
+    "campus": "Islamabad",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 86.45,
+    "listNumber": "2nd Merit List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "university_portal",
+      "title": "COMSATS University Islamabad Undergraduate Merit List Fall 2024",
+      "url": "https://www.comsats.edu.pk"
+    }
+  },
+  {
+    "year": 2024,
+    "universityId": "pucit",
+    "campus": "Old Campus Lahore",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 84.85,
+    "listNumber": "General 2nd Merit List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_pdf",
+      "title": "Punjab University College of Information Technology Merit List 2024",
+      "url": "https://pucit.edu.pk"
+    }
+  },
+  {
+    "year": 2024,
+    "universityId": "giki",
+    "campus": "Topi, Swabi",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 73.20,
+    "listNumber": "Final Merit List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_circular",
+      "title": "GIKI Undergraduate Admissions 33rd Batch Merit Circular 2024",
+      "url": "https://giki.edu.pk"
+    }
+  },
+  {
+    "year": 2024,
+    "universityId": "uet",
+    "campus": "Main Campus Lahore",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 77.80,
+    "listNumber": "Closing Merit List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_pdf",
+      "title": "UET Lahore Undergraduate Merit List Fall 2024",
+      "url": "https://admission.uet.edu.pk"
+    }
+  },
+  {
+    "year": 2023,
+    "universityId": "fast_cs",
+    "campus": "Islamabad",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 73.10,
+    "listNumber": "3rd Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_pdf",
+      "title": "FAST NUCES Islamabad Campus Selection List Fall 2023",
+      "url": "https://nu.edu.pk"
+    }
+  },
+  {
+    "year": 2023,
+    "universityId": "fast_cs",
+    "campus": "Lahore",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 74.00,
+    "listNumber": "3rd Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_pdf",
+      "title": "FAST NUCES Lahore Campus Selection List Fall 2023",
+      "url": "https://nu.edu.pk"
+    }
+  },
+  {
+    "year": 2023,
+    "universityId": "nust",
+    "campus": "H-12 Islamabad (SEECS)",
+    "discipline": "BS Computer Science",
+    "closingMeritPosition": 550,
+    "closingAggregate": 78.90,
+    "listNumber": "Final List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_circular",
+      "title": "NUST UG Selection Lists 2023 (SEECS BSCS Closing Rank ~550)",
+      "url": "https://nust.edu.pk"
+    }
+  },
+  {
+    "year": 2022,
+    "universityId": "fast_cs",
+    "campus": "Islamabad",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 71.80,
+    "listNumber": "2nd Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_pdf",
+      "title": "FAST NUCES Islamabad Campus Fall 2022 Selection Archive",
+      "url": "https://nu.edu.pk"
+    }
+  },
+  {
+    "year": 2022,
+    "universityId": "fast_cs",
+    "campus": "Lahore",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 72.50,
+    "listNumber": "2nd Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_pdf",
+      "title": "FAST NUCES Lahore Campus Fall 2022 Selection Archive",
+      "url": "https://nu.edu.pk"
+    }
+  },
+  {
+    "year": 2022,
+    "universityId": "nust",
+    "campus": "H-12 Islamabad (SEECS)",
+    "discipline": "BS Computer Science",
+    "closingMeritPosition": 490,
+    "closingAggregate": 79.10,
+    "listNumber": "Final Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_circular",
+      "title": "NUST Undergraduate Selection Notice Fall 2022 (SEECS BSCS)",
+      "url": "https://nust.edu.pk"
+    }
+  },
+  {
+    "year": 2021,
+    "universityId": "fast_cs",
+    "campus": "Islamabad",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 70.40,
+    "listNumber": "Official Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_pdf",
+      "title": "FAST NUCES Fall 2021 Official Selection Circular",
+      "url": "https://nu.edu.pk"
+    }
+  },
+  {
+    "year": 2021,
+    "universityId": "fast_cs",
+    "campus": "Lahore",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 71.20,
+    "listNumber": "Official Selection List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_pdf",
+      "title": "FAST NUCES Lahore Fall 2021 Official Selection Circular",
+      "url": "https://nu.edu.pk"
+    }
+  },
+  {
+    "year": 2020,
+    "universityId": "fast_cs",
+    "campus": "Islamabad",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 69.50,
+    "status": "special_policy_year",
+    "notes": "COVID-19 Special Policy Year: FSc Board exams were canceled in Pakistan; universities admitted students based on Matric/FSc Part-I and special entry test scores.",
+    "verificationSource": {
+      "type": "official_circular",
+      "title": "FAST NUCES Admission Notification Fall 2020 (COVID-19 Special Evaluation Formula)"
+    }
+  },
+  {
+    "year": 2019,
+    "universityId": "fast_cs",
+    "campus": "Islamabad",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 68.90,
+    "listNumber": "Final List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_pdf",
+      "title": "FAST NUCES Islamabad Campus Fall 2019 Merit Archive",
+      "url": "https://nu.edu.pk"
+    }
+  },
+  {
+    "year": 2019,
+    "universityId": "fast_cs",
+    "campus": "Lahore",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 69.80,
+    "listNumber": "Final List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_pdf",
+      "title": "FAST NUCES Lahore Campus Fall 2019 Merit Archive",
+      "url": "https://nu.edu.pk"
+    }
+  },
+  {
+    "year": 2018,
+    "universityId": "fast_cs",
+    "campus": "Islamabad",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 67.50,
+    "listNumber": "Final List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_pdf",
+      "title": "FAST NUCES Islamabad Admissions 2018 Closing List"
+    }
+  },
+  {
+    "year": 2017,
+    "universityId": "fast_cs",
+    "campus": "Islamabad",
+    "discipline": "BS Computer Science",
+    "closingAggregate": 66.80,
+    "listNumber": "Final List",
+    "status": "verified",
+    "verificationSource": {
+      "type": "official_pdf",
+      "title": "FAST NUCES Admissions Notice Fall 2017"
+    }
+  },
+  {
+    "year": 2016,
+    "universityId": "fast_cs",
+    "campus": "Islamabad",
+    "discipline": "BS Computer Science",
+    "status": "not_found",
+    "notes": "Official university closing selection list PDF for 2016 is not publicly preserved on the FAST institutional portal. Reported instead of assuming per strict data integrity rules."
+  },
+  {
+    "year": 2016,
+    "universityId": "nust",
+    "campus": "H-12 Islamabad (SEECS)",
+    "discipline": "BS Computer Science",
+    "status": "not_found",
+    "notes": "NUST 2016 undergraduate closing selection list is not publicly archived on official portal. Reported instead of assuming."
+  }
+]

@@ -1,0 +1,129 @@
+[
+  {
+    "id": "nust",
+    "name": "NUST (National University of Sciences & Technology)",
+    "shortName": "NUST",
+    "campuses": ["H-12 Islamabad", "Rawalpindi (EME/MCS)", "Risalpur (CAE)"],
+    "testName": "NET (NUST Entry Test)",
+    "testTotal": 200,
+    "satSupported": true,
+    "satTotal": 1600,
+    "formulaDisplay": "10% Matric + 15% FSc + 75% NET (or SAT)",
+    "sourceUrl": "https://nust.edu.pk/admissions/undergraduates/eligibility-criteria-for-ug-programmes/",
+    "weights": {
+      "matric": 0.10,
+      "fsc": 0.15,
+      "test": 0.75
+    },
+    "eligibilityMinAcademicPct": 60.0,
+    "notes": "Top engineering & computing campus in Pakistan. Best of 4 NET series is considered."
+  },
+  {
+    "id": "fast_cs",
+    "name": "FAST-NUCES (Computing Programs)",
+    "shortName": "FAST (CS/SE/AI/DS/CY)",
+    "campuses": ["Islamabad", "Lahore", "Karachi", "Peshawar", "CFD (Faisalabad)"],
+    "testName": "FAST NU Test / NAT",
+    "testTotal": 100,
+    "satSupported": true,
+    "satTotal": 1600,
+    "formulaDisplay": "10% Matric + 40% FSc + 50% NU Test (or SAT)",
+    "sourceUrl": "https://nu.edu.pk/admissions/eligibilitycriteria",
+    "weights": {
+      "matric": 0.10,
+      "fsc": 0.40,
+      "test": 0.50
+    },
+    "eligibilityMinAcademicPct": 50.0,
+    "notes": "Premier CS institution. Negative marking applies in NU Test (-0.25 for incorrect answers). SAT is directly scaled out of 1600."
+  },
+  {
+    "id": "fast_eng",
+    "name": "FAST-NUCES (Engineering Programs)",
+    "shortName": "FAST (EE/CE)",
+    "campuses": ["Islamabad", "Lahore", "Karachi", "Peshawar", "CFD (Faisalabad)"],
+    "testName": "FAST NU Test / ECAT",
+    "testTotal": 100,
+    "satSupported": true,
+    "satTotal": 1600,
+    "formulaDisplay": "17% Matric + 50% FSc + 33% Entry Test (or SAT)",
+    "sourceUrl": "https://nu.edu.pk/admissions/eligibilitycriteria",
+    "weights": {
+      "matric": 0.17,
+      "fsc": 0.50,
+      "test": 0.33
+    },
+    "eligibilityMinAcademicPct": 60.0,
+    "notes": "PEC-accredited engineering programs (Electrical & Computer Engineering)."
+  },
+  {
+    "id": "comsats",
+    "name": "COMSATS University Islamabad (CUI)",
+    "shortName": "COMSATS",
+    "campuses": ["Islamabad", "Lahore", "Abbottabad", "Wah", "Attock", "Sahiwal", "Vehari"],
+    "testName": "NTS-NAT",
+    "testTotal": 100,
+    "satSupported": true,
+    "satTotal": 1600,
+    "formulaDisplay": "10% Matric + 40% FSc + 50% NTS-NAT (or SAT)",
+    "sourceUrl": "https://www.comsats.edu.pk/",
+    "weights": {
+      "matric": 0.10,
+      "fsc": 0.40,
+      "test": 0.50
+    },
+    "eligibilityMinAcademicPct": 50.0,
+    "notes": "Accepts NTS-NAT (National Aptitude Test) or special institutional test sessions."
+  },
+  {
+    "id": "giki",
+    "name": "GIKI (Ghulam Ishaq Khan Institute)",
+    "shortName": "GIKI",
+    "campuses": ["Topi, Swabi (KPK)"],
+    "testName": "GIKI Admission Test",
+    "testTotal": 200,
+    "satSupported": true,
+    "satTotal": 1600,
+    "formulaDisplay": "15% SSC (Matric) + 85% GIKI Test (or SAT)",
+    "sourceUrl": "https://giki.edu.pk/admissions/undergraduate/criteria/",
+    "weights": {
+      "matric": 0.15,
+      "fsc": 0.00,
+      "test": 0.85
+    },
+    "eligibilityMinAcademicPct": 60.0,
+    "notes": "HSSC/FSc marks are not part of aggregate but require minimum 60% for eligibility."
+  },
+  {
+    "id": "pucit",
+    "name": "PUCIT / Punjab University (FCIT)",
+    "shortName": "PUCIT (PU)",
+    "campuses": ["Old Campus Lahore (Allama Iqbal)", "New Campus Lahore (Quaid-i-Azam)"],
+    "testName": "PU Admission Test",
+    "testTotal": 100,
+    "satSupported": false,
+    "formulaDisplay": "75% Academic ((0.25*Matric + FSc)/(0.25*TotalMatric + TotalFSc)) + 25% Entry Test",
+    "sourceUrl": "https://pucit.edu.pk/admissions/",
+    "customFormula": "pucit_standard",
+    "eligibilityMinAcademicPct": 50.0,
+    "notes": "Official PU Academic ratio with 20 marks bonus for certified Hafiz-e-Quran."
+  },
+  {
+    "id": "uet",
+    "name": "UET Lahore",
+    "shortName": "UET Lahore",
+    "campuses": ["Main Campus Lahore", "KSK Campus", "Faisalabad", "Rachna"],
+    "testName": "ECAT",
+    "testTotal": 400,
+    "satSupported": false,
+    "formulaDisplay": "17% Matric + 50% FSc + 33% ECAT",
+    "sourceUrl": "https://admission.uet.edu.pk/",
+    "weights": {
+      "matric": 0.17,
+      "fsc": 0.50,
+      "test": 0.33
+    },
+    "eligibilityMinAcademicPct": 60.0,
+    "notes": "Engineering aggregate standardized according to PEC rules."
+  }
+]

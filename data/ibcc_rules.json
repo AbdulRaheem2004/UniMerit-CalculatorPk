@@ -1,0 +1,26 @@
+{
+  "source": "Inter Board Committee of Chairmen (IBCC) Official Equivalence Notification",
+  "sourceUrl": "https://ibcc.edu.pk/",
+  "gradePoints": {
+    "A*": 90,
+    "A": 85,
+    "B": 75,
+    "C": 65,
+    "D": 55,
+    "E": 45,
+    "U": 0
+  },
+  "standardSubjectsOLevel": 8,
+  "standardTotalMarksOLevel": 1100,
+  "compulsorySubjectsScience": [
+    "English",
+    "Urdu",
+    "Islamiyat",
+    "Pakistan Studies",
+    "Mathematics",
+    "Physics",
+    "Chemistry",
+    "Biology / Computer Science"
+  ],
+  "notes": "IBCC converts letter grades of 8 subjects to an equivalent score out of 1100. For O-Levels, minimum 8 subjects required for Pakistani nationals."
+}

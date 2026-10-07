@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pakistani Universities Merit Calculator & Predictor 2026</title>
+    <meta name="description" content="Calculate your exact aggregate for NUST, FAST, COMSATS, GIKI, PUCIT, and UET. Supports NET, NU Test, NTS, ECAT, Digital SAT (1600), IBCC O/A-Level equivalence, and 2016-2026 historical closing merit cutoffs." />
+    <meta name="keywords" content="NUST aggregate calculator, FAST merit calculator, NET score calculator, FAST NU test, SAT merit calculator Pakistan, IBCC equivalence, ECAT merit calculator" />
+    <meta name="author" content="Pakistani Students Admissions Utility" />
+    
+    <!-- Open Graph for WhatsApp & Social Sharing -->
+    <meta property="og:title" content="Pakistani Universities Merit Calculator & 10-Year Cutoffs" />
+    <meta property="og:description" content="Calculate your aggregate across NUST, FAST, COMSATS, GIKI, and PUCIT simultaneously. Check past 2016-2026 cutoffs and solve your target test score." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="./icon-512.png" />
+    
+    <!-- PWA & Theme -->
+    <meta name="theme-color" content="#115e59" />
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 min-h-screen antialiased selection:bg-teal-700 selection:text-white">
+    <div id="root"></div>
+    <script type="module" src="./src/main.tsx"></script>
+    <script>
+      // Lightweight PWA Service Worker Registration
+      if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').catch(() => {});
+        });
+      }
+    </script>
+  </body>
+</html>
