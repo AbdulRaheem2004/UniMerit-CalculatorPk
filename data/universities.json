@@ -1,13 +1,24 @@
 [
   {
     "id": "nust",
-    "name": "NUST (National University of Sciences & Technology)",
-    "shortName": "NUST",
-    "campuses": ["H-12 Islamabad", "Rawalpindi (EME/MCS)", "Risalpur (CAE)"],
+    "name": "NUST (Computing Programs - SEECS)",
+    "shortName": "NUST Computing",
+    "disciplineCategory": "computing",
+    "disciplines": [
+      "BS Computer Science",
+      "BS Software Engineering",
+      "BS Artificial Intelligence",
+      "BS Data Science"
+    ],
+    "campuses": [
+      "H-12 Islamabad (SEECS)"
+    ],
     "testName": "NET (NUST Entry Test)",
     "testTotal": 200,
     "satSupported": true,
     "satTotal": 1600,
+    "satMinScore": 1100,
+    "satNotes": "Accepted for National Seats (minimum 550 each in Math and Physics). 75% weight in merit aggregate.",
     "formulaDisplay": "10% Matric + 15% FSc + 75% NET (or SAT)",
     "sourceUrl": "https://nust.edu.pk/admissions/undergraduates/eligibility-criteria-for-ug-programmes/",
     "weights": {
@@ -16,17 +27,100 @@
       "test": 0.75
     },
     "eligibilityMinAcademicPct": 60.0,
-    "notes": "Top engineering & computing campus in Pakistan. Best of 4 NET series is considered."
+    "notes": "Best of 4 NET series is considered. Top computing faculty in Pakistan."
+  },
+  {
+    "id": "nust_eng",
+    "name": "NUST (Engineering Programs)",
+    "shortName": "NUST Engineering",
+    "disciplineCategory": "engineering",
+    "disciplines": [
+      "Electrical Engineering",
+      "Mechanical Engineering",
+      "Civil Engineering",
+      "Mechatronics Engineering",
+      "Aerospace Engineering",
+      "Chemical Engineering",
+      "Computer Engineering"
+    ],
+    "campuses": [
+      "H-12 Islamabad (SMME/NICE/SCME/SEECS)",
+      "Rawalpindi (EME College)",
+      "Rawalpindi (MCS)",
+      "Risalpur (CAE)",
+      "Karachi (PNEC)"
+    ],
+    "testName": "NET (Engineering)",
+    "testTotal": 200,
+    "satSupported": true,
+    "satTotal": 1600,
+    "satMinScore": 1100,
+    "satNotes": "National Seats: 75% SAT + 15% FSc + 10% Matric. Separate pool for International ACT/SAT seats.",
+    "formulaDisplay": "10% Matric + 15% FSc + 75% NET (or SAT)",
+    "sourceUrl": "https://nust.edu.pk/admissions/undergraduates/eligibility-criteria-for-ug-programmes/",
+    "weights": {
+      "matric": 0.10,
+      "fsc": 0.15,
+      "test": 0.75
+    },
+    "eligibilityMinAcademicPct": 60.0,
+    "notes": "Requires FSc Pre-Engineering with minimum 60% marks as per PEC criteria."
+  },
+  {
+    "id": "nust_business",
+    "name": "NUST (Business & Social Sciences - NBS / S3H)",
+    "shortName": "NUST Business (NBS)",
+    "disciplineCategory": "business",
+    "disciplines": [
+      "BBA (Bachelor of Business Administration)",
+      "BS Accounting & Finance",
+      "BS Economics",
+      "BS Public Administration"
+    ],
+    "campuses": [
+      "H-12 Islamabad (NBS/S3H)"
+    ],
+    "testName": "NET (Business / Social Sciences)",
+    "testTotal": 200,
+    "satSupported": true,
+    "satTotal": 1600,
+    "satMinScore": 1050,
+    "satNotes": "Accepted for National Seats (minimum 500 in SAT Math and Reading/Writing).",
+    "formulaDisplay": "10% Matric + 15% FSc + 75% NET (or SAT)",
+    "sourceUrl": "https://nust.edu.pk/admissions/undergraduates/eligibility-criteria-for-ug-programmes/",
+    "weights": {
+      "matric": 0.10,
+      "fsc": 0.15,
+      "test": 0.75
+    },
+    "eligibilityMinAcademicPct": 60.0,
+    "notes": "NUST Business School (NBS) and School of Social Sciences & Humanities (S3H)."
   },
   {
     "id": "fast_cs",
     "name": "FAST-NUCES (Computing Programs)",
-    "shortName": "FAST (CS/SE/AI/DS/CY)",
-    "campuses": ["Islamabad", "Lahore", "Karachi", "Peshawar", "CFD (Faisalabad)"],
+    "shortName": "FAST Computing",
+    "disciplineCategory": "computing",
+    "disciplines": [
+      "BS Computer Science",
+      "BS Software Engineering",
+      "BS Artificial Intelligence",
+      "BS Data Science",
+      "BS Cyber Security"
+    ],
+    "campuses": [
+      "Islamabad",
+      "Lahore",
+      "Karachi",
+      "Peshawar",
+      "CFD (Faisalabad)"
+    ],
     "testName": "FAST NU Test / NAT",
     "testTotal": 100,
     "satSupported": true,
     "satTotal": 1600,
+    "satMinScore": 1200,
+    "satNotes": "Requires minimum 1200 in SAT-I. Dedicated SAT merit allocation.",
     "formulaDisplay": "10% Matric + 40% FSc + 50% NU Test (or SAT)",
     "sourceUrl": "https://nu.edu.pk/admissions/eligibilitycriteria",
     "weights": {
@@ -35,17 +129,30 @@
       "test": 0.50
     },
     "eligibilityMinAcademicPct": 50.0,
-    "notes": "Premier CS institution. Negative marking applies in NU Test (-0.25 for incorrect answers). SAT is directly scaled out of 1600."
+    "notes": "Negative marking applies in NU Test (-0.25 for incorrect answers). SAT is directly scaled out of 1600."
   },
   {
     "id": "fast_eng",
     "name": "FAST-NUCES (Engineering Programs)",
-    "shortName": "FAST (EE/CE)",
-    "campuses": ["Islamabad", "Lahore", "Karachi", "Peshawar", "CFD (Faisalabad)"],
+    "shortName": "FAST Engineering",
+    "disciplineCategory": "engineering",
+    "disciplines": [
+      "Electrical Engineering",
+      "Computer Engineering"
+    ],
+    "campuses": [
+      "Islamabad",
+      "Lahore",
+      "Karachi",
+      "Peshawar",
+      "CFD (Faisalabad)"
+    ],
     "testName": "FAST NU Test / ECAT",
     "testTotal": 100,
     "satSupported": true,
     "satTotal": 1600,
+    "satMinScore": 1200,
+    "satNotes": "Requires minimum 1200 in SAT-I for Engineering programs.",
     "formulaDisplay": "17% Matric + 50% FSc + 33% Entry Test (or SAT)",
     "sourceUrl": "https://nu.edu.pk/admissions/eligibilitycriteria",
     "weights": {
@@ -57,14 +164,66 @@
     "notes": "PEC-accredited engineering programs (Electrical & Computer Engineering)."
   },
   {
+    "id": "fast_bba",
+    "name": "FAST-NUCES (Business & Management Programs)",
+    "shortName": "FAST Business",
+    "disciplineCategory": "business",
+    "disciplines": [
+      "BBA (Bachelor of Business Administration)",
+      "BS Accounting & Finance",
+      "BS FinTech",
+      "BS Business Analytics"
+    ],
+    "campuses": [
+      "Islamabad",
+      "Lahore",
+      "Karachi",
+      "Peshawar",
+      "CFD (Faisalabad)"
+    ],
+    "testName": "FAST NU Test / NAT",
+    "testTotal": 100,
+    "satSupported": true,
+    "satTotal": 1600,
+    "satMinScore": 1000,
+    "satNotes": "Requires minimum 1000 in SAT-I for Business programs.",
+    "formulaDisplay": "10% Matric + 40% FSc + 50% NU Test (or SAT)",
+    "sourceUrl": "https://nu.edu.pk/admissions/eligibilitycriteria",
+    "weights": {
+      "matric": 0.10,
+      "fsc": 0.40,
+      "test": 0.50
+    },
+    "eligibilityMinAcademicPct": 50.0,
+    "notes": "Minimum 50% required in intermediate (FA/FSc/ICS/I.Com). Separate merit list."
+  },
+  {
     "id": "comsats",
-    "name": "COMSATS University Islamabad (CUI)",
-    "shortName": "COMSATS",
-    "campuses": ["Islamabad", "Lahore", "Abbottabad", "Wah", "Attock", "Sahiwal", "Vehari"],
+    "name": "COMSATS University Islamabad (Computing Programs)",
+    "shortName": "COMSATS Computing",
+    "disciplineCategory": "computing",
+    "disciplines": [
+      "BS Computer Science",
+      "BS Software Engineering",
+      "BS Artificial Intelligence",
+      "BS Data Science",
+      "BS Cyber Security"
+    ],
+    "campuses": [
+      "Islamabad",
+      "Lahore",
+      "Abbottabad",
+      "Wah",
+      "Attock",
+      "Sahiwal",
+      "Vehari"
+    ],
     "testName": "NTS-NAT",
     "testTotal": 100,
     "satSupported": true,
     "satTotal": 1600,
+    "satMinScore": 1000,
+    "satNotes": "Accepts SAT in lieu of NTS-NAT (scaled to 50% weight).",
     "formulaDisplay": "10% Matric + 40% FSc + 50% NTS-NAT (or SAT)",
     "sourceUrl": "https://www.comsats.edu.pk/",
     "weights": {
@@ -76,14 +235,101 @@
     "notes": "Accepts NTS-NAT (National Aptitude Test) or special institutional test sessions."
   },
   {
+    "id": "comsats_eng",
+    "name": "COMSATS University (Engineering Programs)",
+    "shortName": "COMSATS Engineering",
+    "disciplineCategory": "engineering",
+    "disciplines": [
+      "Electrical Engineering",
+      "Computer Engineering",
+      "Mechanical Engineering",
+      "Civil Engineering",
+      "Chemical Engineering"
+    ],
+    "campuses": [
+      "Islamabad",
+      "Lahore",
+      "Abbottabad",
+      "Wah",
+      "Attock",
+      "Sahiwal"
+    ],
+    "testName": "NTS-NAT (IE)",
+    "testTotal": 100,
+    "satSupported": true,
+    "satTotal": 1600,
+    "satMinScore": 1000,
+    "satNotes": "Accepts SAT in lieu of NTS-NAT Engineering.",
+    "formulaDisplay": "10% Matric + 40% FSc + 50% NTS-NAT (or SAT)",
+    "sourceUrl": "https://www.comsats.edu.pk/",
+    "weights": {
+      "matric": 0.10,
+      "fsc": 0.40,
+      "test": 0.50
+    },
+    "eligibilityMinAcademicPct": 60.0,
+    "notes": "PEC accredited programs require minimum 60% in FSc Pre-Engineering."
+  },
+  {
+    "id": "comsats_business",
+    "name": "COMSATS University (Business Programs)",
+    "shortName": "COMSATS Business",
+    "disciplineCategory": "business",
+    "disciplines": [
+      "BBA (Bachelor of Business Administration)",
+      "BS Accounting & Finance",
+      "BS Business Analytics"
+    ],
+    "campuses": [
+      "Islamabad",
+      "Lahore",
+      "Abbottabad",
+      "Wah",
+      "Attock",
+      "Sahiwal",
+      "Vehari"
+    ],
+    "testName": "NTS-NAT",
+    "testTotal": 100,
+    "satSupported": true,
+    "satTotal": 1600,
+    "satMinScore": 950,
+    "satNotes": "Accepts SAT in lieu of NTS-NAT.",
+    "formulaDisplay": "10% Matric + 40% FSc + 50% NTS-NAT (or SAT)",
+    "sourceUrl": "https://www.comsats.edu.pk/",
+    "weights": {
+      "matric": 0.10,
+      "fsc": 0.40,
+      "test": 0.50
+    },
+    "eligibilityMinAcademicPct": 50.0,
+    "notes": "Minimum 50% marks in intermediate (FA/FSc/ICS/I.Com)."
+  },
+  {
     "id": "giki",
-    "name": "GIKI (Ghulam Ishaq Khan Institute)",
+    "name": "GIKI (Ghulam Ishaq Khan Institute - Engineering & Computing)",
     "shortName": "GIKI",
-    "campuses": ["Topi, Swabi (KPK)"],
+    "disciplineCategory": "engineering",
+    "disciplines": [
+      "BS Computer Science",
+      "BS Artificial Intelligence",
+      "BS Data Science",
+      "Mechanical Engineering",
+      "Electrical Engineering",
+      "Computer Engineering",
+      "Chemical Engineering",
+      "Civil Engineering",
+      "Materials Engineering"
+    ],
+    "campuses": [
+      "Topi, Swabi (KPK)"
+    ],
     "testName": "GIKI Admission Test",
     "testTotal": 200,
     "satSupported": true,
     "satTotal": 1600,
+    "satMinScore": 1200,
+    "satNotes": "Digital SAT / SAT Subject score scaled to 85% aggregate weight.",
     "formulaDisplay": "15% SSC (Matric) + 85% GIKI Test (or SAT)",
     "sourceUrl": "https://giki.edu.pk/admissions/undergraduate/criteria/",
     "weights": {
@@ -96,12 +342,23 @@
   },
   {
     "id": "pucit",
-    "name": "PUCIT / Punjab University (FCIT)",
+    "name": "PUCIT / Punjab University (FCIT Computing)",
     "shortName": "PUCIT (PU)",
-    "campuses": ["Old Campus Lahore (Allama Iqbal)", "New Campus Lahore (Quaid-i-Azam)"],
+    "disciplineCategory": "computing",
+    "disciplines": [
+      "BS Computer Science",
+      "BS Software Engineering",
+      "BS Information Technology",
+      "BS Data Science"
+    ],
+    "campuses": [
+      "Old Campus Lahore (Allama Iqbal)",
+      "New Campus Lahore (Quaid-i-Azam)"
+    ],
     "testName": "PU Admission Test",
     "testTotal": 100,
     "satSupported": false,
+    "satNotes": "Domestic regular seats require mandatory PU Admission Test. SAT not accepted for general seats.",
     "formulaDisplay": "75% Academic ((0.25*Matric + FSc)/(0.25*TotalMatric + TotalFSc)) + 25% Entry Test",
     "sourceUrl": "https://pucit.edu.pk/admissions/",
     "customFormula": "pucit_standard",
@@ -110,12 +367,29 @@
   },
   {
     "id": "uet",
-    "name": "UET Lahore",
+    "name": "UET Lahore (Engineering & Computing)",
     "shortName": "UET Lahore",
-    "campuses": ["Main Campus Lahore", "KSK Campus", "Faisalabad", "Rachna"],
+    "disciplineCategory": "engineering",
+    "disciplines": [
+      "BS Computer Science",
+      "BS Software Engineering",
+      "Mechanical Engineering",
+      "Electrical Engineering",
+      "Civil Engineering",
+      "Chemical Engineering",
+      "Mechatronics & Control"
+    ],
+    "campuses": [
+      "Main Campus Lahore",
+      "KSK Campus",
+      "Faisalabad",
+      "Rachna (Gujranwala)",
+      "Narowal"
+    ],
     "testName": "ECAT",
     "testTotal": 400,
     "satSupported": false,
+    "satNotes": "Regular engineering seats require ECAT. SAT is only applicable for specific Overseas Pakistani seats.",
     "formulaDisplay": "17% Matric + 50% FSc + 33% ECAT",
     "sourceUrl": "https://admission.uet.edu.pk/",
     "weights": {

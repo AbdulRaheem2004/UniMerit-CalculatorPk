@@ -1,10 +1,12 @@
-import React from 'react';
-import { UniversityCalculationResult, HistoricalMeritRecord } from '../engine/types';
-import { Award, ArrowUpRight, AlertTriangle, CheckCircle2, AlertCircle, ExternalLink } from 'lucide-react';
+import React, { useState } from 'react';
+import { UniversityCalculationResult, HistoricalMeritRecord, DisciplineCategory } from '../engine/types';
+import { Award, ArrowUpRight, AlertTriangle, CheckCircle2, AlertCircle, ExternalLink, MapPin, Building2 } from 'lucide-react';
+import { NustFieldsModal } from './NustFieldsModal';
 
 interface UniversityResultsProps {
   results: UniversityCalculationResult[];
   historicalMerits: HistoricalMeritRecord[];
+  selectedDisciplineCategory: DisciplineCategory | 'all';
   onSelectForReverse: (uniId: string, cutoffAggregate?: number) => void;
   onOpenAudit: (uniId: string) => void;
   showRomanUrdu: boolean;
@@ -13,56 +15,138 @@ interface UniversityResultsProps {
 export const UniversityResults: React.FC<UniversityResultsProps> = ({
   results,
   historicalMerits,
+  selectedDisciplineCategory,
   onSelectForReverse,
   onOpenAudit,
   showRomanUrdu,
 }) => {
-  // Find latest benchmark for each university (2024 BS CS or key discipline)
-  const getLatestCutoff = (uniId: string) => {
-    return historicalMerits.find(
-      (h) => h.universityId === uniId && (h.year === 2024 || h.year === 2025) && typeof h.closingAggregate === 'number'
-    );
+  // Store selected campus per university ID
+  const [selectedCampusMap, setSelectedCampusMap] = useState<Record<string, string>>({});
+  // Optional global campus filter
+  const [globalCampusFilter, setGlobalCampusFilter] = useState<string>('all');
+  // State for NUST Fields Detailed Big Box
+  const [isNustModalOpen, setIsNustModalOpen] = useState<boolean>(false);
+
+  const handleSelectCampus = (uniId: string, campus: string) => {
+    setSelectedCampusMap((prev) => ({
+      ...prev,
+      [uniId]: campus,
+    }));
   };
+
+  const handleGlobalCampusChange = (campus: string) => {
+    setGlobalCampusFilter(campus);
+    if (campus === 'all') return;
+    
+    // Auto-select matching campus for each university if it exists
+    const newMap: Record<string, string> = { ...selectedCampusMap };
+    results.forEach((res) => {
+      const match = res.university.campuses.find((c) =>
+        c.toLowerCase().includes(campus.toLowerCase())
+      );
+      if (match) {
+        newMap[res.university.id] = match;
+      }
+    });
+    setSelectedCampusMap(newMap);
+  };
+
+  // Find latest verified benchmark (2026, 2025, or 2024) for a university and campus
+  const getLatestCutoffForCampus = (uniId: string, campus: string) => {
+    const matching = historicalMerits.filter(
+      (h) =>
+        h.universityId.startsWith(uniId.split('_')[0]) &&
+        h.status === 'verified' &&
+        h.campus.toLowerCase().includes(campus.toLowerCase().split(' ')[0]) &&
+        typeof h.closingAggregate === 'number'
+    );
+    return matching.sort((a, b) => b.year - a.year)[0];
+  };
+
+  // Consolidate NUST cards into one premier box in the open grid
+  const filteredResults = results.filter((res) => {
+    // Hide separate NUST engineering and business cards from the open view
+    if (res.university.id === 'nust_eng' || res.university.id === 'nust_business') {
+      return false;
+    }
+    if (selectedDisciplineCategory === 'all') return true;
+    if (res.university.id === 'nust') return true; // NUST box opens all fields modal
+    return res.university.disciplineCategory === selectedDisciplineCategory;
+  });
+
+  const nustResult = results.find((r) => r.university.id === 'nust');
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      {/* Top Header & Campus Filter */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
           <h2 className="text-base font-bold text-zinc-900 dark:text-white flex items-center gap-2">
             <Award className="w-5 h-5 text-teal-600 dark:text-teal-400" />
             Simultaneous Multi-University Merit Aggregates
           </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Real-time projection based on verified official admission prospectus formulas.
+            Real-time projection across all campuses based on verified official admission prospectuses.
           </p>
+        </div>
+
+        {/* Global Campus Quick Filter */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 flex items-center gap-1 mr-1">
+            <MapPin className="w-3.5 h-3.5 text-teal-600" /> Quick Campus:
+          </span>
+          {[
+            { id: 'all', label: 'All Campuses' },
+            { id: 'Islamabad', label: 'Islamabad' },
+            { id: 'Lahore', label: 'Lahore' },
+            { id: 'Karachi', label: 'Karachi' },
+            { id: 'Peshawar', label: 'Peshawar' },
+            { id: 'Faisalabad', label: 'CFD/Fsd' },
+          ].map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => handleGlobalCampusChange(c.id)}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${
+                globalCampusFilter === c.id
+                  ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 font-semibold shadow-xs'
+                  : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
+              }`}
+            >
+              {c.label}
+            </button>
+          ))}
         </div>
       </div>
 
+      {/* University Result Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {results.map((res) => {
+        {filteredResults.map((res) => {
           const uni = res.university;
-          const latestCutoffRecord = getLatestCutoff(uni.id);
+          const isNust = uni.id === 'nust';
+          const currentCampus = selectedCampusMap[uni.id] || uni.campuses[0];
+          const latestCutoffRecord = getLatestCutoffForCampus(uni.id, currentCampus);
           const cutoff = latestCutoffRecord?.closingAggregate;
 
-          // Determine Probability Zone against latest cutoff
+          // Determine Probability Zone against selected campus cutoff
           let zoneBadge = null;
           if (cutoff) {
             const diff = res.aggregate - cutoff;
             if (diff >= 1.5) {
               zoneBadge = (
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" /> Safe Zone (+{diff.toFixed(1)}%)
+                <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 flex items-center gap-1 shrink-0">
+                  <CheckCircle2 className="w-3 h-3" /> Safe (+{diff.toFixed(1)}%)
                 </span>
               );
             } else if (diff >= -1.5) {
               zoneBadge = (
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 flex items-center gap-1">
+                <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 flex items-center gap-1 shrink-0">
                   <AlertCircle className="w-3 h-3" /> Borderline ({diff >= 0 ? `+${diff.toFixed(1)}%` : `${diff.toFixed(1)}%`})
                 </span>
               );
             } else {
               zoneBadge = (
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-100 text-red-800 dark:bg-red-950/70 dark:text-red-300 flex items-center gap-1">
+                <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-100 text-red-800 dark:bg-red-950/70 dark:text-red-300 flex items-center gap-1 shrink-0">
                   <AlertTriangle className="w-3 h-3" /> High Risk ({diff.toFixed(1)}%)
                 </span>
               );
@@ -72,21 +156,75 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
           return (
             <div
               key={uni.id}
-              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 flex flex-col justify-between shadow-sm hover:border-teal-300 dark:hover:border-teal-700 transition-all group"
+              className={`bg-white dark:bg-zinc-900 border ${
+                isNust
+                  ? 'border-teal-500/80 dark:border-teal-500/60 ring-2 ring-teal-500/10'
+                  : 'border-zinc-200 dark:border-zinc-800'
+              } rounded-2xl p-5 flex flex-col justify-between shadow-sm hover:border-teal-400 dark:hover:border-teal-600 transition-all group`}
             >
               <div>
-                {/* Header */}
+                {/* Header with Title & Probability Zone */}
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div>
-                    <h3 className="font-bold text-sm text-zinc-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-300 transition-colors">
-                      {uni.shortName}
-                    </h3>
-                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                      {uni.campuses[0]}
+                    <div className="flex items-center gap-1.5">
+                      <h3 className="font-bold text-sm text-zinc-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-300 transition-colors">
+                        {isNust ? 'NUST (All Campuses & Colleges)' : uni.shortName}
+                      </h3>
+                      {isNust && (
+                        <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300 uppercase">
+                          Hub
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 capitalize">
+                      {isNust
+                        ? 'SEECS, SMME, NICE, NBS, EME, CAE'
+                        : `${uni.disciplineCategory} Stream • ${uni.disciplines.slice(0, 2).join(', ')}`}
                     </p>
                   </div>
                   {zoneBadge}
                 </div>
+
+                {/* NUST Big Box CTA Trigger Button */}
+                {isNust && (
+                  <div
+                    onClick={() => setIsNustModalOpen(true)}
+                    className="my-2.5 p-2.5 rounded-xl bg-teal-800 text-white hover:bg-teal-900 cursor-pointer transition-all flex items-center justify-between text-xs font-semibold shadow-xs group/nust"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <Building2 className="w-4 h-4 text-teal-300" />
+                      Click Box to Open All NUST Fields
+                    </span>
+                    <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-md flex items-center gap-1 shrink-0">
+                      20+ Fields <ArrowUpRight className="w-3 h-3 group-hover/nust:translate-x-0.5 group-hover/nust:-translate-y-0.5 transition-transform" />
+                    </span>
+                  </div>
+                )}
+
+                {/* Campus Selector Pills for Non-NUST Multi-Campus Universities */}
+                {!isNust && uni.campuses.length > 1 && (
+                  <div className="my-2.5">
+                    <span className="text-[10px] uppercase font-semibold text-zinc-400 flex items-center gap-1 mb-1">
+                      <MapPin className="w-3 h-3" /> Select Campus:
+                    </span>
+                    <div className="flex flex-wrap gap-1">
+                      {uni.campuses.map((campus) => (
+                        <button
+                          key={campus}
+                          type="button"
+                          onClick={() => handleSelectCampus(uni.id, campus)}
+                          className={`px-2 py-0.5 rounded text-[10px] font-medium transition-all ${
+                            currentCampus === campus
+                              ? 'bg-teal-700 text-white dark:bg-teal-600 shadow-xs'
+                              : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                          }`}
+                        >
+                          {campus.replace(/ \(.+\)/, '')}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Aggregate Display */}
                 <div className="my-3 p-3 bg-zinc-50 dark:bg-zinc-800/60 rounded-xl flex items-baseline justify-between">
@@ -122,7 +260,7 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
                   </div>
                   <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
                     <span className="flex items-center gap-1">
-                      {res.breakdown.testType === 'sat' ? 'Digital SAT (1600):' : 'Entry Test:'}
+                      {res.breakdown.testType === 'sat' ? 'Digital SAT (1600):' : `${uni.testName}:`}
                     </span>
                     <span className="font-mono font-medium text-teal-700 dark:text-teal-300">
                       {res.breakdown.testContribution.toFixed(2)}%
@@ -130,13 +268,20 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
                   </div>
                 </div>
 
-                {/* Benchmark Reference */}
-                {cutoff && (
+                {/* Concluded Closing Cutoff Benchmark */}
+                {cutoff ? (
                   <div className="mt-3 pt-2 border-t border-dashed border-zinc-200 dark:border-zinc-800 text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center justify-between">
-                    <span>2024 Closing Cutoff ({latestCutoffRecord?.discipline}):</span>
-                    <span className="font-mono font-semibold text-zinc-700 dark:text-zinc-300">
+                    <span>
+                      {latestCutoffRecord?.year} Cutoff ({isNust ? 'SEECS BSCS' : currentCampus.split(' ')[0]}):
+                    </span>
+                    <span className="font-mono font-semibold text-zinc-800 dark:text-zinc-200">
                       {cutoff.toFixed(2)}%
                     </span>
+                  </div>
+                ) : (
+                  <div className="mt-3 pt-2 border-t border-dashed border-zinc-200 dark:border-zinc-800 text-[10px] text-zinc-400 italic flex items-center justify-between">
+                    <span>Campus: {currentCampus}</span>
+                    <span>Closing cutoff archive active</span>
                   </div>
                 )}
 
@@ -159,19 +304,39 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
                   Formula Source
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => onSelectForReverse(uni.id, cutoff)}
-                  className="text-[11px] font-semibold text-teal-700 hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-200 flex items-center gap-1"
-                >
-                  Solve Target Score
-                  <ArrowUpRight className="w-3 h-3" />
-                </button>
+                {isNust ? (
+                  <button
+                    type="button"
+                    onClick={() => setIsNustModalOpen(true)}
+                    className="text-[11px] font-bold text-teal-800 hover:text-teal-950 dark:text-teal-300 dark:hover:text-teal-100 flex items-center gap-1"
+                  >
+                    View All Fields
+                    <ArrowUpRight className="w-3 h-3" />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => onSelectForReverse(uni.id, cutoff)}
+                    className="text-[11px] font-semibold text-teal-700 hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-200 flex items-center gap-1"
+                  >
+                    Solve Target Score
+                    <ArrowUpRight className="w-3 h-3" />
+                  </button>
+                )}
               </div>
             </div>
           );
         })}
       </div>
+
+      {/* NUST Big Box (Horizontal Fields Rows Modal) */}
+      <NustFieldsModal
+        isOpen={isNustModalOpen}
+        onClose={() => setIsNustModalOpen(false)}
+        studentAggregate={nustResult?.aggregate || 0}
+        testType={nustResult?.breakdown.testType || 'local'}
+        onSelectForReverse={onSelectForReverse}
+      />
     </div>
   );
 };

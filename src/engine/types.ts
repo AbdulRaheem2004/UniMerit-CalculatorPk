@@ -4,15 +4,21 @@ export interface UniversityWeights {
   test: number;
 }
 
+export type DisciplineCategory = 'computing' | 'engineering' | 'business' | 'sciences' | 'general';
+
 export interface UniversityConfig {
   id: string;
   name: string;
   shortName: string;
+  disciplineCategory: DisciplineCategory;
+  disciplines: string[];
   campuses: string[];
   testName: string;
   testTotal: number;
   satSupported?: boolean;
   satTotal?: number;
+  satMinScore?: number;
+  satNotes?: string;
   formulaDisplay: string;
   sourceUrl: string;
   weights?: UniversityWeights;

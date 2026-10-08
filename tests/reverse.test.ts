@@ -87,7 +87,25 @@ describe('Reverse Target Score Solver Engine', () => {
     expect(result.status).toBe('achievable');
     expect(result.testType).toBe('sat');
     expect(result.maxScore).toBe(1600);
-    expect(result.targetScore).toBeGreaterThan(1000);
+    expect(result.targetScore).toBeGreaterThanOrEqual(1200); // Must be at least FAST minimum threshold
     expect(result.targetScore).toBeLessThanOrEqual(1600);
+  });
+
+  it('REV-05: returns impossible status when attempting to solve SAT for universities that do not support SAT', () => {
+    const pucit = universities.find(u => u.id === 'pucit')!;
+    const input: AcademicInput = {
+      matricObtained: 980,
+      matricTotal: 1100,
+      fscObtained: 920,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: true,
+      satScore: 0,
+      entryTestScores: {}
+    };
+
+    const result = solveRequiredTestScore(input, pucit, 80.0, true);
+    expect(result.status).toBe('impossible');
+    expect(result.message).toContain('does not accept Digital SAT');
   });
 });

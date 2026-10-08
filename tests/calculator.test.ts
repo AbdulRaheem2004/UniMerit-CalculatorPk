@@ -188,4 +188,59 @@ describe('Forward Aggregate Calculator Engine', () => {
     expect(result.isEligible).toBe(false);
     expect(result.eligibilityMessage).toContain('Eligibility warning');
   });
+
+  it('ENG-09: flags ineligibility when SAT score is below FAST minimum threshold (1200)', () => {
+    const input: AcademicInput = {
+      matricObtained: 900,
+      matricTotal: 1100,
+      fscObtained: 850,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: true,
+      satScore: 1150, // Below FAST CS minimum of 1200
+      entryTestScores: {}
+    };
+    const result = calculateUniversityAggregate(input, fastCs);
+    expect(result.isEligible).toBe(false);
+    expect(result.eligibilityMessage).toContain('below FAST Computing\'s minimum eligibility threshold of 1200');
+  });
+
+  it('ENG-10: flags ineligibility when applying with SAT to universities that do not support SAT (PUCIT / UET)', () => {
+    const input: AcademicInput = {
+      matricObtained: 950,
+      matricTotal: 1100,
+      fscObtained: 900,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: true,
+      satScore: 1400,
+      entryTestScores: {}
+    };
+    const pucitResult = calculateUniversityAggregate(input, pucit);
+    expect(pucitResult.isEligible).toBe(false);
+    expect(pucitResult.eligibilityMessage).toContain('does not accept Digital SAT');
+
+    const uetResult = calculateUniversityAggregate(input, uet);
+    expect(uetResult.isEligible).toBe(false);
+    expect(uetResult.eligibilityMessage).toContain('does not accept Digital SAT');
+  });
+
+  it('ENG-11: calculates NUST aggregate accurately on Digital SAT basis (75% SAT + 15% FSc + 10% Matric)', () => {
+    // Matric: 980/1100 (89.0909%), FSc: 920/1100 (83.6364%), SAT: 1400/1600 (87.5%)
+    // Expected: (89.0909*0.10) + (83.6364*0.15) + (87.5*0.75) = 8.909 + 12.545 + 65.625 = 87.079%
+    const input: AcademicInput = {
+      matricObtained: 980,
+      matricTotal: 1100,
+      fscObtained: 920,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: true,
+      satScore: 1400,
+      entryTestScores: {}
+    };
+    const result = calculateUniversityAggregate(input, nust);
+    expect(result.aggregate).toBeCloseTo(87.08, 1);
+    expect(result.isEligible).toBe(true);
+    expect(result.breakdown.testType).toBe('sat');
+  });
 });

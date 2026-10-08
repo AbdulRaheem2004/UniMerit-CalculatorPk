@@ -11,6 +11,18 @@ export function solveRequiredTestScore(
   preferSat: boolean = false
 ): ReverseTargetResult {
   const isSat = preferSat && !!uni.satSupported;
+
+  if (preferSat && !uni.satSupported) {
+    return {
+      targetScore: 0,
+      targetPercentage: 0,
+      maxScore: 1600,
+      testType: 'sat',
+      status: 'impossible',
+      message: `${uni.shortName} does not accept Digital SAT for general domestic seats. You must take ${uni.testName}.`
+    };
+  }
+
   const maxScore = isSat ? (uni.satTotal ?? 1600) : uni.testTotal;
   const testType: 'local' | 'sat' = isSat ? 'sat' : 'local';
 
@@ -69,6 +81,16 @@ export function solveRequiredTestScore(
   const remainingNeeded = targetAggregate - academicContribution;
 
   if (remainingNeeded <= 0) {
+    if (isSat && uni.satMinScore) {
+      return {
+        targetScore: uni.satMinScore,
+        targetPercentage: Number(((uni.satMinScore / maxScore) * 100).toFixed(2)),
+        maxScore,
+        testType,
+        status: 'achievable',
+        message: `Your academics alone reach this target, but ${uni.shortName} requires a mandatory minimum SAT score of ${uni.satMinScore}/1600.`
+      };
+    }
     return {
       targetScore: 0,
       targetPercentage: 0,
@@ -82,7 +104,7 @@ export function solveRequiredTestScore(
   // remainingNeeded = (targetScore / maxScore) * 100 * weights.test
   const targetPct = remainingNeeded / weights.test;
   const rawScore = (targetPct / 100) * maxScore;
-  const targetScore = Math.ceil(rawScore);
+  let targetScore = Math.ceil(rawScore);
 
   if (targetScore > maxScore) {
     return {
@@ -95,13 +117,19 @@ export function solveRequiredTestScore(
     };
   }
 
+  let note = '';
+  if (isSat && uni.satMinScore && targetScore < uni.satMinScore) {
+    targetScore = uni.satMinScore;
+    note = ` (Adjusted to meet ${uni.shortName}'s minimum cutoff threshold of ${uni.satMinScore})`;
+  }
+
   const testNameDisplay = isSat ? 'Digital SAT' : uni.testName;
   return {
     targetScore,
-    targetPercentage: Number(targetPct.toFixed(2)),
+    targetPercentage: Number(((targetScore / maxScore) * 100).toFixed(2)),
     maxScore,
     testType,
     status: 'achievable',
-    message: `You need at least ${targetScore}/${maxScore} (${targetPct.toFixed(1)}%) in ${testNameDisplay} to hit ${targetAggregate.toFixed(2)}%.`
+    message: `You need at least ${targetScore}/${maxScore} (${((targetScore / maxScore) * 100).toFixed(1)}%) in ${testNameDisplay} to hit ${targetAggregate.toFixed(2)}%${note}.`
   };
 }

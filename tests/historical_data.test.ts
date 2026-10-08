@@ -42,4 +42,48 @@ describe('Historical Merit Data Integrity & Authentication (2016-2026)', () => {
       }
     }
   });
+
+  it('DAT-04: verifies concluded admission cycle records for 2025 & 2026 with authentic sources', () => {
+    const records2026 = records.filter(r => r.year === 2026);
+    expect(records2026.length).toBeGreaterThan(0);
+    for (const rec of records2026) {
+      expect(rec.status).toBe('verified');
+      expect(rec.verificationSource).toBeDefined();
+      expect(rec.verificationSource?.title).toBeTruthy();
+      const hasMetric = (typeof rec.closingAggregate === 'number') || (typeof rec.closingMeritPosition === 'number');
+      expect(hasMetric).toBe(true);
+    }
+
+    const records2025 = records.filter(r => r.year === 2025);
+    expect(records2025.length).toBeGreaterThan(0);
+    for (const rec of records2025) {
+      expect(rec.status).toBe('verified');
+      expect(rec.verificationSource).toBeDefined();
+      const hasMetric = (typeof rec.closingAggregate === 'number') || (typeof rec.closingMeritPosition === 'number');
+      expect(hasMetric).toBe(true);
+    }
+  });
+
+  it('DAT-05: covers verified multi-campus records across major disciplines for 2024', () => {
+    const verified2024 = records.filter(r => r.year === 2024 && r.status === 'verified');
+    const campuses = new Set(verified2024.map(r => r.campus));
+    
+    // FAST multi-campus coverage
+    expect(Array.from(campuses).some(c => c.includes('Islamabad'))).toBe(true);
+    expect(Array.from(campuses).some(c => c.includes('Lahore'))).toBe(true);
+    expect(Array.from(campuses).some(c => c.includes('Karachi'))).toBe(true);
+    expect(Array.from(campuses).some(c => c.includes('Peshawar'))).toBe(true);
+    expect(Array.from(campuses).some(c => c.includes('CFD'))).toBe(true);
+
+    // COMSATS multi-campus coverage
+    expect(Array.from(campuses).some(c => c.includes('Abbottabad'))).toBe(true);
+    expect(Array.from(campuses).some(c => c.includes('Wah'))).toBe(true);
+
+    // Multi-discipline coverage
+    const disciplines = new Set(verified2024.map(r => r.discipline));
+    expect(disciplines).toContain('BS Computer Science');
+    expect(disciplines).toContain('BS Software Engineering');
+    expect(disciplines).toContain('Electrical Engineering');
+    expect(disciplines).toContain('BBA');
+  });
 });

@@ -5,7 +5,8 @@ import { AcademicInput, UniversityConfig, UniversityCalculationResult } from './
  */
 export function calculatePercentage(obtained: number, total: number): number {
   if (total <= 0 || obtained < 0) return 0;
-  return Number(((obtained / total) * 100).toFixed(4));
+  const clampedObtained = Math.min(obtained, total);
+  return Number(((clampedObtained / total) * 100).toFixed(4));
 }
 
 /**
@@ -19,15 +20,24 @@ export function calculateUniversityAggregate(
   const fscPct = calculatePercentage(input.fscObtained, input.fscTotal);
   
   // Eligibility check (Academic criteria: usually FSc & Matric must meet threshold)
-  const isEligible = fscPct >= uni.eligibilityMinAcademicPct && matricPct >= uni.eligibilityMinAcademicPct;
-  const eligibilityMessage = isEligible
+  let isEligible = fscPct >= uni.eligibilityMinAcademicPct && matricPct >= uni.eligibilityMinAcademicPct;
+  let eligibilityMessage = isEligible
     ? undefined
     : `Eligibility warning: Requires minimum ${uni.eligibilityMinAcademicPct}% in Intermediate / Matric. Your FSc is ${fscPct.toFixed(1)}%.`;
 
   // Test score evaluation: Local test vs Digital SAT
   const isUsingSat = input.useSat && !!uni.satSupported && input.satScore > 0;
   let testPct = 0;
-  const testType: 'local' | 'sat' = isUsingSat ? 'sat' : 'local';
+  const testType: 'local' | 'sat' = input.useSat && !!uni.satSupported ? 'sat' : 'local';
+
+  // Specific SAT validations
+  if (input.useSat && !uni.satSupported) {
+    isEligible = false;
+    eligibilityMessage = `${uni.shortName} does not accept Digital SAT for regular domestic seats. Admission requires ${uni.testName}.`;
+  } else if (input.useSat && uni.satSupported && uni.satMinScore && input.satScore > 0 && input.satScore < uni.satMinScore) {
+    isEligible = false;
+    eligibilityMessage = `SAT score (${input.satScore}/1600) is below ${uni.shortName}'s minimum eligibility threshold of ${uni.satMinScore}/1600.`;
+  }
 
   if (isUsingSat) {
     testPct = calculatePercentage(input.satScore, uni.satTotal ?? 1600);
@@ -39,7 +49,9 @@ export function calculateUniversityAggregate(
   // PUCIT custom formula
   if (uni.customFormula === 'pucit_standard') {
     const hafizBonus = input.hafizQuran ? 20 : 0;
-    const academicNumerator = (0.25 * input.matricObtained) + input.fscObtained + hafizBonus;
+    const clampedMatric = Math.min(Math.max(0, input.matricObtained), input.matricTotal);
+    const clampedFsc = Math.min(Math.max(0, input.fscObtained), input.fscTotal);
+    const academicNumerator = (0.25 * clampedMatric) + clampedFsc + hafizBonus;
     const academicDenominator = (0.25 * input.matricTotal) + input.fscTotal;
     const academicPct = academicDenominator > 0 ? (academicNumerator / academicDenominator) * 100 : 0;
     

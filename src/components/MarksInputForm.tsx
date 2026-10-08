@@ -1,11 +1,13 @@
 import React from 'react';
-import { AcademicInput, UniversityConfig } from '../engine/types';
-import { Calculator, Sparkles } from 'lucide-react';
+import { AcademicInput, UniversityConfig, DisciplineCategory } from '../engine/types';
+import { Calculator, Sparkles, Layers } from 'lucide-react';
 
 interface MarksInputFormProps {
   input: AcademicInput;
   onChange: (updated: AcademicInput) => void;
   universities: UniversityConfig[];
+  selectedDisciplineCategory: DisciplineCategory | 'all';
+  onSelectDisciplineCategory: (category: DisciplineCategory | 'all') => void;
   onOpenIBCC: () => void;
   showRomanUrdu: boolean;
 }
@@ -14,6 +16,8 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
   input,
   onChange,
   universities,
+  selectedDisciplineCategory,
+  onSelectDisciplineCategory,
   onOpenIBCC,
   showRomanUrdu,
 }) => {
@@ -42,16 +46,67 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
 
   return (
     <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-6 shadow-sm">
-      <div className="flex items-center justify-between pb-4 border-b border-zinc-100 dark:border-zinc-800">
+      {/* Header and Discipline Stream Selector */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-zinc-100 dark:border-zinc-800 gap-4">
         <div>
           <h2 className="text-base font-bold text-zinc-900 dark:text-white flex items-center gap-2">
             <Calculator className="w-4 h-4 text-teal-600 dark:text-teal-400" />
             Academic & Test Scores
           </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Enter your credentials once to see exact merit across all universities simultaneously.
+            Enter your credentials once to see exact merit across all universities & campuses simultaneously.
           </p>
         </div>
+
+        {/* Discipline Filter Tabs */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 flex items-center gap-1 mr-1">
+            <Layers className="w-3.5 h-3.5" /> Discipline:
+          </span>
+          {[
+            { id: 'all', label: 'All Fields' },
+            { id: 'computing', label: '💻 Computing (CS/SE/AI/DS)' },
+            { id: 'engineering', label: '⚙️ Engineering (EE/ME/CE)' },
+            { id: 'business', label: '📊 Business (BBA/FinTech)' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => onSelectDisciplineCategory(tab.id as DisciplineCategory | 'all')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                selectedDisciplineCategory === tab.id
+                  ? 'bg-teal-700 text-white dark:bg-teal-600 shadow-sm'
+                  : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Discipline-specific Academic Rule Notice */}
+      <div className="mt-4 p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 text-[11px] text-zinc-600 dark:text-zinc-300">
+        {selectedDisciplineCategory === 'computing' && (
+          <span>
+            💡 <strong>Computing Stream:</strong> Requires Intermediate in Pre-Engineering, ICS, or Pre-Medical with Additional Math. Minimum 50% for FAST/COMSATS/PUCIT, 60% for NUST & GIKI.
+          </span>
+        )}
+        {selectedDisciplineCategory === 'engineering' && (
+          <span>
+            💡 <strong>Engineering Stream:</strong> Governed by Pakistan Engineering Council (PEC). Requires minimum 60% in FSc Pre-Engineering across all institutions.
+          </span>
+        )}
+        {selectedDisciplineCategory === 'business' && (
+          <span>
+            💡 <strong>Business & Social Sciences:</strong> Open to all intermediate disciplines (FA / FSc / ICS / I.Com). Minimum 50% for FAST & COMSATS; 60% for NUST NBS.
+          </span>
+        )}
+        {selectedDisciplineCategory === 'all' && (
+          <span>
+            💡 Showing all disciplines across universities. You can filter above by Computing, Engineering, or Business.
+          </span>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
@@ -115,7 +170,13 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
             <div className="flex items-center space-x-1 text-[10px]">
               <button
                 type="button"
-                onClick={() => updateField('fscTotal', 1100)}
+                onClick={() => {
+                  const newTotal = 1100;
+                  const newObtained = input.fscTotal === 520 && input.fscObtained > 0
+                    ? Math.min(newTotal, Math.round((input.fscObtained / 520) * 1100))
+                    : input.fscObtained;
+                  onChange({ ...input, fscTotal: newTotal, fscObtained: newObtained });
+                }}
                 className={`px-2 py-0.5 rounded font-medium border ${
                   input.fscTotal === 1100
                     ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 border-transparent'
@@ -126,7 +187,13 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
               </button>
               <button
                 type="button"
-                onClick={() => updateField('fscTotal', 520)}
+                onClick={() => {
+                  const newTotal = 520;
+                  const newObtained = input.fscTotal === 1100 && input.fscObtained > 0
+                    ? Math.min(newTotal, Math.round((input.fscObtained / 1100) * 520))
+                    : Math.min(newTotal, input.fscObtained);
+                  onChange({ ...input, fscTotal: newTotal, fscObtained: newObtained });
+                }}
                 className={`px-2 py-0.5 rounded font-medium border ${
                   input.fscTotal === 520
                     ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 border-transparent'
@@ -227,13 +294,13 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
 
         {/* SAT Mode Input */}
         {input.useSat ? (
-          <div className="p-4 bg-teal-50/60 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800 rounded-xl space-y-3">
+          <div className="p-4 bg-teal-50/60 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800 rounded-xl space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-teal-900 dark:text-teal-200 flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4 text-teal-600" />
                 Digital SAT Score (out of 1600)
               </span>
-              <span className="text-[11px] font-mono text-teal-700 dark:text-teal-300">
+              <span className="text-[11px] font-mono text-teal-700 dark:text-teal-300 font-bold">
                 {input.satScore > 0 ? `${((input.satScore / 1600) * 100).toFixed(2)}%` : '0.00%'}
               </span>
             </div>
@@ -252,45 +319,89 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
               />
             </div>
             {satError && <p className="text-[11px] text-red-500">{satError}</p>}
-            <p className="text-[11px] text-teal-800 dark:text-teal-300">
-              Applies directly to <strong>FAST-NUCES</strong> (50% computing, 33% engineering), <strong>NUST</strong> (75% National Seats), <strong>GIKI</strong> (85%), and <strong>COMSATS</strong> (50%).
-            </p>
+
+            {/* University SAT Policy Evaluation Status */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
+              <div className="p-2.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-1">
+                <span className="font-bold text-zinc-900 dark:text-white">FAST-NUCES Policy:</span>
+                {input.satScore >= 1200 ? (
+                  <p className="text-emerald-700 dark:text-emerald-400 font-medium">
+                    ✅ Eligible for Computing & Engineering (Met 1200+ threshold)
+                  </p>
+                ) : input.satScore >= 1000 ? (
+                  <p className="text-amber-700 dark:text-amber-400 font-medium">
+                    ⚠️ Eligible for Business (1000+), but below CS/Eng minimum (1200)
+                  </p>
+                ) : (
+                  <p className="text-red-600 dark:text-red-400 font-medium">
+                    ❌ Ineligible for FAST SAT route (Min 1200 for CS/Eng, 1000 for Business)
+                  </p>
+                )}
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-1">
+                <span className="font-bold text-zinc-900 dark:text-white">NUST National Seats:</span>
+                <p className="text-zinc-600 dark:text-zinc-300">
+                  75% SAT + 15% FSc + 10% SSC (Min 550 per section in Math & Physics).
+                </p>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-1">
+                <span className="font-bold text-zinc-900 dark:text-white">GIKI & COMSATS:</span>
+                <p className="text-zinc-600 dark:text-zinc-300">
+                  GIKI: 85% SAT + 15% SSC. COMSATS: 50% SAT + 40% FSc + 10% Matric.
+                </p>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-1">
+                <span className="font-bold text-zinc-900 dark:text-white">PUCIT & UET Lahore:</span>
+                <p className="text-zinc-500 dark:text-zinc-400">
+                  ⚠️ SAT not accepted for regular seats (Mandatory PU Test / ECAT).
+                </p>
+              </div>
+            </div>
           </div>
         ) : (
           /* Local Test Inputs */
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {universities.map((uni) => {
-              const currentScore = input.entryTestScores[uni.id] ?? '';
-              return (
-                <div
-                  key={uni.id}
-                  className="p-3 bg-zinc-50 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700 rounded-xl space-y-1.5"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-zinc-900 dark:text-white truncate">
-                      {uni.shortName}
-                    </span>
-                    <span className="text-[10px] text-zinc-400 font-mono">
-                      Max: {uni.testTotal}
-                    </span>
+            {universities
+              .filter(
+                (uni) =>
+                  selectedDisciplineCategory === 'all' ||
+                  uni.disciplineCategory === selectedDisciplineCategory
+              )
+              .map((uni) => {
+                const currentScore = input.entryTestScores[uni.id] ?? '';
+                return (
+                  <div
+                    key={uni.id}
+                    className="p-3 bg-zinc-50 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700 rounded-xl space-y-1.5"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-zinc-900 dark:text-white truncate">
+                        {uni.shortName}
+                      </span>
+                      <span className="text-[10px] text-zinc-400 font-mono">
+                        Max: {uni.testTotal}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="number"
+                        min={0}
+                        max={uni.testTotal}
+                        value={currentScore}
+                        onChange={(e) => updateTestScore(uni.id, Math.max(0, Number(e.target.value)))}
+                        placeholder={`Test score (/${uni.testTotal})`}
+                        className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 font-mono focus:outline-none focus:ring-2 focus:ring-teal-600"
+                      />
+                    </div>
+                    <p className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">
+                      {uni.testName}
+                    </p>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="number"
-                      min={0}
-                      max={uni.testTotal}
-                      value={currentScore}
-                      onChange={(e) => updateTestScore(uni.id, Math.max(0, Number(e.target.value)))}
-                      placeholder={`Test score (/${uni.testTotal})`}
-                      className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 font-mono focus:outline-none focus:ring-2 focus:ring-teal-600"
-                    />
-                  </div>
-                  <p className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">
-                    {uni.testName}
-                  </p>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
         )}
       </div>

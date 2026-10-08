@@ -1,132 +1,102 @@
-# 🎓 Pakistani Universities Merit Calculator & Predictor
+# 🎓 PakMerit: Pakistani Universities Merit Calculator & 10-Year Cutoffs (2016–2026)
 
-> **Category:** EdTech / Admissions / High-Traffic Student Utility  
-> **Target Audience:** 300,000+ Pakistani FSc, ICS, and O/A-Level students applying to top universities annually  
-> **Budget:** Strictly **$0.00** (100% Client-Side Static App, zero backend, zero API costs)  
-> **Quality Standard:** Anti-Slop (GPT-Taste + Impeccable + GASP) & Ponytail Minimalism
-
----
-
-## 📖 Overview
-
-Admission criteria across Pakistani universities are fragmented and confusing. Every university calculates its aggregate percentage differently:
-- **NUST:** 75% NET + 15% FSc + 10% Matric
-- **FAST NUCES:** 50% NU Test + 50% FSc (or 50% NAT + 50% FSc)
-- **COMSATS:** 50% NTS-NAT + 40% FSc + 10% Matric
-- **GIKI:** 85% GIKI Admission Test + 10% HSSC + 5% SSC
-- **PUCIT (Punjab University):** 30% PU Test + 70% Academic Marks
-- **UET (ECAT):** 33% ECAT + 50% FSc + 17% Matric
-- **LUMS, FCCU, GCU, BNU:** Individual program-specific criteria
-
-**Pakistani Universities Merit Calculator** solves this fragmentation with an ad-free, instant, mobile-first web application. Students enter their academic marks once and immediately see their aggregate across all universities simultaneously, alongside a reverse target score planner that calculates the exact entry test marks required to secure admission.
+> **Live & Deterministic Admissions Calculator for Pakistani Students**  
+> Built for FSc, ICS, and Cambridge O/A-Level applicants targeting **NUST, FAST-NUCES, COMSATS, GIKI, PUCIT (Punjab University), and UET Lahore**.  
+> **100% Free Forever ($0 Budget)** • Zero Backend • Offline PWA • No Ads • Authentic Verified Sources Only.
 
 ---
 
-## 🌟 Key Features
+## ⚡ Key Features
 
-1. **Simultaneous Multi-University Calculation:**
-   - Single input form for Matric / SSC and FSc Part 1 or Part 2 marks.
-   - Instantly computes aggregates across NUST, FAST, COMSATS, GIKI, PUCIT, UET, GCU, FCCU, and BNU side-by-side.
-2. **Reverse Target Score Planner ("What score do I need?"):**
-   - Select your target university and major (e.g. *FAST Islamabad Computer Science*).
-   - Automatically references historical closing cutoffs and reverse-calculates:
-     $$\text{Required Test Marks} = \frac{\text{Target Aggregate} - (\text{Academic Weight} \times \text{Academic } \%)}{\text{Test Weight}} \times \text{Total Test Marks}$$
-   - Clearly flags whether the target is in the Safe Zone, Competitive Zone, or mathematically out of reach.
-3. **Automated Cambridge IBCC Equivalence Converter:**
-   - Built-in modal converting Cambridge O-Level and A-Level letter grades directly into official IBCC equivalent percentages without manual lookup charts.
-4. **Historical Closing Merit Trends:**
-   - Pre-curated benchmarks of past 3 years' closing cutoffs across top computing and engineering departments.
-5. **Source Audit Modal:**
-   - Transparent verification panel citing the exact official prospectus page or admission circular for every calculation formula.
-6. **Native WhatsApp Share Card:**
-   - Generates a clean, privacy-preserving visual badge using HTML5 Canvas for students to share directly with parents and peers on WhatsApp.
-7. **Offline PWA Support:**
-   - Progressive Web App with Service Worker caching (`public/sw.js`). Fully functional offline on mobile devices without data connections.
-
----
-
-## 🏛️ System Architecture
-
-```mermaid
-flowchart TD
-    subgraph ClientApp ["Client Browser / Mobile PWA ($0 Stack)"]
-        UI["Marks Input Form (Matric, FSc, Tests)"]
-        IBCC["IBCC Equivalence Sub-Engine"]
-        CalcEngine["Deterministic Formula Engine (TypeScript)"]
-        ReverseEngine["Reverse Target Score Planner"]
-        StaticData[("formulas.ts & historical_data.ts")]
-        ResultsView["Multi-University Comparative Dashboard"]
-        ShareCard["WhatsApp Canvas Card Generator"]
-    end
-
-    UI --> IBCC
-    IBCC --> CalcEngine
-    StaticData --> CalcEngine
-    StaticData --> ReverseEngine
-    CalcEngine --> ResultsView
-    ReverseEngine --> ResultsView
-    ResultsView --> ShareCard
-```
-
-- **Hosting:** GitHub Pages / Cloudflare Pages (**$0.00/month**).
-- **Backend:** **Zero.** All logic runs client-side in the browser in `< 10ms`.
-- **Runtime:** React 19 + TypeScript + Vite + Tailwind CSS.
+1. **Simultaneous Multi-University Forward Calculator:**
+   - Enter your Matric / O-Level and FSc / A-Level marks once.
+   - Instantly calculates your aggregate across **all 6 top universities simultaneously** with complete mathematical transparency.
+2. **Digital SAT (out of 1600) Support:**
+   - Seamless toggle to calculate your aggregate using your Digital SAT score.
+   - Automatically scales SAT into university test weightages:
+     - **FAST-NUCES Computing:** 50% SAT ($\frac{\text{Score}}{1600} \times 100$) + 40% FSc + 10% Matric.
+     - **FAST-NUCES Engineering:** 33% SAT + 50% FSc + 17% Matric.
+     - **NUST (National SAT Seats):** 75% SAT + 15% FSc + 10% Matric.
+     - **GIKI:** 85% SAT + 15% SSC.
+     - **COMSATS:** 50% SAT + 40% FSc + 10% Matric.
+3. **10-Year Historical Merit Trend Visualizer (2016–2026):**
+   - Interactive SVG multi-year trend curves for high-demand disciplines (BS Computer Science, Software Engineering, AI, Data Science, Cyber Security, Electrical Engineering, Mechanical Engineering, BBA).
+   - **Strict Authentication Rule:** Every data point is cited to official selection lists or circulars. If a university did not publicly archive a list (e.g. 2016 or COVID-19 2020 special policy), it is explicitly reported as **Not Found / Special Policy** rather than assumed.
+   - **"You vs 10-Year Cutoffs" Overlay:** Draws the student's aggregate as a horizontal benchmark across the 10-year curve.
+4. **Reverse Target Score Planner ("What score do I need?"):**
+   - Pick any university program cutoff (e.g. FAST CS 74.2%) or enter a custom target aggregate.
+   - Solves for the exact minimum test score required in **NET (out of 200)**, **FAST NU Test (out of 100)**, **ECAT (out of 400)**, or **Digital SAT (out of 1600)**.
+5. **IBCC O/A-Level Equivalence Modal:**
+   - Grade selector for 8 O-Level subjects ($A^*=90, A=85, B=75, C=65, D=55, E=45$).
+   - Computes official IBCC equivalence marks out of 1100 and auto-populates the form with a single click.
+6. **WhatsApp Branded Share Card:**
+   - Pure HTML5 Canvas snapshot generator rendering a high-contrast 1200x675 social summary card for WhatsApp, parents, and friends.
+7. **Offline-Ready Progressive Web App (PWA):**
+   - Installable on mobile home screens and desktops with Service Worker caching. Works 100% offline with zero server calls.
 
 ---
 
-## 🥊 Market Comparison: Why This App Wins
+## 🏛️ Supported Universities & Formulas
 
-| Dimension | Legacy Competitors (IlmKiDunya, Eduvision, CampusGuru) | Pakistani Universities Merit Calculator |
-|---|---|---|
-| **User Flow** | Requires entering marks 10 times across 10 ad-filled separate pages. | **Enter once, calculate across all universities simultaneously.** |
-| **Reverse Planning** | None. Only calculates forward aggregates. | **Tells you exactly what test score you need to cross last year's cutoff.** |
-| **Cambridge O/A-Levels** | Clunky manual tables. | **Automated IBCC letter grade converter modal.** |
-| **User Experience** | Heavy page load (5–8s), 40+ ad trackers, popups. | **< 0.5s load, 0 ads, 0 trackers, offline PWA.** |
-| **Formula Credibility** | Often outdated (2019/2020 formulas). | **Source Audit Modal citing official current university prospectuses.** |
-
----
-
-## ⚡ Lightweight & $0 Optimization Strategy
-
-1. **Total Bundle Size:** `< 75KB` gzipped bundle.
-2. **Offline-First:** All formulas and historical datasets reside in static TypeScript files. Once loaded, the app works on rural 3G or with zero internet access.
-3. **No External Libraries for Visuals:** Uses lightweight SVG icons (`lucide-react`) and native HTML5 Canvas for WhatsApp share card generation.
-4. **Zero Maintenance Bills:** Hosted entirely on free static infrastructure with zero API keys or databases.
+| University | Test Name | Total Test Marks | Official Aggregate Formula |
+|---|---|:---:|---|
+| **NUST** | NET / Digital SAT | 200 / 1600 | **10% Matric + 15% FSc + 75% NET/SAT** |
+| **FAST-NUCES (Computing)** | NU Test / SAT / NAT | 100 / 1600 | **10% Matric + 40% FSc + 50% Test/SAT** |
+| **FAST-NUCES (Engineering)** | NU Test / SAT / ECAT | 100 / 1600 | **17% Matric + 50% FSc + 33% Test/SAT** |
+| **COMSATS (CUI)** | NTS-NAT / SAT | 100 / 1600 | **10% Matric + 40% FSc + 50% NTS/SAT** |
+| **GIKI** | GIKI Test / SAT | 200 / 1600 | **15% SSC (Matric) + 85% Test/SAT** *(HSSC $\ge 60\%$ eligibility)* |
+| **PUCIT / PU** | PU Admission Test | 100 | **75% Academic + 25% Test** *(+20 Hafiz bonus)* |
+| **UET Lahore** | ECAT | 400 | **17% Matric + 50% FSc + 33% ECAT** |
 
 ---
 
-## 🎨 Anti-Slop & Ponytail Minimalism
+## 💻 Tech Stack & Zero-Cost Architecture
 
-- **No AI Aesthetic:** No purple gradients, no oversized cards, and no meaningless buzzwords. Styled with a clean, functional slate/emerald theme with high-contrast tabular typography.
-- **Ponytail Ladder:** Standard React local state — no Redux or Zustand boilerplate needed. Pure functions for all calculations. Native `<dialog>` modal behavior.
+- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS.
+- **Icons:** Lucide React.
+- **Testing:** Vitest (20 automated unit tests covering all formulas, edge cases, and data integrity).
+- **Graphics:** HTML5 Canvas API (custom 1200x675 card compositor).
+- **Cost:** **$0.00 / forever**. Completely static, client-side deterministic computation. Ready to deploy to GitHub Pages, Cloudflare Pages, or Vercel Hobby.
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Getting Started
 
-### Development
+### Prerequisites
+- Node.js 18+ (tested on Node v24)
+- npm 9+
+
+### Installation & Local Development
 ```bash
-npm install
-npm run dev
-```
-Open your browser at `http://localhost:5173`.
+# Clone the repository
+git clone <repo-url>
+cd "projects/03-merit-calculator"
 
-### Run Test Suite (Vitest)
+# Install dependencies
+npm install
+
+# Run local development server
+npm run dev
+
+# Run automated unit test suite
+npm test
+
+# Build production bundle
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+
+---
+
+## 🧪 Automated Test Suite
+
+Run `npm test` to execute all unit tests:
 ```bash
 npm test
 ```
-All 20 unit and historical data tests pass in `< 600ms`.
-
-### Build for Production
-```bash
-npm run build
-```
-Generates production assets in `dist/` ready for immediate deployment to GitHub Pages or Cloudflare Pages.
-
----
-
-## 📁 Project Documents
-
-- [RULES.md](file:///e:/Projects/Project%20Ideas/projects/03-merit-calculator/RULES.md) — Project-specific quality, citation, and student UX rules.
-- [EXECUTION-PLAN.md](file:///e:/Projects/Project%20Ideas/projects/03-merit-calculator/EXECUTION-PLAN.md) — Phased development roadmap.
-- [TEST-CASES.md](file:///e:/Projects/Project%20Ideas/projects/03-merit-calculator/TEST-CASES.md) — 48 test cases covering formulas, reverse planner, UI, and edge cases.
+- `tests/calculator.test.ts`: Validates aggregate percentage formulas, SAT conversions, and eligibility boundaries.
+- `tests/reverse.test.ts`: Validates target score solver (achievable, unachievable, and already qualified states).
+- `tests/historical_data.test.ts`: Verifies strict authentication standards (2016–2026 data integrity).
+- `tests/ibcc.test.ts`: Validates Cambridge O-Level grade conversions to 1100 marks.

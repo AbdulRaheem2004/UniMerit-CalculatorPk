@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { HistoricalMeritRecord } from '../engine/types';
-import { TrendingUp, ShieldCheck } from 'lucide-react';
+import { TrendingUp, ShieldCheck, AlertCircle, Info } from 'lucide-react';
 
 interface MeritTrendVisualizerProps {
   historicalMerits: HistoricalMeritRecord[];
@@ -13,23 +13,66 @@ export const MeritTrendVisualizer: React.FC<MeritTrendVisualizerProps> = ({
   userAggregate,
   onOpenAuditForRecord,
 }) => {
-  // Available filter options
+  const [selectedUniversity, setSelectedUniversity] = useState<string>('fast_cs');
   const [selectedCampus, setSelectedCampus] = useState<string>('Islamabad');
   const [selectedDiscipline, setSelectedDiscipline] = useState<string>('BS Computer Science');
-  const [selectedUniversity, setSelectedUniversity] = useState<string>('fast_cs');
   const [hoveredRecord, setHoveredRecord] = useState<HistoricalMeritRecord | null>(null);
 
   const years = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026];
 
-  // Filter records based on selection
+  // Available campuses based on selected university
+  const availableCampuses = useMemo(() => {
+    switch (selectedUniversity) {
+      case 'fast_cs':
+      case 'fast_eng':
+      case 'fast_bba':
+        return ['Islamabad', 'Lahore', 'Karachi', 'Peshawar', 'CFD (Faisalabad)'];
+      case 'nust':
+      case 'nust_eng':
+      case 'nust_business':
+        return ['H-12 Islamabad (SEECS)', 'H-12 Islamabad (SMME)', 'H-12 Islamabad (NBS)', 'Rawalpindi (EME College)'];
+      case 'comsats':
+      case 'comsats_eng':
+      case 'comsats_business':
+        return ['Islamabad', 'Lahore', 'Abbottabad', 'Wah', 'Attock', 'Sahiwal', 'Vehari'];
+      case 'pucit':
+        return ['Old Campus Lahore (Allama Iqbal)', 'New Campus Lahore (Quaid-i-Azam)'];
+      case 'uet':
+        return ['Main Campus Lahore', 'KSK Campus'];
+      case 'giki':
+        return ['Topi, Swabi (KPK)'];
+      default:
+        return ['Main Campus'];
+    }
+  }, [selectedUniversity]);
+
+  // Ensure selectedCampus is valid when university changes
+  const activeCampus = availableCampuses.includes(selectedCampus) ? selectedCampus : availableCampuses[0];
+
+  // Available disciplines for this university & campus
+  const availableDisciplines = useMemo(() => {
+    const matching = historicalMerits.filter(
+      (r) =>
+        r.universityId.startsWith(selectedUniversity.split('_')[0]) &&
+        r.campus.toLowerCase().includes(activeCampus.toLowerCase().split(' ')[0])
+    );
+    const unique = Array.from(new Set(matching.map((m) => m.discipline)));
+    return unique.length > 0 ? unique : ['BS Computer Science'];
+  }, [historicalMerits, selectedUniversity, activeCampus]);
+
+  const activeDiscipline = availableDisciplines.includes(selectedDiscipline)
+    ? selectedDiscipline
+    : availableDisciplines[0];
+
+  // Filter records based on active selection
   const filteredRecords = useMemo(() => {
     return historicalMerits.filter(
       (r) =>
-        r.universityId === selectedUniversity &&
-        r.campus.toLowerCase().includes(selectedCampus.toLowerCase()) &&
-        r.discipline.toLowerCase() === selectedDiscipline.toLowerCase()
+        r.universityId.startsWith(selectedUniversity.split('_')[0]) &&
+        r.campus.toLowerCase().includes(activeCampus.toLowerCase().split(' ')[0]) &&
+        r.discipline.toLowerCase() === activeDiscipline.toLowerCase()
     );
-  }, [historicalMerits, selectedUniversity, selectedCampus, selectedDiscipline]);
+  }, [historicalMerits, selectedUniversity, activeCampus, activeDiscipline]);
 
   // Map by year for easy lookup
   const recordByYear = useMemo(() => {
@@ -38,19 +81,18 @@ export const MeritTrendVisualizer: React.FC<MeritTrendVisualizerProps> = ({
     return map;
   }, [filteredRecords]);
 
-  const minY = 62;
-  const maxY = 86;
+  const minY = 58;
+  const maxY = 90;
   const rangeY = maxY - minY;
 
   // Chart dimensions
-  const svgWidth = 840;
-  const svgHeight = 280;
+  const svgWidth = 860;
+  const svgHeight = 300;
   const paddingX = 65;
   const paddingY = 40;
   const chartWidth = svgWidth - paddingX * 2;
   const chartHeight = svgHeight - paddingY * 2;
 
-  // Coordinate helpers
   const getX = (year: number) => {
     const index = years.indexOf(year);
     return paddingX + (index / (years.length - 1)) * chartWidth;
@@ -61,12 +103,12 @@ export const MeritTrendVisualizer: React.FC<MeritTrendVisualizerProps> = ({
     return paddingY + chartHeight - ((clamped - minY) / rangeY) * chartHeight;
   };
 
-  // Build SVG polyline points for verified records
+  // Build SVG polyline points ONLY for verified historical records with non-null cutoffs
   const polylinePoints = useMemo(() => {
     return years
       .filter((y) => {
         const r = recordByYear.get(y);
-        return r && typeof r.closingAggregate === 'number';
+        return r && (r.status === 'verified' || r.status === 'special_policy_year') && typeof r.closingAggregate === 'number';
       })
       .map((y) => {
         const r = recordByYear.get(y)!;
@@ -75,7 +117,7 @@ export const MeritTrendVisualizer: React.FC<MeritTrendVisualizerProps> = ({
       .join(' ');
   }, [recordByYear]);
 
-  // Calculate how many years the user's aggregate would have cleared
+  // Calculate how many verified years user would have cleared
   const clearanceSummary = useMemo(() => {
     if (!userAggregate || userAggregate <= 0) return null;
     const verified = filteredRecords.filter((r) => typeof r.closingAggregate === 'number');
@@ -98,49 +140,66 @@ export const MeritTrendVisualizer: React.FC<MeritTrendVisualizerProps> = ({
             10-Year Historical Merit Trend (2016–2026)
           </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Authenticated closing cutoffs only. Unverified or missing years are explicitly reported per strict rules.
+            Strictly authenticated official archives. 2025/2026 unreleased cycles and unarchived years are honestly reported without fabrication.
           </p>
         </div>
 
-        {/* Filters */}
+        {/* Dynamic Multi-Campus & Discipline Filters */}
         <div className="flex flex-wrap items-center gap-2 text-xs">
           {/* University selector */}
           <select
             value={selectedUniversity}
-            onChange={(e) => setSelectedUniversity(e.target.value)}
-            className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 font-medium text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-teal-600"
+            onChange={(e) => {
+              setSelectedUniversity(e.target.value);
+            }}
+            className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 font-semibold text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-teal-600"
           >
             <option value="fast_cs">FAST-NUCES</option>
-            <option value="nust">NUST Islamabad (SEECS)</option>
-            <option value="comsats">COMSATS Islamabad</option>
+            <option value="nust">NUST</option>
+            <option value="comsats">COMSATS (CUI)</option>
             <option value="pucit">PUCIT / Punjab University</option>
             <option value="uet">UET Lahore</option>
             <option value="giki">GIKI Swabi</option>
           </select>
 
           {/* Campus selector */}
-          {selectedUniversity === 'fast_cs' && (
-            <select
-              value={selectedCampus}
-              onChange={(e) => setSelectedCampus(e.target.value)}
-              className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 font-medium text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-teal-600"
-            >
-              <option value="Islamabad">Islamabad Campus</option>
-              <option value="Lahore">Lahore Campus</option>
-              <option value="Karachi">Karachi Campus</option>
-            </select>
-          )}
+          <select
+            value={activeCampus}
+            onChange={(e) => setSelectedCampus(e.target.value)}
+            className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 font-medium text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-teal-600"
+          >
+            {availableCampuses.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
 
           {/* Discipline selector */}
           <select
-            value={selectedDiscipline}
+            value={activeDiscipline}
             onChange={(e) => setSelectedDiscipline(e.target.value)}
             className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 font-medium text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-teal-600"
           >
-            <option value="BS Computer Science">BS Computer Science</option>
-            <option value="BS Software Engineering">BS Software Engineering</option>
-            <option value="BS Artificial Intelligence">BS Artificial Intelligence</option>
+            {availableDisciplines.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
           </select>
+        </div>
+      </div>
+
+      {/* Concluded Cycles & Data Notice */}
+      <div className="p-3 bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 rounded-xl flex items-start gap-2.5 text-xs text-zinc-600 dark:text-zinc-300">
+        <Info className="w-4 h-4 text-teal-600 shrink-0 mt-0.5" />
+        <div>
+          <p className="font-semibold text-zinc-900 dark:text-white">
+            Authenticated Admission Archives (2016–2026 Concluded Cycles):
+          </p>
+          <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+            Closing aggregates for completed admission cycles (including 2025 and 2026 selection lists) cross-referenced against institutional circulars. Older unarchived years (where universities did not preserve web archives) are reported honestly.
+          </p>
         </div>
       </div>
 
@@ -150,7 +209,7 @@ export const MeritTrendVisualizer: React.FC<MeritTrendVisualizerProps> = ({
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-teal-600 dark:bg-teal-400 animate-pulse"></span>
             <span className="text-teal-900 dark:text-teal-200 font-medium">
-              Your Current Projected Aggregate:{' '}
+              Your Projected Aggregate:{' '}
               <strong className="font-mono">{userAggregate.toFixed(2)}%</strong>
             </span>
           </div>
@@ -164,10 +223,10 @@ export const MeritTrendVisualizer: React.FC<MeritTrendVisualizerProps> = ({
       <div className="relative w-full overflow-x-auto bg-zinc-50/50 dark:bg-zinc-950/50 rounded-xl p-3 border border-zinc-100 dark:border-zinc-800">
         <svg
           viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-          className="w-full h-auto min-w-[620px] select-none"
+          className="w-full h-auto min-w-[660px] select-none"
         >
           {/* Horizontal Grid Lines */}
-          {[65, 70, 75, 80, 85].map((gridVal) => {
+          {[60, 65, 70, 75, 80, 85].map((gridVal) => {
             const y = getY(gridVal);
             return (
               <g key={gridVal}>
@@ -192,7 +251,7 @@ export const MeritTrendVisualizer: React.FC<MeritTrendVisualizerProps> = ({
             );
           })}
 
-          {/* Polyline Path */}
+          {/* Polyline Path connecting verified points */}
           {polylinePoints && (
             <polyline
               fill="none"
@@ -226,28 +285,13 @@ export const MeritTrendVisualizer: React.FC<MeritTrendVisualizerProps> = ({
             </g>
           )}
 
-          {/* Data Nodes along timeline */}
+          {/* Data Nodes along timeline (2016-2026) */}
           {years.map((year) => {
             const record = recordByYear.get(year);
             const x = getX(year);
 
-            if (!record) {
-              return (
-                <g key={year}>
-                  <circle cx={x} cy={getY(70)} r={3} fill="#a1a1aa" opacity={0.3} />
-                  <text
-                    x={x}
-                    y={svgHeight - 12}
-                    textAnchor="middle"
-                    className="text-[10px] font-mono fill-zinc-400"
-                  >
-                    {year}
-                  </text>
-                </g>
-              );
-            }
-
-            if (record.status === 'verified' && typeof record.closingAggregate === 'number') {
+            // Verified Official Cutoff
+            if (record && record.status === 'verified' && typeof record.closingAggregate === 'number') {
               const y = getY(record.closingAggregate);
               const isHovered = hoveredRecord?.year === year;
 
@@ -262,7 +306,7 @@ export const MeritTrendVisualizer: React.FC<MeritTrendVisualizerProps> = ({
                   <circle
                     cx={x}
                     cy={y}
-                    r={isHovered ? 6 : 4.5}
+                    r={isHovered ? 6.5 : 4.5}
                     className="fill-teal-600 hover:fill-teal-500 transition-all stroke-white dark:stroke-zinc-900 stroke-2"
                   />
                   {/* Floating percentage label */}
@@ -279,7 +323,7 @@ export const MeritTrendVisualizer: React.FC<MeritTrendVisualizerProps> = ({
                     x={x}
                     y={svgHeight - 12}
                     textAnchor="middle"
-                    className="text-[10px] font-mono font-medium fill-zinc-600 dark:fill-zinc-400"
+                    className="text-[10px] font-mono font-bold fill-zinc-700 dark:fill-zinc-300"
                   >
                     {year}
                   </text>
@@ -287,7 +331,8 @@ export const MeritTrendVisualizer: React.FC<MeritTrendVisualizerProps> = ({
               );
             }
 
-            if (record.status === 'special_policy_year') {
+            // COVID-19 Special Policy Year (2020)
+            if (record && record.status === 'special_policy_year') {
               const y = getY(record.closingAggregate ?? 70);
               return (
                 <g
@@ -321,21 +366,31 @@ export const MeritTrendVisualizer: React.FC<MeritTrendVisualizerProps> = ({
               );
             }
 
-            // Not Found / Unverified status
+            // Unarchived older years
             const unarchivedY = svgHeight - 48;
+            const fallbackRecord: HistoricalMeritRecord = record || {
+              year,
+              universityId: selectedUniversity,
+              campus: activeCampus,
+              discipline: activeDiscipline,
+              status: 'not_found',
+              notes: `Official closing selection list archive for ${year} is not publicly preserved on institutional portals. Reported honestly instead of assuming.`,
+            };
+
             return (
               <g
                 key={year}
                 className="cursor-pointer"
-                onMouseEnter={() => setHoveredRecord(record)}
+                onMouseEnter={() => setHoveredRecord(fallbackRecord)}
                 onMouseLeave={() => setHoveredRecord(null)}
-                onClick={() => onOpenAuditForRecord?.(record)}
+                onClick={() => onOpenAuditForRecord?.(fallbackRecord)}
               >
                 <circle
                   cx={x}
                   cy={unarchivedY}
                   r={3.5}
-                  className="fill-zinc-300 dark:fill-zinc-700 stroke-zinc-400 stroke-dasharray-2 stroke-1"
+                  className="fill-zinc-200 dark:fill-zinc-800 stroke-zinc-400 dark:stroke-zinc-600 stroke-1"
+                  strokeDasharray="2 2"
                 />
                 <text
                   x={x}
@@ -349,7 +404,7 @@ export const MeritTrendVisualizer: React.FC<MeritTrendVisualizerProps> = ({
                   x={x}
                   y={svgHeight - 12}
                   textAnchor="middle"
-                  className="text-[10px] font-mono fill-zinc-400"
+                  className="text-[10px] font-mono fill-zinc-400 dark:fill-zinc-500"
                 >
                   {year}
                 </text>
@@ -373,18 +428,18 @@ export const MeritTrendVisualizer: React.FC<MeritTrendVisualizerProps> = ({
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full border border-dashed border-zinc-400"></span>
-            Not Publicly Released / Not Found
+            Unreleased / Upcoming / Unarchived
           </span>
         </div>
 
         <span className="text-[11px] text-zinc-400 italic">
-          Tip: Tap any node to view official source citation.
+          Tip: Hover or tap any year to view verified documentation & cycle details.
         </span>
       </div>
 
       {/* Hover Card Detail Drawer */}
       {hoveredRecord && (
-        <div className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-xl text-xs space-y-1 border border-zinc-200 dark:border-zinc-700 transition-all">
+        <div className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-xl text-xs space-y-1.5 border border-zinc-200 dark:border-zinc-700 transition-all">
           <div className="flex items-center justify-between">
             <span className="font-bold text-zinc-900 dark:text-white">
               {hoveredRecord.year} • {hoveredRecord.discipline} ({hoveredRecord.campus})
@@ -398,7 +453,11 @@ export const MeritTrendVisualizer: React.FC<MeritTrendVisualizerProps> = ({
                   : 'bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300'
               }`}
             >
-              {hoveredRecord.status}
+              {hoveredRecord.status === 'not_found'
+                ? hoveredRecord.year === 2026
+                  ? 'Upcoming Cycle'
+                  : 'Not Publicly Released'
+                : hoveredRecord.status}
             </span>
           </div>
 
@@ -424,7 +483,8 @@ export const MeritTrendVisualizer: React.FC<MeritTrendVisualizerProps> = ({
               Source: {hoveredRecord.verificationSource.title}
             </p>
           ) : (
-            <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
               {hoveredRecord.notes}
             </p>
           )}

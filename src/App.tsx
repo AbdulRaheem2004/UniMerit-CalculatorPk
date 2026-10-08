@@ -36,6 +36,9 @@ export function App() {
   const [reverseTargetUniId, setReverseTargetUniId] = useState<string>('fast_cs');
   const [reverseDefaultCutoff, setReverseDefaultCutoff] = useState<number | undefined>(undefined);
 
+  // Selected discipline stream (all, computing, engineering, business)
+  const [selectedDisciplineCategory, setSelectedDisciplineCategory] = useState<import('./engine/types').DisciplineCategory | 'all'>('computing');
+
   // Student Input State with realistic prefilled defaults
   const [input, setInput] = useState<AcademicInput>({
     matricObtained: 980,
@@ -70,11 +73,15 @@ export function App() {
     return universities.map((uni) => calculateUniversityAggregate(input, uni));
   }, [input]);
 
-  // Extract student's aggregate for the primary target university (FAST or NUST)
+  // Extract student's aggregate for the primary target university (matching discipline)
   const primaryAggregate = useMemo(() => {
-    const primary = calculationResults.find((r) => r.university.id === 'fast_cs');
-    return primary?.aggregate;
-  }, [calculationResults]);
+    const primary = calculationResults.find((r) =>
+      selectedDisciplineCategory === 'all'
+        ? r.university.id === 'fast_cs' || r.university.id === 'nust'
+        : r.university.disciplineCategory === selectedDisciplineCategory
+    );
+    return primary?.aggregate ?? calculationResults[0]?.aggregate;
+  }, [calculationResults, selectedDisciplineCategory]);
 
   const handleSelectForReverse = (uniId: string, cutoffAggregate?: number) => {
     setReverseTargetUniId(uniId);
@@ -123,7 +130,7 @@ export function App() {
               Pakistani Universities Merit Calculator & 10-Year Cutoffs
             </h1>
             <p className="text-xs sm:text-sm text-teal-100/90 max-w-2xl">
-              Calculate your exact aggregate for NUST, FAST-NUCES, COMSATS, GIKI, PUCIT, and UET simultaneously. Compare domestic tests and Digital SAT (1600) with verified 2016–2026 historical merit archives.
+              Calculate your exact aggregate for NUST, FAST-NUCES, COMSATS, GIKI, PUCIT, and UET simultaneously across all campuses and disciplines (Computing, Engineering, Business).
             </p>
           </div>
 
@@ -142,6 +149,8 @@ export function App() {
           input={input}
           onChange={setInput}
           universities={universities}
+          selectedDisciplineCategory={selectedDisciplineCategory}
+          onSelectDisciplineCategory={setSelectedDisciplineCategory}
           onOpenIBCC={() => setIsIBCCModalOpen(true)}
           showRomanUrdu={showRomanUrdu}
         />
@@ -150,6 +159,7 @@ export function App() {
         <UniversityResults
           results={calculationResults}
           historicalMerits={historicalMerits}
+          selectedDisciplineCategory={selectedDisciplineCategory}
           onSelectForReverse={handleSelectForReverse}
           onOpenAudit={handleOpenAuditForUni}
           showRomanUrdu={showRomanUrdu}
