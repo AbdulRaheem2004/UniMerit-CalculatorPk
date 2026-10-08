@@ -75,6 +75,9 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
           </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
             Computed in real-time using official university admission criteria and weighted formulas.
+            <span className="ml-1 text-teal-700 dark:text-teal-400 font-medium">
+              (Green <span className="underline font-bold">Eligible</span> indicates you meet the minimum legal criteria to apply; your aggregate determines merit rank).
+            </span>
           </p>
         </div>
 
@@ -150,11 +153,17 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
                   </div>
 
                   {res.isEligible ? (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 flex items-center gap-1 shrink-0">
+                    <span
+                      title="Eligible: You satisfy the mandatory minimum legal requirements (PMDC, PEC, or University academic & test cutoffs) to be admitted. Your aggregate determines your rank on the merit list."
+                      className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 flex items-center gap-1 shrink-0 cursor-help"
+                    >
                       <CheckCircle2 className="w-3 h-3" /> Eligible
                     </span>
                   ) : (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-800 dark:bg-red-950/70 dark:text-red-300 flex items-center gap-1 shrink-0">
+                    <span
+                      title={`Ineligible: You do not satisfy the minimum criteria (${res.eligibilityMessage || 'below minimum threshold'}). You cannot be considered regardless of merit.`}
+                      className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-800 dark:bg-red-950/70 dark:text-red-300 flex items-center gap-1 shrink-0 cursor-help"
+                    >
                       <AlertTriangle className="w-3 h-3" /> Ineligible
                     </span>
                   )}

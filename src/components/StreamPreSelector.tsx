@@ -1,6 +1,7 @@
 import React from 'react';
 import { DisciplineCategory } from '../engine/types';
 import { Stethoscope, Laptop, Cpu, Briefcase, Globe, CheckCircle2, ChevronRight } from 'lucide-react';
+import { CartoonMascot } from './CartoonMascot';
 
 interface StreamPreSelectorProps {
   selectedCategory: DisciplineCategory | 'all';
@@ -118,25 +119,33 @@ export const StreamPreSelector: React.FC<StreamPreSelectorProps> = ({
         </div>
       </div>
 
-      {/* Grid of Selectable Stream Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      {/* Grid of Selectable Stream Cards with Cartoon Mascots sitting on top */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-y-12 gap-x-3 pt-10 sm:pt-11">
         {options.map((opt) => {
           const Icon = opt.icon;
           const isSelected = selectedCategory === opt.id;
 
           return (
-            <button
+            <div
               key={opt.id}
-              type="button"
-              onClick={() => onSelectCategory(opt.id)}
-              className={`relative flex flex-col justify-between text-left p-3.5 rounded-xl border-2 transition-all duration-200 cursor-pointer group ${
-                isSelected
-                  ? `${opt.borderColor} bg-gradient-to-b ${opt.accentColor} text-white shadow-md transform -translate-y-0.5`
-                  : 'border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-800/40 text-zinc-800 dark:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100/70 dark:hover:bg-zinc-800/70'
-              }`}
+              className="relative group/mascot"
             >
-              {/* Top Row: Icon & Status Check */}
-              <div className="flex items-center justify-between mb-2">
+              {/* Mascot Sitting on Top of Box */}
+              <div className="absolute -top-11 sm:-top-12 right-3.5 z-20">
+                <CartoonMascot stream={opt.id} isSelected={isSelected} />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => onSelectCategory(opt.id)}
+                className={`w-full h-full relative flex flex-col justify-between text-left p-3.5 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-visible ${
+                  isSelected
+                    ? `${opt.borderColor} bg-gradient-to-b ${opt.accentColor} text-white shadow-md transform -translate-y-0.5`
+                    : 'border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-800/40 text-zinc-800 dark:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100/70 dark:hover:bg-zinc-800/70'
+                }`}
+              >
+                {/* Top Row: Icon & Status Check */}
+                <div className="flex items-center justify-between mb-2">
                 <div
                   className={`p-2 rounded-lg ${
                     isSelected
@@ -181,6 +190,7 @@ export const StreamPreSelector: React.FC<StreamPreSelectorProps> = ({
                 </div>
               </div>
             </button>
+            </div>
           );
         })}
       </div>

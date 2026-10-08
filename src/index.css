@@ -30,3 +30,49 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 116, 139, 0.45);
 }
+
+/* Mascot Jump & Idle Physics Animations */
+@keyframes mascot-jump {
+  0% {
+    transform: translateY(0) scale(1, 1);
+  }
+  15% {
+    transform: translateY(4px) scale(1.2, 0.8);
+  }
+  42% {
+    transform: translateY(-28px) scale(0.88, 1.18) rotate(-6deg);
+  }
+  60% {
+    transform: translateY(-34px) scale(1.05, 0.95) rotate(5deg);
+  }
+  80% {
+    transform: translateY(3px) scale(1.22, 0.78) rotate(0deg);
+  }
+  92% {
+    transform: translateY(-4px) scale(0.96, 1.04);
+  }
+  100% {
+    transform: translateY(0) scale(1, 1) rotate(0deg);
+  }
+}
+
+@keyframes mascot-idle {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-2.5px) rotate(-1.5deg);
+  }
+  70% {
+    transform: translateY(-1px) rotate(1.5deg);
+  }
+}
+
+.animate-mascot-jump {
+  animation: mascot-jump 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animate-mascot-idle {
+  animation: mascot-idle 3s ease-in-out infinite;
+}
+
