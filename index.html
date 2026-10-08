@@ -111,12 +111,12 @@
   </head>
   <body class="bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 min-h-screen antialiased selection:bg-teal-700 selection:text-white">
     <div id="root"></div>
-    <script type="module" src="./src/main.tsx"></script>
+    <script type="module" src="/src/main.tsx"></script>
     <script>
-      // Lightweight PWA Service Worker Registration
-      if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+      // Lightweight PWA Service Worker Registration (Production only)
+      if ('serviceWorker' in navigator && window.location.protocol.startsWith('http') && !window.location.hostname.includes('localhost')) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js').catch(() => {});
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
         });
       }
     </script>

@@ -4,13 +4,14 @@ export interface UniversityWeights {
   test: number;
 }
 
-export type DisciplineCategory = 'computing' | 'engineering' | 'business' | 'sciences' | 'general';
+export type DisciplineCategory = 'medical' | 'computing' | 'engineering' | 'business' | 'sciences' | 'general';
 
 export interface UniversityConfig {
   id: string;
   name: string;
   shortName: string;
   disciplineCategory: DisciplineCategory;
+  categories?: DisciplineCategory[];
   disciplines: string[];
   campuses: string[];
   testName: string;

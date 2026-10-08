@@ -80,4 +80,62 @@ describe('University Configuration, Official Criteria & Admission Portals', () =
     const pucit = universities.find(u => u.id === 'pucit')!;
     expect(pucit.notes).toContain('2 marks per late session');
   });
+
+  it('UNI-07: verifies all premier medical universities and PMDC 50-40-10 criteria', () => {
+    const medicalUnis = universities.filter(u => u.disciplineCategory === 'medical');
+    expect(medicalUnis.length).toBeGreaterThanOrEqual(6);
+    const medIds = medicalUnis.map(u => u.id);
+    expect(medIds).toContain('uhs');
+    expect(medIds).toContain('nums');
+    expect(medIds).toContain('duhs');
+    expect(medIds).toContain('kmu');
+    expect(medIds).toContain('aku');
+    expect(medIds).toContain('stmu');
+
+    const uhs = universities.find(u => u.id === 'uhs')!;
+    expect(uhs.weights?.matric).toBeCloseTo(0.10, 2);
+    expect(uhs.weights?.fsc).toBeCloseTo(0.40, 2);
+    expect(uhs.weights?.test).toBeCloseTo(0.50, 2);
+    expect(uhs.testTotal).toBe(200); // MDCAT total
+  });
+
+  it('UNI-08: verifies newly added reputable Pakistani universities across all streams', () => {
+    const ids = universities.map(u => u.id);
+    expect(ids).toContain('lums_cs');
+    expect(ids).toContain('lums_eng');
+    expect(ids).toContain('lums_business');
+    expect(ids).toContain('iba_cs');
+    expect(ids).toContain('iba_business');
+    expect(ids).toContain('ned');
+    expect(ids).toContain('pieas');
+    expect(ids).toContain('ssuet');
+    expect(ids).toContain('fccu');
+    expect(ids).toContain('bnu');
+  });
+
+  it('UNI-09: verifies multi-discipline universities declare their offered categories', () => {
+    const giki = universities.find(u => u.id === 'giki')!;
+    expect(giki.categories).toContain('engineering');
+    expect(giki.categories).toContain('computing');
+
+    const uet = universities.find(u => u.id === 'uet')!;
+    expect(uet.categories).toContain('engineering');
+    expect(uet.categories).toContain('computing');
+
+    const ned = universities.find(u => u.id === 'ned')!;
+    expect(ned.categories).toContain('engineering');
+    expect(ned.categories).toContain('computing');
+
+    const pieas = universities.find(u => u.id === 'pieas')!;
+    expect(pieas.categories).toContain('engineering');
+    expect(pieas.categories).toContain('computing');
+
+    const fccu = universities.find(u => u.id === 'fccu')!;
+    expect(fccu.categories).toContain('computing');
+    expect(fccu.categories).toContain('business');
+
+    const bnu = universities.find(u => u.id === 'bnu')!;
+    expect(bnu.categories).toContain('computing');
+    expect(bnu.categories).toContain('business');
+  });
 });

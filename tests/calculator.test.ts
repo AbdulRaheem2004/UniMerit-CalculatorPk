@@ -281,4 +281,120 @@ describe('Forward Aggregate Calculator Engine', () => {
     const result = calculateUniversityAggregate(input, fastCs);
     expect(result.aggregate).toBeCloseTo(82.59, 1);
   });
+
+  it('ENG-14: calculates Medical aggregate accurately using PMDC standard (50% MDCAT + 40% FSc + 10% Matric)', () => {
+    const uhs = universities.find(u => u.id === 'uhs')!;
+    // Matric: 1000/1100 (90.909%), FSc: 980/1100 (89.091%), MDCAT: 175/200 (87.5%)
+    // Expected: (90.909 * 0.10) + (89.091 * 0.40) + (87.5 * 0.50) = 9.091 + 35.636 + 43.75 = 88.477%
+    const input: AcademicInput = {
+      matricObtained: 1000,
+      matricTotal: 1100,
+      fscObtained: 980,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: false,
+      satScore: 0,
+      entryTestScores: { mdcat: 175 }
+    };
+    const result = calculateUniversityAggregate(input, uhs);
+    expect(result.aggregate).toBeCloseTo(88.48, 1);
+    expect(result.isEligible).toBe(true);
+    expect(result.breakdown.matricContribution).toBeCloseTo(9.09, 1);
+    expect(result.breakdown.fscContribution).toBeCloseTo(35.64, 1);
+    expect(result.breakdown.testContribution).toBeCloseTo(43.75, 1);
+  });
+
+  it('ENG-15: applies +20 marks Hafiz-e-Quran bonus to FSc in PMDC medical aggregate', () => {
+    const uhs = universities.find(u => u.id === 'uhs')!;
+    // Matric: 1000/1100, FSc: 950/1100 -> with Hafiz: (950 + 20) = 970/1100 (88.182%)
+    const inputNoHafiz: AcademicInput = {
+      matricObtained: 1000,
+      matricTotal: 1100,
+      fscObtained: 950,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: false,
+      satScore: 0,
+      entryTestScores: { mdcat: 170 }
+    };
+    const inputWithHafiz: AcademicInput = {
+      ...inputNoHafiz,
+      hafizQuran: true
+    };
+    const resNo = calculateUniversityAggregate(inputNoHafiz, uhs);
+    const resHafiz = calculateUniversityAggregate(inputWithHafiz, uhs);
+    // Difference in FSc contribution: (20 / 1100) * 100 * 0.40 = 0.727%
+    expect(resHafiz.aggregate - resNo.aggregate).toBeCloseTo(0.727, 2);
+  });
+
+  it('ENG-16: flags PMDC ineligibility when MDCAT is below 100/200 (< 50%)', () => {
+    const uhs = universities.find(u => u.id === 'uhs')!;
+    const input: AcademicInput = {
+      matricObtained: 1000,
+      matricTotal: 1100,
+      fscObtained: 950,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: false,
+      satScore: 0,
+      entryTestScores: { mdcat: 95 } // Below 100 minimum threshold
+    };
+    const result = calculateUniversityAggregate(input, uhs);
+    expect(result.isEligible).toBe(false);
+    expect(result.eligibilityMessage).toContain('below PMDC minimum pass threshold');
+  });
+
+  it('ENG-17: calculates NED University formula accurately (60% Test + 40% HSC + 0% SSC)', () => {
+    const ned = universities.find(u => u.id === 'ned')!;
+    // Matric: 1000/1100 (not counted), FSc: 880/1100 (80.0%), NED Test: 80/100 (80.0%)
+    // Expected: (80.0 * 0.40) + (80.0 * 0.60) = 32.0 + 48.0 = 80.0%
+    const input: AcademicInput = {
+      matricObtained: 1000,
+      matricTotal: 1100,
+      fscObtained: 880,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: false,
+      satScore: 0,
+      entryTestScores: { ned: 80 }
+    };
+    const result = calculateUniversityAggregate(input, ned);
+    expect(result.aggregate).toBeCloseTo(80.0, 1);
+    expect(result.breakdown.matricContribution).toBeCloseTo(0.0, 1);
+  });
+
+  it('ENG-18: calculates PIEAS Islamabad aggregate accurately (60% Written Test + 25% FSc + 15% Matric)', () => {
+    const pieas = universities.find(u => u.id === 'pieas')!;
+    // Matric: 990/1100 (90.0%), FSc: 880/1100 (80.0%), Test: 75/100 (75.0%)
+    // Expected: (90.0 * 0.15) + (80.0 * 0.25) + (75.0 * 0.60) = 13.5 + 20.0 + 45.0 = 78.5%
+    const input: AcademicInput = {
+      matricObtained: 990,
+      matricTotal: 1100,
+      fscObtained: 880,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: false,
+      satScore: 0,
+      entryTestScores: { pieas: 75 }
+    };
+    const result = calculateUniversityAggregate(input, pieas);
+    expect(result.aggregate).toBeCloseTo(78.5, 1);
+  });
+
+  it('ENG-19: calculates IBA Karachi aggregate based on Aptitude Test (100% test determination)', () => {
+    const iba = universities.find(u => u.id === 'iba_cs')!;
+    const input: AcademicInput = {
+      matricObtained: 950,
+      matricTotal: 1100,
+      fscObtained: 900,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: false,
+      satScore: 0,
+      entryTestScores: { iba_cs: 84 }
+    };
+    const result = calculateUniversityAggregate(input, iba);
+    expect(result.aggregate).toBeCloseTo(84.0, 1);
+    expect(result.isEligible).toBe(true);
+  });
 });

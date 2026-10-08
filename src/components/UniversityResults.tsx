@@ -49,18 +49,20 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
     setSelectedCampusMap(newMap);
   };
 
-  // Consolidate NUST cards into one premier box in the open grid
+  // Filter universities based on selected discipline category
+  // Multi-discipline universities appear in all groups they offer
   const filteredResults = results.filter((res) => {
-    // Hide separate NUST engineering and business cards from the open view
-    if (res.university.id === 'nust_eng' || res.university.id === 'nust_business') {
-      return false;
-    }
+    const uni = res.university;
     if (selectedDisciplineCategory === 'all') return true;
-    if (res.university.id === 'nust') return true; // NUST box opens all fields modal
-    return res.university.disciplineCategory === selectedDisciplineCategory;
+
+    // Check if the university supports the chosen category
+    if (uni.categories && uni.categories.includes(selectedDisciplineCategory)) {
+      return true;
+    }
+    return uni.disciplineCategory === selectedDisciplineCategory;
   });
 
-  const nustResult = results.find((r) => r.university.id === 'nust');
+  const nustResult = results.find((r) => r.university.id === 'nust') || results.find((r) => r.university.id.startsWith('nust'));
 
   return (
     <div className="space-y-4">
@@ -127,18 +129,23 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
                   <div>
                     <div className="flex items-center gap-1.5">
                       <h3 className="font-bold text-sm text-zinc-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-300 transition-colors">
-                        {isNust ? 'NUST (All Campuses & Colleges)' : uni.shortName}
+                        {uni.shortName}
                       </h3>
+                      {uni.disciplineCategory === 'medical' && (
+                        <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 uppercase">
+                          Medical
+                        </span>
+                      )}
                       {isNust && (
                         <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300 uppercase">
-                          Hub
+                          NUST Hub
                         </span>
                       )}
                     </div>
                     <p className="text-[11px] text-zinc-500 dark:text-zinc-400 capitalize">
                       {isNust
                         ? 'SEECS, SMME, NICE, NBS, EME, CAE'
-                        : `${uni.disciplineCategory} Stream • ${uni.disciplines.slice(0, 2).join(', ')}`}
+                        : `${uni.disciplineCategory} Stream • ${uni.disciplines.slice(0, 3).join(', ')}`}
                     </p>
                   </div>
 

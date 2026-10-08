@@ -27,7 +27,10 @@ export function solveRequiredTestScore(
   const testType: 'local' | 'sat' = isSat ? 'sat' : 'local';
 
   const matricPct = calculatePercentage(input.matricObtained, input.matricTotal);
-  const fscPct = calculatePercentage(input.fscObtained, input.fscTotal);
+  const fscMarksEffective = (input.hafizQuran && uni.disciplineCategory === 'medical')
+    ? Math.min(input.fscTotal, input.fscObtained + 20)
+    : input.fscObtained;
+  const fscPct = calculatePercentage(fscMarksEffective, input.fscTotal);
 
   if (uni.customFormula === 'pucit_standard') {
     const hafizBonus = input.hafizQuran ? 20 : 0;
@@ -98,6 +101,17 @@ export function solveRequiredTestScore(
       testType,
       status: 'already_achieved',
       message: 'Mubarak! Your academic marks alone already exceed this target aggregate.'
+    };
+  }
+
+  if (weights.test <= 0) {
+    return {
+      targetScore: 0,
+      targetPercentage: 0,
+      maxScore,
+      testType,
+      status: 'already_achieved',
+      message: `${uni.shortName} does not weight entry tests in its aggregate formula.`
     };
   }
 

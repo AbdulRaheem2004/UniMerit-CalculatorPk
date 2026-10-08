@@ -17,7 +17,10 @@ export function calculateUniversityAggregate(
   uni: UniversityConfig
 ): UniversityCalculationResult {
   const matricPct = calculatePercentage(input.matricObtained, input.matricTotal);
-  const fscPct = calculatePercentage(input.fscObtained, input.fscTotal);
+  const fscMarksEffective = (input.hafizQuran && uni.disciplineCategory === 'medical')
+    ? Math.min(input.fscTotal, input.fscObtained + 20)
+    : input.fscObtained;
+  const fscPct = calculatePercentage(fscMarksEffective, input.fscTotal);
   
   // Eligibility check (Academic criteria: usually FSc & Matric must meet threshold)
   let isEligible = fscPct >= uni.eligibilityMinAcademicPct && matricPct >= uni.eligibilityMinAcademicPct;
@@ -42,8 +45,36 @@ export function calculateUniversityAggregate(
   if (isUsingSat) {
     testPct = calculatePercentage(input.satScore, uni.satTotal ?? 1600);
   } else {
-    const rawScore = input.entryTestScores[uni.id] ?? input.entryTestScores[uni.testName] ?? 0;
+    let rawScore = input.entryTestScores[uni.id];
+    if (rawScore === undefined || rawScore === 0) {
+      if (uni.disciplineCategory === 'medical' || ['uhs', 'duhs', 'kmu', 'stmu', 'aku'].includes(uni.id)) {
+        rawScore = input.entryTestScores['mdcat'] ?? input.entryTestScores[uni.id] ?? 0;
+      } else if (uni.id === 'nums') {
+        rawScore = input.entryTestScores['nums'] ?? input.entryTestScores['mdcat'] ?? 0;
+      } else if (uni.id.startsWith('nust')) {
+        rawScore = input.entryTestScores['nust'] ?? input.entryTestScores[uni.id] ?? 0;
+      } else if (uni.id.startsWith('fast')) {
+        rawScore = input.entryTestScores['fast_cs'] ?? input.entryTestScores['fast'] ?? input.entryTestScores[uni.id] ?? 0;
+      } else if (uni.id.startsWith('comsats')) {
+        rawScore = input.entryTestScores['comsats'] ?? input.entryTestScores[uni.id] ?? 0;
+      } else if (uni.id.startsWith('iba')) {
+        rawScore = input.entryTestScores['iba'] ?? input.entryTestScores[uni.id] ?? 0;
+      } else if (uni.id.startsWith('lums')) {
+        rawScore = input.entryTestScores['lums'] ?? input.entryTestScores[uni.id] ?? 0;
+      } else if (rawScore === undefined) {
+        rawScore = input.entryTestScores[uni.testName] ?? 0;
+      }
+    }
     testPct = calculatePercentage(rawScore, uni.testTotal);
+  }
+
+  // Medical MDCAT specific check: PMDC requires minimum 50% for BDS, 55% for MBBS
+  if (uni.disciplineCategory === 'medical') {
+    const mdcatScore = input.entryTestScores['mdcat'] ?? input.entryTestScores[uni.id] ?? 0;
+    if (mdcatScore > 0 && mdcatScore < 100) {
+      isEligible = false;
+      eligibilityMessage = `MDCAT score (${mdcatScore}/200) is below PMDC minimum pass threshold of 50% (100 marks for BDS, 110 for MBBS).`;
+    }
   }
 
   // PUCIT custom formula

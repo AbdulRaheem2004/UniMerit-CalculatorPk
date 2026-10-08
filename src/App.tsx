@@ -3,6 +3,7 @@ import universitiesData from '../data/universities.json';
 import { UniversityConfig, AcademicInput } from './engine/types';
 import { calculateUniversityAggregate } from './engine/calculator';
 import { Header } from './components/Header';
+import { StreamPreSelector } from './components/StreamPreSelector';
 import { MarksInputForm } from './components/MarksInputForm';
 import { UniversityResults } from './components/UniversityResults';
 import { ReversePlanner } from './components/ReversePlanner';
@@ -34,7 +35,7 @@ export function App() {
   const [reverseTargetUniId, setReverseTargetUniId] = useState<string>('fast_cs');
   const [reverseDefaultTarget, setReverseDefaultTarget] = useState<number | undefined>(75.0);
 
-  // Selected discipline stream (all, computing, engineering, business)
+  // Selected discipline stream (all, medical, computing, engineering, business)
   const [selectedDisciplineCategory, setSelectedDisciplineCategory] = useState<import('./engine/types').DisciplineCategory | 'all'>('computing');
 
   // Student Input State with realistic prefilled defaults
@@ -47,13 +48,26 @@ export function App() {
     useSat: false,
     satScore: 1350,
     entryTestScores: {
+      mdcat: 172,
+      nums: 125,
+      aku: 80,
       nust: 155,
+      nust_eng: 155,
+      nust_business: 155,
       fast_cs: 74,
       fast_eng: 74,
+      fast_bba: 74,
       comsats: 80,
       giki: 150,
       pucit: 75,
       uet: 280,
+      iba_cs: 78,
+      iba_business: 78,
+      ned: 75,
+      pieas: 75,
+      ssuet: 75,
+      fccu: 75,
+      bnu: 75,
     },
   });
 
@@ -124,7 +138,7 @@ export function App() {
               Pakistani Universities Merit Calculator
             </h1>
             <p className="text-xs sm:text-sm text-teal-100/90 max-w-2xl">
-              Calculate your exact aggregate for NUST, FAST-NUCES, COMSATS, GIKI, PUCIT, and UET simultaneously. Fully supports new 1200 & 1100 marks schemes (Tarjuma-tul-Quran), NUST 0% gap year policy, Digital SAT (1600), and verified admission portals.
+              Calculate your exact aggregate for Medical (UHS, NUMS, Dow, KMU, AKU, Shifa), Computing (FAST, NUST, LUMS, IBA, COMSATS, GIKI, PUCIT), Engineering (UET, NED, PIEAS, SSUET), and Business universities simultaneously. Verified with PMDC, PEC, and HEC official regulations.
             </p>
           </div>
 
@@ -138,7 +152,14 @@ export function App() {
           </button>
         </div>
 
-        {/* 1. Academic & Test Marks Input Form */}
+        {/* Step 1: Pre-Selection Stream Menu */}
+        <StreamPreSelector
+          selectedCategory={selectedDisciplineCategory}
+          onSelectCategory={setSelectedDisciplineCategory}
+          showRomanUrdu={showRomanUrdu}
+        />
+
+        {/* Step 2: Academic & Test Marks Input Form */}
         <MarksInputForm
           input={input}
           onChange={setInput}
