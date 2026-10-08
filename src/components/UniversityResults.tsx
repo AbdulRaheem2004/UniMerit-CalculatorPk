@@ -1,20 +1,18 @@
 import React, { useState } from 'react';
-import { UniversityCalculationResult, HistoricalMeritRecord, DisciplineCategory } from '../engine/types';
-import { Award, ArrowUpRight, AlertTriangle, CheckCircle2, AlertCircle, ExternalLink, MapPin, Building2 } from 'lucide-react';
+import { UniversityCalculationResult, DisciplineCategory } from '../engine/types';
+import { Award, ArrowUpRight, AlertTriangle, ExternalLink, MapPin, Building2, Calculator, CheckCircle2 } from 'lucide-react';
 import { NustFieldsModal } from './NustFieldsModal';
 
 interface UniversityResultsProps {
   results: UniversityCalculationResult[];
-  historicalMerits: HistoricalMeritRecord[];
   selectedDisciplineCategory: DisciplineCategory | 'all';
-  onSelectForReverse: (uniId: string, cutoffAggregate?: number) => void;
+  onSelectForReverse: (uniId: string, targetAggregate?: number) => void;
   onOpenAudit: (uniId: string) => void;
   showRomanUrdu: boolean;
 }
 
 export const UniversityResults: React.FC<UniversityResultsProps> = ({
   results,
-  historicalMerits,
   selectedDisciplineCategory,
   onSelectForReverse,
   onOpenAudit,
@@ -24,7 +22,7 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
   const [selectedCampusMap, setSelectedCampusMap] = useState<Record<string, string>>({});
   // Optional global campus filter
   const [globalCampusFilter, setGlobalCampusFilter] = useState<string>('all');
-  // State for NUST Fields Detailed Big Box
+  // State for NUST Fields Detailed Modal
   const [isNustModalOpen, setIsNustModalOpen] = useState<boolean>(false);
 
   const handleSelectCampus = (uniId: string, campus: string) => {
@@ -51,18 +49,6 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
     setSelectedCampusMap(newMap);
   };
 
-  // Find latest verified benchmark (2026, 2025, or 2024) for a university and campus
-  const getLatestCutoffForCampus = (uniId: string, campus: string) => {
-    const matching = historicalMerits.filter(
-      (h) =>
-        h.universityId.startsWith(uniId.split('_')[0]) &&
-        h.status === 'verified' &&
-        h.campus.toLowerCase().includes(campus.toLowerCase().split(' ')[0]) &&
-        typeof h.closingAggregate === 'number'
-    );
-    return matching.sort((a, b) => b.year - a.year)[0];
-  };
-
   // Consolidate NUST cards into one premier box in the open grid
   const filteredResults = results.filter((res) => {
     // Hide separate NUST engineering and business cards from the open view
@@ -86,7 +72,7 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
             Simultaneous Multi-University Merit Aggregates
           </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Real-time projection across all campuses based on verified official admission prospectuses.
+            Computed in real-time using official university admission criteria and weighted formulas.
           </p>
         </div>
 
@@ -125,33 +111,6 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
           const uni = res.university;
           const isNust = uni.id === 'nust';
           const currentCampus = selectedCampusMap[uni.id] || uni.campuses[0];
-          const latestCutoffRecord = getLatestCutoffForCampus(uni.id, currentCampus);
-          const cutoff = latestCutoffRecord?.closingAggregate;
-
-          // Determine Probability Zone against selected campus cutoff
-          let zoneBadge = null;
-          if (cutoff) {
-            const diff = res.aggregate - cutoff;
-            if (diff >= 1.5) {
-              zoneBadge = (
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 flex items-center gap-1 shrink-0">
-                  <CheckCircle2 className="w-3 h-3" /> Safe (+{diff.toFixed(1)}%)
-                </span>
-              );
-            } else if (diff >= -1.5) {
-              zoneBadge = (
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 flex items-center gap-1 shrink-0">
-                  <AlertCircle className="w-3 h-3" /> Borderline ({diff >= 0 ? `+${diff.toFixed(1)}%` : `${diff.toFixed(1)}%`})
-                </span>
-              );
-            } else {
-              zoneBadge = (
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-100 text-red-800 dark:bg-red-950/70 dark:text-red-300 flex items-center gap-1 shrink-0">
-                  <AlertTriangle className="w-3 h-3" /> High Risk ({diff.toFixed(1)}%)
-                </span>
-              );
-            }
-          }
 
           return (
             <div
@@ -163,7 +122,7 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
               } rounded-2xl p-5 flex flex-col justify-between shadow-sm hover:border-teal-400 dark:hover:border-teal-600 transition-all group`}
             >
               <div>
-                {/* Header with Title & Probability Zone */}
+                {/* Header with Title & Eligibility Tag */}
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div>
                     <div className="flex items-center gap-1.5">
@@ -182,10 +141,19 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
                         : `${uni.disciplineCategory} Stream • ${uni.disciplines.slice(0, 2).join(', ')}`}
                     </p>
                   </div>
-                  {zoneBadge}
+
+                  {res.isEligible ? (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 flex items-center gap-1 shrink-0">
+                      <CheckCircle2 className="w-3 h-3" /> Eligible
+                    </span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-800 dark:bg-red-950/70 dark:text-red-300 flex items-center gap-1 shrink-0">
+                      <AlertTriangle className="w-3 h-3" /> Ineligible
+                    </span>
+                  )}
                 </div>
 
-                {/* NUST Big Box CTA Trigger Button */}
+                {/* NUST Big Box CTA Trigger */}
                 {isNust && (
                   <div
                     onClick={() => setIsNustModalOpen(true)}
@@ -227,7 +195,7 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
                 )}
 
                 {/* Aggregate Display */}
-                <div className="my-3 p-3 bg-zinc-50 dark:bg-zinc-800/60 rounded-xl flex items-baseline justify-between">
+                <div className="my-3 p-3 bg-zinc-50 dark:bg-zinc-800/60 rounded-xl flex items-baseline justify-between border border-zinc-100 dark:border-zinc-800">
                   <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
                     Your Aggregate
                   </span>
@@ -243,6 +211,17 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
                     <span>{res.eligibilityMessage}</span>
                   </div>
                 )}
+
+                {/* Official Formula Badge */}
+                <div className="p-2 bg-teal-50/60 dark:bg-teal-950/30 rounded-lg border border-teal-100 dark:border-teal-900/40 mb-3">
+                  <div className="flex items-center gap-1 text-[10px] uppercase font-bold text-teal-800 dark:text-teal-300">
+                    <Calculator className="w-3 h-3" />
+                    <span>Official Formula:</span>
+                  </div>
+                  <p className="text-[11px] font-mono text-zinc-700 dark:text-zinc-300 mt-0.5">
+                    {uni.formulaDisplay}
+                  </p>
+                </div>
 
                 {/* Mathematical Contribution Breakdown */}
                 <div className="space-y-1.5 text-xs border-t border-zinc-100 dark:border-zinc-800 pt-2.5">
@@ -268,31 +247,14 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
                   </div>
                 </div>
 
-                {/* Concluded Closing Cutoff Benchmark */}
-                {cutoff ? (
-                  <div className="mt-3 pt-2 border-t border-dashed border-zinc-200 dark:border-zinc-800 text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center justify-between">
-                    <span>
-                      {latestCutoffRecord?.year} Cutoff ({isNust ? 'SEECS BSCS' : currentCampus.split(' ')[0]}):
-                    </span>
-                    <span className="font-mono font-semibold text-zinc-800 dark:text-zinc-200">
-                      {cutoff.toFixed(2)}%
-                    </span>
-                  </div>
-                ) : (
-                  <div className="mt-3 pt-2 border-t border-dashed border-zinc-200 dark:border-zinc-800 text-[10px] text-zinc-400 italic flex items-center justify-between">
-                    <span>Campus: {currentCampus}</span>
-                    <span>Closing cutoff archive active</span>
-                  </div>
-                )}
-
                 {showRomanUrdu && (
                   <p className="mt-2 text-[10px] text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 p-1.5 rounded">
-                    💡 Target score jannay ke liye 'Solve Target Score' par click karein.
+                    💡 Official website button par click karke university portal par apply karein.
                   </p>
                 )}
               </div>
 
-              {/* Action Buttons */}
+              {/* Action Buttons: Formula Source & Direct Official Website Link */}
               <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between gap-2">
                 <button
                   type="button"
@@ -301,28 +263,40 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
                   title="View official prospectus formula source"
                 >
                   <ExternalLink className="w-3 h-3" />
-                  Formula Source
+                  Formula Details
                 </button>
 
-                {isNust ? (
-                  <button
-                    type="button"
-                    onClick={() => setIsNustModalOpen(true)}
-                    className="text-[11px] font-bold text-teal-800 hover:text-teal-950 dark:text-teal-300 dark:hover:text-teal-100 flex items-center gap-1"
+                <div className="flex items-center gap-2">
+                  {isNust ? (
+                    <button
+                      type="button"
+                      onClick={() => setIsNustModalOpen(true)}
+                      className="px-2.5 py-1 rounded-lg text-[11px] font-bold text-teal-900 dark:text-teal-200 bg-teal-100 dark:bg-teal-950 hover:bg-teal-200 transition-colors flex items-center gap-1"
+                    >
+                      View All Fields
+                      <ArrowUpRight className="w-3 h-3" />
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => onSelectForReverse(uni.id, 75.0)}
+                      className="text-[11px] font-semibold text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 flex items-center gap-1"
+                    >
+                      Target Solver
+                    </button>
+                  )}
+
+                  <a
+                    href={uni.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-teal-800 hover:bg-teal-900 dark:bg-teal-700 dark:hover:bg-teal-600 transition-colors flex items-center gap-1.5 shadow-xs"
+                    title={`Visit official ${uni.shortName} admissions website`}
                   >
-                    View All Fields
-                    <ArrowUpRight className="w-3 h-3" />
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => onSelectForReverse(uni.id, cutoff)}
-                    className="text-[11px] font-semibold text-teal-700 hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-200 flex items-center gap-1"
-                  >
-                    Solve Target Score
-                    <ArrowUpRight className="w-3 h-3" />
-                  </button>
-                )}
+                    <span>Official Portal</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
               </div>
             </div>
           );
@@ -334,7 +308,6 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
         isOpen={isNustModalOpen}
         onClose={() => setIsNustModalOpen(false)}
         studentAggregate={nustResult?.aggregate || 0}
-        testType={nustResult?.breakdown.testType || 'local'}
         onSelectForReverse={onSelectForReverse}
       />
     </div>

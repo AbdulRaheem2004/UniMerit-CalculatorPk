@@ -130,7 +130,7 @@ export const WhatsAppShareModal: React.FC<WhatsAppShareModalProps> = ({
     results.forEach((r) => {
       msg += `• *${r.university.shortName}:* ${r.aggregate.toFixed(2)}%\n`;
     });
-    msg += `\nCalculate your aggregate & check 10-year cutoffs here: https://pakmerit.app`;
+    msg += `\nCalculate your aggregate & verify official formulas: https://pakmerit.app`;
     return msg;
   };
 

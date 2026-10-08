@@ -1,13 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import universitiesData from '../data/universities.json';
-import historicalMeritsData from '../data/historical_merits.json';
-import { UniversityConfig, HistoricalMeritRecord, AcademicInput } from './engine/types';
+import { UniversityConfig, AcademicInput } from './engine/types';
 import { calculateUniversityAggregate } from './engine/calculator';
 import { Header } from './components/Header';
 import { MarksInputForm } from './components/MarksInputForm';
 import { UniversityResults } from './components/UniversityResults';
 import { ReversePlanner } from './components/ReversePlanner';
-import { MeritTrendVisualizer } from './components/MeritTrendVisualizer';
 import { IBCCConverterModal } from './components/IBCCConverterModal';
 import { SourceAuditModal } from './components/SourceAuditModal';
 import { WhatsAppShareModal } from './components/WhatsAppShareModal';
@@ -15,7 +13,6 @@ import { Footer } from './components/Footer';
 import { Share2 } from 'lucide-react';
 
 const universities = universitiesData as UniversityConfig[];
-const historicalMerits = historicalMeritsData as HistoricalMeritRecord[];
 
 export function App() {
   // Theme state
@@ -32,9 +29,9 @@ export function App() {
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
   const [activeAuditUniId, setActiveAuditUniId] = useState<string | undefined>(undefined);
 
-  // Reverse planner targeted university & cutoff
+  // Reverse planner targeted university & target aggregate
   const [reverseTargetUniId, setReverseTargetUniId] = useState<string>('fast_cs');
-  const [reverseDefaultCutoff, setReverseDefaultCutoff] = useState<number | undefined>(undefined);
+  const [reverseDefaultTarget, setReverseDefaultTarget] = useState<number | undefined>(75.0);
 
   // Selected discipline stream (all, computing, engineering, business)
   const [selectedDisciplineCategory, setSelectedDisciplineCategory] = useState<import('./engine/types').DisciplineCategory | 'all'>('computing');
@@ -73,20 +70,10 @@ export function App() {
     return universities.map((uni) => calculateUniversityAggregate(input, uni));
   }, [input]);
 
-  // Extract student's aggregate for the primary target university (matching discipline)
-  const primaryAggregate = useMemo(() => {
-    const primary = calculationResults.find((r) =>
-      selectedDisciplineCategory === 'all'
-        ? r.university.id === 'fast_cs' || r.university.id === 'nust'
-        : r.university.disciplineCategory === selectedDisciplineCategory
-    );
-    return primary?.aggregate ?? calculationResults[0]?.aggregate;
-  }, [calculationResults, selectedDisciplineCategory]);
-
-  const handleSelectForReverse = (uniId: string, cutoffAggregate?: number) => {
+  const handleSelectForReverse = (uniId: string, targetAggregate?: number) => {
     setReverseTargetUniId(uniId);
-    if (cutoffAggregate) {
-      setReverseDefaultCutoff(cutoffAggregate);
+    if (targetAggregate) {
+      setReverseDefaultTarget(targetAggregate);
     }
     const elem = document.getElementById('reverse-planner');
     if (elem) {
@@ -124,13 +111,13 @@ export function App() {
         <div className="bg-gradient-to-r from-teal-900 via-teal-800 to-emerald-900 text-white rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-teal-700/60 text-teal-200 uppercase tracking-wider inline-block">
-              Fall 2026 Admissions
+              Undergraduate Admissions
             </span>
             <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-              Pakistani Universities Merit Calculator & 10-Year Cutoffs
+              Pakistani Universities Merit Calculator
             </h1>
             <p className="text-xs sm:text-sm text-teal-100/90 max-w-2xl">
-              Calculate your exact aggregate for NUST, FAST-NUCES, COMSATS, GIKI, PUCIT, and UET simultaneously across all campuses and disciplines (Computing, Engineering, Business).
+              Calculate your exact aggregate for NUST, FAST-NUCES, COMSATS, GIKI, PUCIT, and UET simultaneously. Inspect official formulas, solve target entry test scores, and access official admissions portals.
             </p>
           </div>
 
@@ -158,7 +145,6 @@ export function App() {
         {/* 2. Simultaneous Multi-University Aggregate Results */}
         <UniversityResults
           results={calculationResults}
-          historicalMerits={historicalMerits}
           selectedDisciplineCategory={selectedDisciplineCategory}
           onSelectForReverse={handleSelectForReverse}
           onOpenAudit={handleOpenAuditForUni}
@@ -169,17 +155,9 @@ export function App() {
         <ReversePlanner
           input={input}
           universities={universities}
-          historicalMerits={historicalMerits}
           selectedUniId={reverseTargetUniId}
-          defaultCutoff={reverseDefaultCutoff}
+          defaultTarget={reverseDefaultTarget}
           showRomanUrdu={showRomanUrdu}
-        />
-
-        {/* 4. 10-Year Historical Merit Trend Visualizer (2016-2026) */}
-        <MeritTrendVisualizer
-          historicalMerits={historicalMerits}
-          userAggregate={primaryAggregate}
-          onOpenAuditForRecord={() => handleOpenAuditForUni()}
         />
       </main>
 
@@ -205,7 +183,6 @@ export function App() {
         isOpen={isAuditModalOpen}
         onClose={() => setIsAuditModalOpen(false)}
         universities={universities}
-        historicalMerits={historicalMerits}
         activeUniId={activeAuditUniId}
       />
 

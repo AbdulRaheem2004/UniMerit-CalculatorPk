@@ -1,12 +1,11 @@
 import React from 'react';
-import { X, ShieldCheck, ExternalLink, BookCheck } from 'lucide-react';
-import { UniversityConfig, HistoricalMeritRecord } from '../engine/types';
+import { X, ShieldCheck, ExternalLink, BookCheck, Info, CheckCircle2 } from 'lucide-react';
+import { UniversityConfig } from '../engine/types';
 
 interface SourceAuditModalProps {
   isOpen: boolean;
   onClose: () => void;
   universities: UniversityConfig[];
-  historicalMerits: HistoricalMeritRecord[];
   activeUniId?: string;
 }
 
@@ -14,7 +13,6 @@ export const SourceAuditModal: React.FC<SourceAuditModalProps> = ({
   isOpen,
   onClose,
   universities,
-  historicalMerits,
   activeUniId,
 }) => {
   if (!isOpen) return null;
@@ -30,10 +28,10 @@ export const SourceAuditModal: React.FC<SourceAuditModalProps> = ({
             </div>
             <div>
               <h3 className="font-bold text-base text-zinc-900 dark:text-white">
-                Verified Sources & Prospectus Citations
+                Official Formulas & University Admissions Portals
               </h3>
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                100% authenticated data. No unverified assumptions or hallucinated numbers.
+                100% authenticated criteria verified against published university prospectuses.
               </p>
             </div>
           </div>
@@ -46,100 +44,72 @@ export const SourceAuditModal: React.FC<SourceAuditModalProps> = ({
         </div>
 
         {/* Scrollable Content */}
-        <div className="overflow-y-auto space-y-6 pr-1 text-xs">
-          {/* Section 1: University Aggregate Formulas */}
-          <div className="space-y-3">
-            <h4 className="font-bold text-sm text-zinc-900 dark:text-white flex items-center gap-1.5">
-              <BookCheck className="w-4 h-4 text-teal-600" />
-              1. Official University Admission Formulas
-            </h4>
-
-            <div className="space-y-2">
-              {universities.map((uni) => (
-                <div
-                  key={uni.id}
-                  className={`p-3 rounded-xl border ${
-                    activeUniId === uni.id
-                      ? 'border-teal-500 bg-teal-50/50 dark:bg-teal-950/30'
-                      : 'border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/40'
-                  } space-y-1`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-zinc-900 dark:text-white">
-                      {uni.name}
-                    </span>
-                    <a
-                      href={uni.sourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1 font-medium"
-                    >
-                      Official Prospectus <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </div>
-                  <p className="font-mono text-zinc-700 dark:text-zinc-300">
-                    Formula: {uni.formulaDisplay}
-                  </p>
-                  {uni.notes && (
-                    <p className="text-zinc-500 dark:text-zinc-400 text-[11px]">
-                      {uni.notes}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
+        <div className="overflow-y-auto space-y-4 pr-1 text-xs">
+          <div className="p-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800/60 flex items-start space-x-2 text-teal-900 dark:text-teal-200">
+            <Info className="w-4 h-4 shrink-0 mt-0.5 text-teal-600" />
+            <p>
+              Every formula below corresponds directly to the official admission prospectus of each institution. Click <strong>"Official Admissions Portal"</strong> on any university to view the live university website and apply.
+            </p>
           </div>
 
-          {/* Section 2: Historical Merit Lists Verification */}
-          <div className="space-y-3 border-t border-zinc-100 dark:border-zinc-800 pt-4">
-            <h4 className="font-bold text-sm text-zinc-900 dark:text-white flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-teal-600" />
-              2. 2016–2026 Historical Closing Merit Archive
-            </h4>
+          <div className="space-y-3">
+            {universities.map((uni) => (
+              <div
+                key={uni.id}
+                className={`p-3.5 rounded-xl border ${
+                  activeUniId === uni.id
+                    ? 'border-teal-500 bg-teal-50/50 dark:bg-teal-950/30'
+                    : 'border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/40'
+                } space-y-2`}
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                  <div className="flex items-center gap-1.5">
+                    <BookCheck className="w-4 h-4 text-teal-600 shrink-0" />
+                    <span className="font-bold text-sm text-zinc-900 dark:text-white">
+                      {uni.name}
+                    </span>
+                  </div>
+                  <a
+                    href={uni.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold text-white bg-teal-800 hover:bg-teal-900 dark:bg-teal-700 dark:hover:bg-teal-600 transition-colors self-start sm:self-auto shadow-xs"
+                  >
+                    <span>Official Admissions Portal</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
 
-            <p className="text-zinc-600 dark:text-zinc-400">
-              In accordance with strict verification rules: any missing year where the university did not preserve public archives is explicitly recorded as <strong>Not Found</strong> rather than estimated.
-            </p>
+                <div className="p-2 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700/80 font-mono text-[11px] text-zinc-800 dark:text-zinc-200">
+                  <span className="text-zinc-400 font-sans block text-[10px] uppercase font-bold">Calculation Formula:</span>
+                  {uni.formulaDisplay}
+                </div>
 
-            <div className="border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
-              <table className="w-full text-left text-zinc-800 dark:text-zinc-200">
-                <thead className="bg-zinc-100 dark:bg-zinc-800 text-[11px] font-semibold text-zinc-600 dark:text-zinc-300">
-                  <tr>
-                    <th className="p-2.5">Year</th>
-                    <th className="p-2.5">University / Discipline</th>
-                    <th className="p-2.5">Closing Metric</th>
-                    <th className="p-2.5">Status & Source</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800 text-[11px]">
-                  {historicalMerits.slice(0, 15).map((rec, i) => (
-                    <tr key={i} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
-                      <td className="p-2.5 font-mono font-bold">{rec.year}</td>
-                      <td className="p-2.5">
-                        {rec.discipline} ({rec.campus})
-                      </td>
-                      <td className="p-2.5 font-mono">
-                        {rec.closingAggregate ? `${rec.closingAggregate.toFixed(2)}%` : rec.closingMeritPosition ? `#${rec.closingMeritPosition}` : '—'}
-                      </td>
-                      <td className="p-2.5">
-                        <span
-                          className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
-                            rec.status === 'verified'
-                              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-                              : 'bg-zinc-200 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-300'
-                          }`}
-                        >
-                          {rec.status}
-                        </span>
-                        <div className="text-[10px] text-zinc-500 truncate max-w-xs mt-0.5">
-                          {rec.verificationSource?.title || rec.notes}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-zinc-600 dark:text-zinc-400">
+                  <div className="flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+                    <span>Academic Eligibility: Min <strong>{uni.eligibilityMinAcademicPct}%</strong> in FSc/Matric</span>
+                  </div>
+                  <div>
+                    {uni.satSupported ? (
+                      <span className="text-teal-700 dark:text-teal-300">
+                        ✓ Digital SAT Accepted ({uni.satMinScore ? `Min ${uni.satMinScore}/1600` : '1600 scale'})
+                      </span>
+                    ) : (
+                      <span className="text-zinc-400">
+                        ✗ Digital SAT not accepted for domestic seats
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {uni.notes && (
+                  <p className="text-zinc-500 dark:text-zinc-400 text-[11px] pt-1 border-t border-zinc-100 dark:border-zinc-800/60">
+                    {uni.notes}
+                  </p>
+                )}
+              </div>
+            ))}
           </div>
         </div>
 
@@ -148,9 +118,9 @@ export const SourceAuditModal: React.FC<SourceAuditModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-teal-800 hover:bg-teal-900 transition-colors"
+            className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 transition-colors"
           >
-            Close Audit View
+            Close Details
           </button>
         </div>
       </div>

@@ -1,35 +1,28 @@
 import React, { useState } from 'react';
-import { AcademicInput, UniversityConfig, HistoricalMeritRecord } from '../engine/types';
+import { AcademicInput, UniversityConfig } from '../engine/types';
 import { solveRequiredTestScore } from '../engine/reverse';
-import { Target } from 'lucide-react';
+import { Target, ExternalLink } from 'lucide-react';
 
 interface ReversePlannerProps {
   input: AcademicInput;
   universities: UniversityConfig[];
-  historicalMerits: HistoricalMeritRecord[];
   selectedUniId?: string;
-  defaultCutoff?: number;
+  defaultTarget?: number;
   showRomanUrdu: boolean;
 }
 
 export const ReversePlanner: React.FC<ReversePlannerProps> = ({
   input,
   universities,
-  historicalMerits,
   selectedUniId,
-  defaultCutoff,
+  defaultTarget,
   showRomanUrdu,
 }) => {
   const [activeUniId, setActiveUniId] = useState<string>(selectedUniId || 'fast_cs');
-  const [customTarget, setCustomTarget] = useState<number>(defaultCutoff || 75.0);
+  const [customTarget, setCustomTarget] = useState<number>(defaultTarget || 75.0);
   const [solveForSat, setSolveForSat] = useState<boolean>(input.useSat);
 
   const selectedUni = universities.find((u) => u.id === activeUniId) || universities[0];
-
-  // Curated cutoff recommendations for this university
-  const cutoffsForUni = historicalMerits.filter(
-    (h) => h.universityId === activeUniId && typeof h.closingAggregate === 'number' && (h.year === 2024 || h.year === 2025)
-  );
 
   // Compute required score
   const result = solveRequiredTestScore(input, selectedUni, customTarget, solveForSat);
@@ -43,7 +36,7 @@ export const ReversePlanner: React.FC<ReversePlannerProps> = ({
             Reverse Target Score Solver ("What score do I need?")
           </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Pick your target aggregate or dream program cutoff to calculate the exact test score required to get in.
+            Set your target aggregate percentage to solve the exact entry test or SAT score required based on your Matric & FSc marks.
           </p>
         </div>
 
@@ -92,16 +85,26 @@ export const ReversePlanner: React.FC<ReversePlannerProps> = ({
               </option>
             ))}
           </select>
-          <p className="text-[11px] text-zinc-400">
+          <p className="text-[11px] text-zinc-400 font-mono">
             Formula: {selectedUni.formulaDisplay}
           </p>
+
+          <a
+            href={selectedUni.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-[11px] text-teal-700 dark:text-teal-400 hover:underline pt-1 font-medium"
+          >
+            <span>Visit {selectedUni.shortName} Admissions Portal</span>
+            <ExternalLink className="w-3 h-3" />
+          </a>
         </div>
 
         {/* Step 2: Set Target Aggregate */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-              2. Target Aggregate Cutoff (%)
+              2. Target Aggregate Percentage (%)
             </label>
             <span className="text-xs font-mono font-bold text-teal-700 dark:text-teal-300">
               {customTarget.toFixed(2)}%
@@ -110,7 +113,7 @@ export const ReversePlanner: React.FC<ReversePlannerProps> = ({
 
           <input
             type="number"
-            step="0.05"
+            step="0.5"
             min={40}
             max={100}
             value={customTarget || ''}
@@ -118,21 +121,23 @@ export const ReversePlanner: React.FC<ReversePlannerProps> = ({
             className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 font-mono text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-600"
           />
 
-          {/* Quick preset chips */}
-          {cutoffsForUni.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {cutoffsForUni.slice(0, 3).map((c, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => setCustomTarget(c.closingAggregate!)}
-                  className="px-2 py-0.5 rounded text-[10px] font-medium bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition-colors border border-zinc-200 dark:border-zinc-700"
-                >
-                  {c.discipline} ({c.closingAggregate}%)
-                </button>
-              ))}
-            </div>
-          )}
+          {/* Quick preset target buttons */}
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            {[65.0, 70.0, 75.0, 80.0, 85.0].map((preset) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => setCustomTarget(preset)}
+                className={`px-2.5 py-0.5 rounded text-[11px] font-medium transition-colors border ${
+                  customTarget === preset
+                    ? 'bg-teal-800 text-white dark:bg-teal-600 border-teal-800'
+                    : 'bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700'
+                }`}
+              >
+                {preset}% Target
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Step 3: Solved Output Card */}
@@ -149,12 +154,12 @@ export const ReversePlanner: React.FC<ReversePlannerProps> = ({
               )}
               {result.status === 'already_achieved' && (
                 <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300">
-                  SAFE ALREADY
+                  QUALIFIED ALREADY
                 </span>
               )}
               {result.status === 'impossible' && (
                 <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300">
-                  UNACHIEVABLE
+                  MATHEMATICALLY IMPOSSIBLE
                 </span>
               )}
             </div>
@@ -176,7 +181,7 @@ export const ReversePlanner: React.FC<ReversePlannerProps> = ({
 
           {showRomanUrdu && (
             <p className="text-[11px] text-amber-700 dark:text-amber-400 pt-2 border-t border-zinc-200 dark:border-zinc-700 mt-2">
-              💡 Yeh target hasil karne ke liye entry test ki targeted preparation karein.
+              💡 Yeh target aggregate hasil karne ke liye entry test ki targeted preparation karein.
             </p>
           )}
         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { X, Search, ArrowUpRight, CheckCircle2, AlertCircle, AlertTriangle, Building2, Sparkles } from 'lucide-react';
+import { X, Search, ArrowUpRight, Building2, ExternalLink, GraduationCap } from 'lucide-react';
 
 export interface NustProgram {
   id: string;
@@ -7,12 +7,7 @@ export interface NustProgram {
   category: 'computing' | 'engineering' | 'business' | 'sciences';
   school: string;
   campus: string;
-  closingCutoff2026: number;
-  closingRank2026: number;
-  closingCutoff2025: number;
-  closingRank2025: number;
-  closingCutoff2024: number;
-  closingRank2024: number;
+  eligibility: string;
 }
 
 export const nustProgramsData: NustProgram[] = [
@@ -22,12 +17,7 @@ export const nustProgramsData: NustProgram[] = [
     category: 'computing',
     school: 'SEECS',
     campus: 'H-12 Islamabad',
-    closingCutoff2026: 78.45,
-    closingRank2026: 626,
-    closingCutoff2025: 77.80,
-    closingRank2025: 853,
-    closingCutoff2024: 78.60,
-    closingRank2024: 747,
+    eligibility: 'Pre-Eng / ICS / Pre-Med with Add. Math (Min 60%)',
   },
   {
     id: 'nust-se',
@@ -35,12 +25,7 @@ export const nustProgramsData: NustProgram[] = [
     category: 'computing',
     school: 'SEECS',
     campus: 'H-12 Islamabad',
-    closingCutoff2026: 77.20,
-    closingRank2026: 807,
-    closingCutoff2025: 77.10,
-    closingRank2025: 510,
-    closingCutoff2024: 77.40,
-    closingRank2024: 482,
+    eligibility: 'Pre-Eng / ICS / Pre-Med with Add. Math (Min 60%)',
   },
   {
     id: 'nust-ai',
@@ -48,12 +33,7 @@ export const nustProgramsData: NustProgram[] = [
     category: 'computing',
     school: 'SEECS',
     campus: 'H-12 Islamabad',
-    closingCutoff2026: 78.10,
-    closingRank2026: 540,
-    closingCutoff2025: 77.60,
-    closingRank2025: 580,
-    closingCutoff2024: 78.00,
-    closingRank2024: 515,
+    eligibility: 'Pre-Eng / ICS / Pre-Med with Add. Math (Min 60%)',
   },
   {
     id: 'nust-ds',
@@ -61,12 +41,7 @@ export const nustProgramsData: NustProgram[] = [
     category: 'computing',
     school: 'SEECS',
     campus: 'H-12 Islamabad',
-    closingCutoff2026: 77.80,
-    closingRank2026: 640,
-    closingCutoff2025: 77.30,
-    closingRank2025: 680,
-    closingCutoff2024: 77.70,
-    closingRank2024: 620,
+    eligibility: 'Pre-Eng / ICS / Pre-Med with Add. Math (Min 60%)',
   },
   {
     id: 'nust-mcs-se',
@@ -74,12 +49,7 @@ export const nustProgramsData: NustProgram[] = [
     category: 'computing',
     school: 'MCS',
     campus: 'Rawalpindi',
-    closingCutoff2026: 75.80,
-    closingRank2026: 1050,
-    closingCutoff2025: 75.60,
-    closingRank2025: 1080,
-    closingCutoff2024: 75.50,
-    closingRank2024: 1100,
+    eligibility: 'Pre-Engineering / ICS (Min 60%)',
   },
   {
     id: 'nust-ee-seecs',
@@ -87,12 +57,7 @@ export const nustProgramsData: NustProgram[] = [
     category: 'engineering',
     school: 'SEECS',
     campus: 'H-12 Islamabad',
-    closingCutoff2026: 71.20,
-    closingRank2026: 2100,
-    closingCutoff2025: 70.90,
-    closingRank2025: 2180,
-    closingCutoff2024: 70.80,
-    closingRank2024: 2200,
+    eligibility: 'Pre-Engineering (Min 60%)',
   },
   {
     id: 'nust-me-smme',
@@ -100,12 +65,7 @@ export const nustProgramsData: NustProgram[] = [
     category: 'engineering',
     school: 'SMME',
     campus: 'H-12 Islamabad',
-    closingCutoff2026: 67.90,
-    closingRank2026: 2850,
-    closingCutoff2025: 67.70,
-    closingRank2025: 2880,
-    closingCutoff2024: 67.50,
-    closingRank2024: 2900,
+    eligibility: 'Pre-Engineering (Min 60%)',
   },
   {
     id: 'nust-ce-nice',
@@ -113,168 +73,127 @@ export const nustProgramsData: NustProgram[] = [
     category: 'engineering',
     school: 'NICE',
     campus: 'H-12 Islamabad',
-    closingCutoff2026: 65.50,
-    closingRank2026: 3350,
-    closingCutoff2025: 65.30,
-    closingRank2025: 3380,
-    closingCutoff2024: 65.20,
-    closingRank2024: 3400,
+    eligibility: 'Pre-Engineering (Min 60%)',
   },
   {
-    id: 'nust-chem-scme',
+    id: 'nust-che-scme',
     discipline: 'Chemical Engineering',
     category: 'engineering',
     school: 'SCME',
     campus: 'H-12 Islamabad',
-    closingCutoff2026: 66.80,
-    closingRank2026: 3000,
-    closingCutoff2025: 66.50,
-    closingRank2025: 3050,
-    closingCutoff2024: 66.40,
-    closingRank2024: 3100,
+    eligibility: 'Pre-Engineering (Min 60%)',
   },
   {
-    id: 'nust-mat-scme',
-    discipline: 'Materials Engineering',
-    category: 'engineering',
-    school: 'SCME',
-    campus: 'H-12 Islamabad',
-    closingCutoff2026: 64.20,
-    closingRank2026: 3600,
-    closingCutoff2025: 64.00,
-    closingRank2025: 3650,
-    closingCutoff2024: 63.80,
-    closingRank2024: 3700,
-  },
-  {
-    id: 'nust-mechatronics-eme',
+    id: 'nust-mte-smme',
     discipline: 'Mechatronics Engineering',
     category: 'engineering',
-    school: 'EME College',
-    campus: 'Rawalpindi',
-    closingCutoff2026: 66.90,
-    closingRank2026: 3000,
-    closingCutoff2025: 66.60,
-    closingRank2025: 3050,
-    closingCutoff2024: 66.40,
-    closingRank2024: 3100,
+    school: 'SMME',
+    campus: 'H-12 Islamabad',
+    eligibility: 'Pre-Engineering (Min 60%)',
   },
   {
-    id: 'nust-comp-eng-eme',
-    discipline: 'Computer Engineering',
-    category: 'engineering',
-    school: 'EME College',
-    campus: 'Rawalpindi',
-    closingCutoff2026: 74.40,
-    closingRank2026: 1400,
-    closingCutoff2025: 74.20,
-    closingRank2025: 1430,
-    closingCutoff2024: 74.10,
-    closingRank2024: 1450,
-  },
-  {
-    id: 'nust-ee-eme',
+    id: 'nust-eme-ee',
     discipline: 'Electrical Engineering',
     category: 'engineering',
     school: 'EME College',
     campus: 'Rawalpindi',
-    closingCutoff2026: 64.80,
-    closingRank2026: 3550,
-    closingCutoff2025: 64.60,
-    closingRank2025: 3580,
-    closingCutoff2024: 64.50,
-    closingRank2024: 3600,
+    eligibility: 'Pre-Engineering (Min 60%)',
   },
   {
-    id: 'nust-aero-cae',
+    id: 'nust-eme-me',
+    discipline: 'Mechanical Engineering',
+    category: 'engineering',
+    school: 'EME College',
+    campus: 'Rawalpindi',
+    eligibility: 'Pre-Engineering (Min 60%)',
+  },
+  {
+    id: 'nust-eme-mts',
+    discipline: 'Mechatronics Engineering',
+    category: 'engineering',
+    school: 'EME College',
+    campus: 'Rawalpindi',
+    eligibility: 'Pre-Engineering (Min 60%)',
+  },
+  {
+    id: 'nust-eme-ce',
+    discipline: 'Computer Engineering',
+    category: 'engineering',
+    school: 'EME College',
+    campus: 'Rawalpindi',
+    eligibility: 'Pre-Engineering / ICS (Min 60%)',
+  },
+  {
+    id: 'nust-cae-aero',
     discipline: 'Aerospace Engineering',
     category: 'engineering',
     school: 'CAE',
     campus: 'Risalpur',
-    closingCutoff2026: 75.40,
-    closingRank2026: 1150,
-    closingCutoff2025: 75.20,
-    closingRank2025: 1180,
-    closingCutoff2024: 75.00,
-    closingRank2024: 1200,
+    eligibility: 'Pre-Engineering (Min 60%)',
   },
   {
-    id: 'nust-avionics-cae',
+    id: 'nust-cae-av',
     discipline: 'Avionics Engineering',
     category: 'engineering',
     school: 'CAE',
     campus: 'Risalpur',
-    closingCutoff2026: 74.10,
-    closingRank2026: 1450,
-    closingCutoff2025: 73.90,
-    closingRank2025: 1480,
-    closingCutoff2024: 73.80,
-    closingRank2024: 1500,
+    eligibility: 'Pre-Engineering (Min 60%)',
   },
   {
     id: 'nust-bba',
-    discipline: 'BBA (Bachelor of Business Administration)',
+    discipline: 'Bachelor of Business Administration (BBA)',
     category: 'business',
     school: 'NBS',
     campus: 'H-12 Islamabad',
-    closingCutoff2026: 75.60,
-    closingRank2026: 420,
-    closingCutoff2025: 75.40,
-    closingRank2025: 440,
-    closingCutoff2024: 75.20,
-    closingRank2024: 450,
+    eligibility: 'FA / FSc / ICS / I.Com (Min 60%)',
   },
   {
-    id: 'nust-af',
+    id: 'nust-acfac',
     discipline: 'BS Accounting & Finance',
     category: 'business',
     school: 'NBS',
     campus: 'H-12 Islamabad',
-    closingCutoff2026: 74.10,
-    closingRank2026: 650,
-    closingCutoff2025: 73.90,
-    closingRank2025: 670,
-    closingCutoff2024: 73.80,
-    closingRank2024: 680,
+    eligibility: 'FA / FSc / ICS / I.Com (Min 60%)',
   },
   {
-    id: 'nust-eco',
+    id: 'nust-econ',
     discipline: 'BS Economics',
     category: 'business',
     school: 'S3H',
     campus: 'H-12 Islamabad',
-    closingCutoff2026: 72.50,
-    closingRank2026: 850,
-    closingCutoff2025: 72.30,
-    closingRank2025: 870,
-    closingCutoff2024: 72.10,
-    closingRank2024: 890,
+    eligibility: 'FA / FSc / ICS (Min 60%)',
+  },
+  {
+    id: 'nust-psych',
+    discipline: 'BS Psychology',
+    category: 'business',
+    school: 'S3H',
+    campus: 'H-12 Islamabad',
+    eligibility: 'FA / FSc / ICS (Min 60%)',
   },
   {
     id: 'nust-biotech',
-    discipline: 'BS Biotechnology',
+    discipline: 'BS Applied Biosciences / Biotechnology',
     category: 'sciences',
     school: 'ASAB',
     campus: 'H-12 Islamabad',
-    closingCutoff2026: 70.80,
-    closingRank2026: 950,
-    closingCutoff2025: 70.50,
-    closingRank2025: 980,
-    closingCutoff2024: 70.20,
-    closingRank2024: 1000,
+    eligibility: 'FSc Pre-Medical (Min 60%)',
   },
   {
     id: 'nust-math',
-    discipline: 'BS Mathematics / Physics',
+    discipline: 'BS Mathematics',
     category: 'sciences',
     school: 'SNS',
     campus: 'H-12 Islamabad',
-    closingCutoff2026: 66.50,
-    closingRank2026: 1400,
-    closingCutoff2025: 66.20,
-    closingRank2025: 1450,
-    closingCutoff2024: 65.80,
-    closingRank2024: 1500,
+    eligibility: 'FSc Pre-Engineering / ICS (Min 60%)',
+  },
+  {
+    id: 'nust-physics',
+    discipline: 'BS Physics',
+    category: 'sciences',
+    school: 'SNS',
+    campus: 'H-12 Islamabad',
+    eligibility: 'FSc Pre-Engineering (Min 60%)',
   },
 ];
 
@@ -282,68 +201,64 @@ interface NustFieldsModalProps {
   isOpen: boolean;
   onClose: () => void;
   studentAggregate: number;
-  testType: 'local' | 'sat';
-  onSelectForReverse: (uniId: string, cutoffAggregate?: number) => void;
+  onSelectForReverse: (uniId: string, targetAggregate?: number) => void;
 }
 
 export const NustFieldsModal: React.FC<NustFieldsModalProps> = ({
   isOpen,
   onClose,
   studentAggregate,
-  testType,
   onSelectForReverse,
 }) => {
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedYear, setSelectedYear] = useState<'2026' | '2025' | '2024'>('2026');
 
   const filteredPrograms = useMemo(() => {
     return nustProgramsData.filter((prog) => {
-      const matchCat = filterCategory === 'all' || prog.category === filterCategory;
-      const matchQuery =
-        prog.discipline.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        prog.school.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        prog.campus.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchCat && matchQuery;
+      const matchCategory = filterCategory === 'all' || prog.category === filterCategory;
+      const q = searchQuery.toLowerCase().trim();
+      const matchSearch =
+        !q ||
+        prog.discipline.toLowerCase().includes(q) ||
+        prog.school.toLowerCase().includes(q) ||
+        prog.campus.toLowerCase().includes(q);
+      return matchCategory && matchSearch;
     });
   }, [filterCategory, searchQuery]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl max-w-5xl w-full p-5 sm:p-7 shadow-2xl relative flex flex-col max-h-[90vh]">
-        {/* Top Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-zinc-100 dark:border-zinc-800 gap-3 shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-teal-800 text-white flex items-center justify-center font-bold text-base shadow-sm">
-              <Building2 className="w-5 h-5" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl max-w-5xl w-full p-5 sm:p-6 shadow-2xl relative space-y-4 max-h-[90vh] flex flex-col">
+        {/* Header */}
+        <div className="flex items-start justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
+          <div className="flex items-center space-x-3">
+            <div className="w-11 h-11 rounded-2xl bg-teal-800 text-teal-50 flex items-center justify-center shadow-sm shrink-0">
+              <Building2 className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-extrabold text-base sm:text-lg text-zinc-900 dark:text-white">
-                  NUST — All Fields & Closing Merit Ranks
+                <h3 className="font-extrabold text-lg text-zinc-900 dark:text-white">
+                  NUST Constituent Schools & Undergraduate Disciplines
                 </h3>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300">
-                  {nustProgramsData.length} Programs
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300 uppercase">
+                  Official Criteria
                 </span>
               </div>
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                SEECS, SMME, NICE, SCME, NBS, S3H (H-12 Islamabad) • EME & MCS (Rawalpindi) • CAE (Risalpur)
+                Uniform National Seats Merit Formula: <strong>75% NET / SAT + 15% FSc + 10% Matric</strong>
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 self-end sm:self-auto">
-            <div className="p-2 px-3 bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 rounded-xl text-right">
-              <span className="text-[10px] uppercase font-semibold text-teal-700 dark:text-teal-400 block">
-                Your NUST Aggregate ({testType === 'sat' ? 'SAT' : 'NET'})
-              </span>
-              <span className="text-lg font-black font-mono text-teal-900 dark:text-teal-200">
+          <div className="flex items-center gap-3">
+            <div className="text-right hidden sm:block">
+              <span className="text-[10px] uppercase font-semibold text-zinc-400 block">Your NUST Aggregate</span>
+              <span className="text-lg font-mono font-extrabold text-teal-800 dark:text-teal-300">
                 {studentAggregate > 0 ? `${studentAggregate.toFixed(3)}%` : '—'}
               </span>
             </div>
-
             <button
               onClick={onClose}
               className="p-2 rounded-xl text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
@@ -354,7 +269,7 @@ export const NustFieldsModal: React.FC<NustFieldsModalProps> = ({
         </div>
 
         {/* Filter Toolbar */}
-        <div className="py-3 flex flex-col md:flex-row md:items-center justify-between gap-3 shrink-0 border-b border-zinc-100 dark:border-zinc-800 text-xs">
+        <div className="py-2 flex flex-col md:flex-row md:items-center justify-between gap-3 shrink-0 border-b border-zinc-100 dark:border-zinc-800 text-xs">
           {/* Category Pills */}
           <div className="flex items-center gap-1.5 flex-wrap">
             {[
@@ -379,93 +294,34 @@ export const NustFieldsModal: React.FC<NustFieldsModalProps> = ({
             ))}
           </div>
 
-          {/* Search Input & Year Selector */}
-          <div className="flex items-center gap-2">
-            {/* Year Selector */}
-            <div className="flex rounded-lg p-0.5 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 font-medium text-[11px]">
-              {(['2026', '2025', '2024'] as const).map((year) => (
-                <button
-                  key={year}
-                  type="button"
-                  onClick={() => setSelectedYear(year)}
-                  className={`px-2.5 py-1 rounded-md transition-all ${
-                    selectedYear === year
-                      ? 'bg-white dark:bg-zinc-900 text-teal-800 dark:text-teal-300 font-bold shadow-xs'
-                      : 'text-zinc-500 hover:text-zinc-900'
-                  }`}
-                >
-                  {year} Cutoffs
-                </button>
-              ))}
-            </div>
-
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search field or school..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 pr-3 py-1 text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-1 focus:ring-teal-600 w-44"
-              />
-            </div>
+          {/* Search Input */}
+          <div className="relative">
+            <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Search field, school, campus..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8 pr-3 py-1.5 text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-1 focus:ring-teal-600 w-56"
+            />
           </div>
         </div>
 
         {/* Scrollable Horizontal Field Rows */}
-        <div className="overflow-y-auto space-y-2 py-3 flex-1 pr-1 text-xs">
+        <div className="overflow-y-auto space-y-2 py-2 flex-1 pr-1 text-xs">
           {filteredPrograms.length === 0 ? (
             <div className="py-12 text-center text-zinc-400">
               No programs match your search or filter.
             </div>
           ) : (
             filteredPrograms.map((prog) => {
-              const cutoff =
-                selectedYear === '2026'
-                  ? prog.closingCutoff2026
-                  : selectedYear === '2025'
-                  ? prog.closingCutoff2025
-                  : prog.closingCutoff2024;
-
-              const rank =
-                selectedYear === '2026'
-                  ? prog.closingRank2026
-                  : selectedYear === '2025'
-                  ? prog.closingRank2025
-                  : prog.closingRank2024;
-
-              // Zone calculation
-              let zoneBadge = null;
-              if (studentAggregate > 0) {
-                const diff = studentAggregate - cutoff;
-                if (diff >= 1.5) {
-                  zoneBadge = (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 flex items-center gap-1 shrink-0">
-                      <CheckCircle2 className="w-3 h-3" /> Safe (+{diff.toFixed(1)}%)
-                    </span>
-                  );
-                } else if (diff >= -1.5) {
-                  zoneBadge = (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 flex items-center gap-1 shrink-0">
-                      <AlertCircle className="w-3 h-3" /> Borderline ({diff >= 0 ? `+${diff.toFixed(1)}%` : `${diff.toFixed(1)}%`})
-                    </span>
-                  );
-                } else {
-                  zoneBadge = (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-800 dark:bg-red-950/70 dark:text-red-300 flex items-center gap-1 shrink-0">
-                      <AlertTriangle className="w-3 h-3" /> High Risk ({diff.toFixed(1)}%)
-                    </span>
-                  );
-                }
-              }
-
               return (
                 <div
                   key={prog.id}
                   className="p-3 sm:px-4 bg-zinc-50 dark:bg-zinc-800/40 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-3 transition-all group"
                 >
                   {/* Field & School Column */}
-                  <div className="flex-1 min-w-[200px]">
+                  <div className="flex-1 min-w-[220px]">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-sm text-zinc-900 dark:text-white group-hover:text-teal-700 dark:group-hover:text-teal-300 transition-colors">
                         {prog.discipline}
@@ -475,44 +331,40 @@ export const NustFieldsModal: React.FC<NustFieldsModalProps> = ({
                       </span>
                     </div>
                     <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
-                      {prog.campus} • Formula: 10% SSC + 15% HSSC + 75% NET / SAT
+                      {prog.campus} • {prog.eligibility}
                     </p>
                   </div>
 
-                  {/* Cutoff & Rank Column */}
-                  <div className="flex items-center gap-4 sm:gap-6 shrink-0">
-                    <div className="text-left sm:text-right">
-                      <span className="text-[10px] text-zinc-400 block font-medium uppercase">
-                        {selectedYear} Closing Cutoff
+                  {/* Aggregate & Actions Column */}
+                  <div className="flex items-center gap-3 sm:gap-4 shrink-0 justify-between md:justify-end">
+                    <div className="text-left md:text-right">
+                      <span className="text-[10px] text-zinc-400 block font-medium uppercase">Your Aggregate</span>
+                      <span className="text-base font-extrabold font-mono text-teal-800 dark:text-teal-300">
+                        {studentAggregate > 0 ? `${studentAggregate.toFixed(3)}%` : '—'}
                       </span>
-                      <div className="flex items-baseline gap-1.5">
-                        <span className="text-sm font-extrabold font-mono text-zinc-900 dark:text-white">
-                          {cutoff.toFixed(2)}%
-                        </span>
-                        <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400">
-                          (Rank #{rank})
-                        </span>
-                      </div>
                     </div>
 
-                    {/* Probability Badge */}
-                    <div className="w-28 flex justify-center">
-                      {zoneBadge || (
-                        <span className="text-[10px] text-zinc-400 italic">Enter marks</span>
-                      )}
-                    </div>
-
-                    {/* Solve Target Button */}
                     <button
                       type="button"
                       onClick={() => {
                         onClose();
-                        onSelectForReverse('nust', cutoff);
+                        onSelectForReverse('nust', 75.0);
                       }}
-                      className="px-3 py-1.5 rounded-lg text-xs font-semibold text-teal-800 dark:text-teal-300 bg-teal-50 hover:bg-teal-100 dark:bg-teal-950/60 dark:hover:bg-teal-900/60 transition-colors flex items-center gap-1 shrink-0"
+                      className="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors flex items-center gap-1 shrink-0"
                     >
-                      Solve Score <ArrowUpRight className="w-3 h-3" />
+                      Target Solver <ArrowUpRight className="w-3 h-3" />
                     </button>
+
+                    <a
+                      href="https://ugadmissions.nust.edu.pk/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-teal-800 hover:bg-teal-900 dark:bg-teal-700 dark:hover:bg-teal-600 transition-colors flex items-center gap-1.5 shrink-0 shadow-xs"
+                      title="Apply on official NUST Undergraduate Admissions Portal"
+                    >
+                      <span>Official Portal</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
                   </div>
                 </div>
               );
@@ -523,8 +375,8 @@ export const NustFieldsModal: React.FC<NustFieldsModalProps> = ({
         {/* Footer */}
         <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-zinc-500 gap-2 shrink-0">
           <span className="flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-teal-600" />
-            Selection Ranks and Cutoffs derived from official NUST circulars (10th/Final selection lists).
+            <GraduationCap className="w-4 h-4 text-teal-600" />
+            Admissions for all constituent campuses (H-12 Islamabad, EME, MCS, CAE) are managed through NUST central portal.
           </span>
           <button
             type="button"

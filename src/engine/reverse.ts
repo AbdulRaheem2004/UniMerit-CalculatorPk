@@ -97,7 +97,7 @@ export function solveRequiredTestScore(
       maxScore,
       testType,
       status: 'already_achieved',
-      message: 'Mubarak! Your academic marks alone already exceed this cutoff aggregate.'
+      message: 'Mubarak! Your academic marks alone already exceed this target aggregate.'
     };
   }
 
@@ -120,7 +120,7 @@ export function solveRequiredTestScore(
   let note = '';
   if (isSat && uni.satMinScore && targetScore < uni.satMinScore) {
     targetScore = uni.satMinScore;
-    note = ` (Adjusted to meet ${uni.shortName}'s minimum cutoff threshold of ${uni.satMinScore})`;
+    note = ` (Adjusted to meet ${uni.shortName}'s minimum eligibility threshold of ${uni.satMinScore})`;
   }
 
   const testNameDisplay = isSat ? 'Digital SAT' : uni.testName;

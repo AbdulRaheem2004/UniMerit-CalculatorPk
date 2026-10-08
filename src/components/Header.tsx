@@ -34,7 +34,7 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             </div>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 hidden sm:block">
-              Pakistani Universities Merit Calculator & 10-Year Cutoffs
+              Pakistani Universities Merit Calculator & Official Admission Formulas
             </p>
           </div>
         </div>
@@ -45,10 +45,10 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onOpenAudit}
             className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-teal-800 bg-teal-50 hover:bg-teal-100 dark:text-teal-300 dark:bg-teal-950/60 dark:hover:bg-teal-900/60 transition-colors border border-teal-200 dark:border-teal-800"
-            title="View verified university citations and prospectus formulas"
+            title="View verified university formulas and official admissions portals"
           >
             <ShieldCheck className="w-4 h-4 text-teal-600 dark:text-teal-400" />
-            <span className="hidden md:inline">Verified Sources</span>
+            <span className="hidden md:inline">Official Formulas & Portals</span>
           </button>
 
           {/* Roman Urdu Toggle */}

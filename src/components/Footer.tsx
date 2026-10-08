@@ -27,13 +27,13 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAudit }) => {
               Official Data Integrity
             </h4>
             <p className="leading-relaxed">
-              Every formula and historical closing cutoff is cross-verified against official university prospectuses and selection lists. If a specific year was not publicly archived by the university, we report it rather than assuming.
+              Every formula and weightage is derived strictly from official university prospectuses and admission circulars. Direct portal links are provided for every university.
             </p>
             <button
               onClick={onOpenAudit}
               className="text-teal-700 dark:text-teal-400 font-semibold hover:underline inline-block pt-1"
             >
-              Inspect Source Citations & Formulas →
+              Inspect Official Formulas & Portals →
             </button>
           </div>
 
@@ -43,7 +43,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAudit }) => {
               Important Disclaimer
             </h4>
             <p className="leading-relaxed">
-              Calculated aggregates and past closing cutoffs provide reliable planning estimates. Final admission offers are determined exclusively by official university merit lists released during each admission cycle.
+              Calculated aggregates provide exact planning calculations based on declared university formulas. Official admission offers and final selection lists are issued exclusively by each university.
             </p>
           </div>
         </div>
