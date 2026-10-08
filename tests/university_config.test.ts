@@ -71,4 +71,13 @@ describe('University Configuration, Official Criteria & Admission Portals', () =
     const uet = universities.find(u => u.id === 'uet')!;
     expect(uet.satSupported).toBe(false);
   });
+
+  it('UNI-06: verifies official notes document gap year policies and 2025/2026 cycle update', () => {
+    const nust = universities.find(u => u.id === 'nust')!;
+    expect(nust.notes).toContain('0% gap year deduction');
+    expect(nust.notes).toContain('2025/2026');
+
+    const pucit = universities.find(u => u.id === 'pucit')!;
+    expect(pucit.notes).toContain('2 marks per late session');
+  });
 });

@@ -9,8 +9,9 @@ import { ReversePlanner } from './components/ReversePlanner';
 import { IBCCConverterModal } from './components/IBCCConverterModal';
 import { SourceAuditModal } from './components/SourceAuditModal';
 import { WhatsAppShareModal } from './components/WhatsAppShareModal';
+import { AdmissionFaqSection } from './components/AdmissionFaqSection';
 import { Footer } from './components/Footer';
-import { Share2 } from 'lucide-react';
+import { Share2, ShieldCheck } from 'lucide-react';
 
 const universities = universitiesData as UniversityConfig[];
 
@@ -109,15 +110,21 @@ export function App() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12 flex-1 space-y-8 w-full">
         {/* Hero Notice Banner */}
         <div className="bg-gradient-to-r from-teal-900 via-teal-800 to-emerald-900 text-white rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-teal-700/60 text-teal-200 uppercase tracking-wider inline-block">
-              Undergraduate Admissions
-            </span>
+          <div className="space-y-1.5">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-teal-700/60 text-teal-200 uppercase tracking-wider inline-block">
+                Fall 2025/2026 Admissions
+              </span>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/30 text-emerald-200 border border-emerald-400/30">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
+                <span>Formulas Verified & Updated Till Date</span>
+              </span>
+            </div>
             <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
               Pakistani Universities Merit Calculator
             </h1>
             <p className="text-xs sm:text-sm text-teal-100/90 max-w-2xl">
-              Calculate your exact aggregate for NUST, FAST-NUCES, COMSATS, GIKI, PUCIT, and UET simultaneously. Inspect official formulas, solve target entry test scores, and access official admissions portals.
+              Calculate your exact aggregate for NUST, FAST-NUCES, COMSATS, GIKI, PUCIT, and UET simultaneously. Fully supports new 1200 & 1100 marks schemes (Tarjuma-tul-Quran), NUST 0% gap year policy, Digital SAT (1600), and verified admission portals.
             </p>
           </div>
 
@@ -159,6 +166,9 @@ export function App() {
           defaultTarget={reverseDefaultTarget}
           showRomanUrdu={showRomanUrdu}
         />
+
+        {/* 4. Official Admissions Policy & SEO FAQ Guide */}
+        <AdmissionFaqSection />
       </main>
 
       {/* Floating Share Button on Mobile */}

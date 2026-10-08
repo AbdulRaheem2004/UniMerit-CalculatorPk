@@ -243,4 +243,42 @@ describe('Forward Aggregate Calculator Engine', () => {
     expect(result.isEligible).toBe(true);
     expect(result.breakdown.testType).toBe('sat');
   });
+
+  it('ENG-12: calculates aggregate accurately with new 1200 marks scheme (Tarjuma-tul-Quran)', () => {
+    // Matric: 1080/1200 (90.0%), FSc: 1020/1200 (85.0%), NET: 160/200 (80.0%)
+    // Expected: (90.0 * 0.10) + (85.0 * 0.15) + (80.0 * 0.75) = 9.0 + 12.75 + 60.0 = 81.75%
+    const input: AcademicInput = {
+      matricObtained: 1080,
+      matricTotal: 1200,
+      fscObtained: 1020,
+      fscTotal: 1200,
+      hafizQuran: false,
+      useSat: false,
+      satScore: 0,
+      entryTestScores: { nust: 160 }
+    };
+    const result = calculateUniversityAggregate(input, nust);
+    expect(result.aggregate).toBeCloseTo(81.75, 2);
+    expect(result.breakdown.matricContribution).toBeCloseTo(9.0, 2);
+    expect(result.breakdown.fscContribution).toBeCloseTo(12.75, 2);
+    expect(result.breakdown.testContribution).toBeCloseTo(60.0, 2);
+  });
+
+  it('ENG-13: calculates aggregate accurately with Part-1 only (550 / 520 marks scheme)', () => {
+    // Matric: 1000/1100 (90.909%), FSc Part-1: 495/550 (90.0%), NU Test: 75/100 (75.0%)
+    // FAST CS: 10% Matric + 40% FSc + 50% Test
+    // Expected: (90.909 * 0.10) + (90.0 * 0.40) + (75.0 * 0.50) = 9.091 + 36.0 + 37.5 = 82.591%
+    const input: AcademicInput = {
+      matricObtained: 1000,
+      matricTotal: 1100,
+      fscObtained: 495,
+      fscTotal: 550,
+      hafizQuran: false,
+      useSat: false,
+      satScore: 0,
+      entryTestScores: { fast_cs: 75 }
+    };
+    const result = calculateUniversityAggregate(input, fastCs);
+    expect(result.aggregate).toBeCloseTo(82.59, 1);
+  });
 });

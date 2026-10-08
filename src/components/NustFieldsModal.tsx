@@ -307,6 +307,21 @@ export const NustFieldsModal: React.FC<NustFieldsModalProps> = ({
           </div>
         </div>
 
+        {/* NUST Gap Year Policy & Verification Notice */}
+        <div className="p-3 rounded-2xl bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 text-[11px] text-teal-900 dark:text-teal-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold bg-teal-200 dark:bg-teal-800 px-2 py-0.5 rounded text-[10px] uppercase tracking-wide">
+              Official Policy: 0% Gap Year Deduction
+            </span>
+            <span>
+              NUST does <strong>not</strong> deduct marks for gap years. Fresh applicants apply with Part-1, while gap-year applicants use full FSc (Part 1+2) on 100% equal footing.
+            </span>
+          </div>
+          <span className="text-[10px] font-semibold text-teal-700 dark:text-teal-400 shrink-0">
+            ✓ Updated for 2025/2026 Cycle
+          </span>
+        </div>
+
         {/* Scrollable Horizontal Field Rows */}
         <div className="overflow-y-auto space-y-2 py-2 flex-1 pr-1 text-xs">
           {filteredPrograms.length === 0 ? (

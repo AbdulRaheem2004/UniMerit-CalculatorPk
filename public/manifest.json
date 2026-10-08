@@ -1,7 +1,7 @@
 {
-  "name": "Pakistani Universities Merit Calculator & Predictor",
+  "name": "PakMerit - Pakistani Universities Merit Calculator",
   "short_name": "PakMerit",
-  "description": "Multi-university aggregate calculator & 2016-2026 historical closing merit cutoffs for Pakistani students.",
+  "description": "Calculate your exact admission aggregate for NUST, FAST-NUCES, COMSATS, GIKI, PUCIT, and UET Lahore. Fully updated for 2025/2026 admissions.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#09090b",

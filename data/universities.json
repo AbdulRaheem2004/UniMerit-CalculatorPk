@@ -27,7 +27,7 @@
       "test": 0.75
     },
     "eligibilityMinAcademicPct": 60.0,
-    "notes": "Best of 4 NET series is considered. Top computing faculty in Pakistan."
+    "notes": "Best of 4 NET series is considered. 0% gap year deduction (gap-year applicants use full FSc Part 1+2 on equal footing). Updated for 2025/2026."
   },
   {
     "id": "nust_eng",
@@ -363,7 +363,7 @@
     "sourceUrl": "https://pucit.edu.pk/admissions/",
     "customFormula": "pucit_standard",
     "eligibilityMinAcademicPct": 50.0,
-    "notes": "Official PU Academic ratio with 20 marks bonus for certified Hafiz-e-Quran."
+    "notes": "Official PU Academic ratio with 20 marks bonus for certified Hafiz-e-Quran. PU deducts 2 marks per late session (gap year) as per PU Admission Regulations."
   },
   {
     "id": "uet",

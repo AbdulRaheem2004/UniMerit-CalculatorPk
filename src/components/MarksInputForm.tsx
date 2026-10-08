@@ -112,18 +112,56 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
         {/* Matric / O-Level */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-1.5">
             <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
               <span>1. Matric / SSC / O-Level</span>
             </label>
-            <button
-              type="button"
-              onClick={onOpenIBCC}
-              className="text-[11px] font-semibold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1"
-            >
-              <Sparkles className="w-3 h-3" />
-              O-Level IBCC Helper
-            </button>
+            <div className="flex items-center space-x-1 text-[10px]">
+              <button
+                type="button"
+                onClick={() => {
+                  const newTotal = 1100;
+                  const newObtained = input.matricTotal > 0 && input.matricObtained > 0
+                    ? Math.min(newTotal, Math.round((input.matricObtained / input.matricTotal) * newTotal))
+                    : input.matricObtained;
+                  onChange({ ...input, matricTotal: newTotal, matricObtained: newObtained });
+                }}
+                className={`px-2 py-0.5 rounded font-medium border ${
+                  input.matricTotal === 1100
+                    ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 border-transparent'
+                    : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'
+                }`}
+                title="Traditional total (FBISE, Sindh, KPK, Pre-2023)"
+              >
+                1100 (Standard)
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const newTotal = 1200;
+                  const newObtained = input.matricTotal > 0 && input.matricObtained > 0
+                    ? Math.min(newTotal, Math.round((input.matricObtained / input.matricTotal) * newTotal))
+                    : input.matricObtained;
+                  onChange({ ...input, matricTotal: newTotal, matricObtained: newObtained });
+                }}
+                className={`px-2 py-0.5 rounded font-medium border ${
+                  input.matricTotal === 1200
+                    ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 border-transparent'
+                    : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'
+                }`}
+                title="Punjab Boards with Tarjuma-tul-Quran (50 marks in 9th + 50 marks in 10th)"
+              >
+                1200 (Punjab Quran)
+              </button>
+              <button
+                type="button"
+                onClick={onOpenIBCC}
+                className="text-[11px] font-semibold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1 ml-1"
+              >
+                <Sparkles className="w-3 h-3" />
+                IBCC
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
@@ -156,24 +194,42 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
           {matricError && <p className="text-[11px] text-red-500">{matricError}</p>}
           {showRomanUrdu && (
             <p className="text-[11px] text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 p-1.5 rounded">
-              💡 Matric certificate ke kul aur hasil karda number likhein. O-Level students IBCC equivalence marks dalein.
+              💡 Matric certificate ke kul aur hasil karda number likhein. Punjab board mein Tarjuma-tul-Quran ke sath total 1200 hai.
             </p>
           )}
         </div>
 
         {/* Intermediate / FSc / A-Level */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-1.5">
             <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
               2. Intermediate / FSc / ICS / A-Level
             </label>
-            <div className="flex items-center space-x-1 text-[10px]">
+            <div className="flex flex-wrap items-center gap-1 text-[10px]">
+              <button
+                type="button"
+                onClick={() => {
+                  const newTotal = 1200;
+                  const newObtained = input.fscTotal > 0 && input.fscObtained > 0
+                    ? Math.min(newTotal, Math.round((input.fscObtained / input.fscTotal) * newTotal))
+                    : input.fscObtained;
+                  onChange({ ...input, fscTotal: newTotal, fscObtained: newObtained });
+                }}
+                className={`px-2 py-0.5 rounded font-medium border ${
+                  input.fscTotal === 1200
+                    ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 border-transparent'
+                    : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'
+                }`}
+                title="Full 1200 (New Punjab Boards & FBISE Quran Scheme)"
+              >
+                Full (1200)
+              </button>
               <button
                 type="button"
                 onClick={() => {
                   const newTotal = 1100;
-                  const newObtained = input.fscTotal === 520 && input.fscObtained > 0
-                    ? Math.min(newTotal, Math.round((input.fscObtained / 520) * 1100))
+                  const newObtained = input.fscTotal > 0 && input.fscObtained > 0
+                    ? Math.min(newTotal, Math.round((input.fscObtained / input.fscTotal) * newTotal))
                     : input.fscObtained;
                   onChange({ ...input, fscTotal: newTotal, fscObtained: newObtained });
                 }}
@@ -182,16 +238,35 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
                     ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 border-transparent'
                     : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'
                 }`}
+                title="Full 1100 (Traditional / Sindh / KPK / Pre-2024 repeaters)"
               >
                 Full (1100)
               </button>
               <button
                 type="button"
                 onClick={() => {
+                  const newTotal = 550;
+                  const newObtained = input.fscTotal > 0 && input.fscObtained > 0
+                    ? Math.min(newTotal, Math.round((input.fscObtained / input.fscTotal) * newTotal))
+                    : input.fscObtained;
+                  onChange({ ...input, fscTotal: newTotal, fscObtained: newObtained });
+                }}
+                className={`px-2 py-0.5 rounded font-medium border ${
+                  input.fscTotal === 550 || input.fscTotal === 555
+                    ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 border-transparent'
+                    : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'
+                }`}
+                title="Punjab Board Part-1 (550 / 555 marks)"
+              >
+                Part-1 (550)
+              </button>
+              <button
+                type="button"
+                onClick={() => {
                   const newTotal = 520;
-                  const newObtained = input.fscTotal === 1100 && input.fscObtained > 0
-                    ? Math.min(newTotal, Math.round((input.fscObtained / 1100) * 520))
-                    : Math.min(newTotal, input.fscObtained);
+                  const newObtained = input.fscTotal > 0 && input.fscObtained > 0
+                    ? Math.min(newTotal, Math.round((input.fscObtained / input.fscTotal) * newTotal))
+                    : input.fscObtained;
                   onChange({ ...input, fscTotal: newTotal, fscObtained: newObtained });
                 }}
                 className={`px-2 py-0.5 rounded font-medium border ${
@@ -199,6 +274,7 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
                     ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 border-transparent'
                     : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'
                 }`}
+                title="Federal Board (FBISE) Part-1 standard"
               >
                 Part-1 (520)
               </button>
@@ -233,9 +309,12 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
             </div>
           </div>
           {fscError && <p className="text-[11px] text-red-500">{fscError}</p>}
+          <p className="text-[10px] text-zinc-500 dark:text-zinc-400">
+            ℹ️ <strong>Curriculum Note:</strong> Punjab & FBISE have added Tarjuma-tul-Quran (Total 1200). Traditional boards/repeaters use 1100. Fresh applicants awaiting Part-2 use Part-1 total (520/550).
+          </p>
           {showRomanUrdu && (
             <p className="text-[11px] text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 p-1.5 rounded">
-              💡 Agar Part-2 ka result pending hai to Part-1 ke marks aur total (520 ya 550) darj karein.
+              💡 Naye syllabus mein Quran translation ke sath kul number 1200 hain. Gap year ya pehle ke students 1100 select karein. Result awaiting students Part-1 (520 ya 550) chunein.
             </p>
           )}
         </div>

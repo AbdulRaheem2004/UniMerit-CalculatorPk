@@ -48,7 +48,7 @@ export const SourceAuditModal: React.FC<SourceAuditModalProps> = ({
           <div className="p-3 rounded-xl bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800/60 flex items-start space-x-2 text-teal-900 dark:text-teal-200">
             <Info className="w-4 h-4 shrink-0 mt-0.5 text-teal-600" />
             <p>
-              Every formula below corresponds directly to the official admission prospectus of each institution. Click <strong>"Official Admissions Portal"</strong> on any university to view the live university website and apply.
+              Every formula below corresponds directly to the official admission prospectus of each institution, verified and updated till date for the <strong>2025/2026 admissions cycle</strong>. NUST operates a strict 0% gap year deduction policy. Click <strong>"Official Admissions Portal"</strong> on any university to view the live university website and apply.
             </p>
           </div>
 
