@@ -131,9 +131,61 @@ $$S_{\text{req}} = \left\lceil \frac{\text{Contribution}_{\text{test needed}}}{W
 
 - **Frontend Core:** React 19, TypeScript 5.8, Tailwind CSS v4, Lucide React
 - **Build System:** Vite 6 with tree-shaking and offline Service Worker caching
-- **Testing:** Vitest 3.2 suite with 38 automated test cases covering:
+- **Testing:** Vitest 3.2 suite with 50 automated test cases covering:
   - Regulatory weights sum verification
   - PMDC medical calculations and MDCAT thresholds
-  - Reverse solver edge conditions
-  - IBCC equivalence conversion tables
+  - Reverse solver edge conditions and out-of-bounds rejection
+  - IBCC equivalence conversion tables and Grade 'U' ineligibility
+  - Strict negative value guards and academic percentage boundaries
   - Institutional HTTPS portal links
+
+---
+
+## 6. Edge Case Handling & Defensive Validation Architecture
+
+The system enforces a multi-tiered defensive validation model ensuring zero silent corruption:
+
+1. **Input Layer (`MarksInputForm.tsx`):**
+   - Negative value detection (`marks < 0`): Highlights inputs in red with explicit feedback (`Obtained marks cannot be negative`).
+   - Bounds checking (`obtained > total`): Displays clear error warnings.
+   - Non-positive totals (`total <= 0`): Blocked with immediate validation flags.
+   - SAT Score boundary (`400` to `1600`): Enforces College Board scale boundaries.
+
+2. **Computational Engine Layer (`calculator.ts`):**
+   - Rejects negative obtained marks or non-positive totals.
+   - Returns `{ aggregate: 0, isEligible: false, missingPrerequisites: ['Invalid academic marks: Obtained marks cannot be negative'] }`.
+   - Cards display `Your Aggregate: —` and `⚠️ Ineligible`.
+
+3. **Reverse Solver Layer (`reverse.ts`):**
+   - Targets $\le 0\%$ or $> 100\%$ return `status: 'impossible'` with explicit boundary error notices.
+   - Negative academic inputs abort reverse calculation and declare candidate ineligible.
+
+---
+
+## 7. Cambridge IBCC Equivalence & Failed Subject Policy
+
+Under **Inter Board Coordination Commission (IBCC) Equivalence Regulations (Clause 3.2)**:
+- **O-Level / IGCSE (8 subjects):** Pakistani national candidates must pass 8 subjects (English, Urdu, Islamiyat, Pak Studies, Math + 3 electives). The minimum acceptable grade is **Grade E**.
+- **A-Level (3 principal subjects):** Candidates must pass 3 principal subjects (e.g. Physics, Chemistry, Biology/Math).
+- **Grade 'U' (Ungraded / Fail) Mandate:** If a student scores Grade 'U' in **ANY** single Cambridge subject, IBCC **refuses to issue an Equivalence Certificate**.
+- **University Admission Mandate:** Higher Education Commission (HEC), PMDC, and PEC mandate that no candidate can be admitted to any university in Pakistan without an official IBCC Equivalence Certificate.
+- **Implementation:**
+  - `ibcc.ts` detects Grade 'U', sets `hasFailedSubject: true`, `isEligible: false`, and provides a detailed regulatory notice.
+  - `IBCCConverterModal.tsx` provides a dual-tab interface for O-Level (8 subjects) and A-Level (3 principal subjects) with red ineligibility alert banners.
+  - When applied, all university cards instantly transition to `⚠️ Ineligible (Failed IBCC Subject)` across all institutions.
+
+---
+
+## 8. Single National Curriculum: 1200 Marks (2026) vs 1100 Marks Scheme
+
+### Why 1200 Marks is the 2026 National Default:
+1. **The Punjab Compulsory Teaching of the Holy Quran Act (2021)** and **Federal Board (FBISE) Notification No. `FBISE/Curriculum/2022/411`** integrated 100 compulsory marks for *Tarjuma-tul-Quran-ul-Majeed* (50 marks in Part-1 / 11th grade and 50 marks in Part-2 / 12th grade).
+2. Consequently, both SSC (Matric) and HSSC (Intermediate) in Punjab (BISE Lahore, Rawalpindi, Faisalabad, Multan, Gujranwala, Sahiwal, Bahawalpur, DG Khan, Sargodha) and Federal Board (FBISE) have a total of **1200 marks** (or 600 in 1st year).
+3. The application sets total marks to **1200 marks** by default to reflect the modern 2026 academic structure.
+
+### Why 1100 Marks Remains Supported:
+1. **Sindh Boards (BIEK Karachi, Hyderabad, Sukkur, Larkana, Mirpurkhas):** Have not implemented the 100-mark Tarjuma-tul-Quran curriculum and remain out of **1100 marks**.
+2. **IBCC Equivalence Certificates:** IBCC scales O-Level and A-Level equivalence to a fixed standard **1100 marks** denominator.
+3. **Pre-2023 Repeaters / Gap-Year Candidates:** Students who passed intermediate prior to the 2022/2023 session have certificates based on the older 1100 marks framework.
+4. The system includes an **Inter Stream Selector** (`FSc Pre-Engineering`, `Pre-Medical`, `ICS`, `FA Arts / General`) and allows manual total marks adjustments to ensure 100% precision for students from all provincial boards.
+

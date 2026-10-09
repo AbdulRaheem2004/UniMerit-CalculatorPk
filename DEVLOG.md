@@ -26,3 +26,12 @@ Deterministic admission aggregate calculator and official criteria guide for pre
 - Added missing reputable universities: LUMS (SBASSE & SDSB), IBA Karachi (BBA & CS), NED Karachi, PIEAS Islamabad, Sir Syed University (SSUET), FCCU Lahore, and BNU Lahore.
 - Supported multi-discipline universities seamlessly across all groups they offer without campus duplication.
 - Verified system with 38 automated Vitest unit tests and visual Playwright browser testing.
+
+### Edge Case Hardening, IBCC Failed Grade Ineligibility & Top Workflow (2026-10-09)
+- **Defensive Boundary Validation:** Enforced strict non-negative academic marks validation (`marks < 0`), non-positive total guards (`total <= 0`), obtained exceeding total guards (`obtained > total`), and reverse solver impossible bounds (`target <= 0` or `target > 100`).
+- **IBCC Grade 'U' Rejection (Clause 3.2):** Implemented official IBCC regulation where a Grade 'U' (Ungraded/Fail) in any Cambridge subject refuses equivalence certificate issuance, resulting in 100% university admission ineligibility across all institutions in Pakistan.
+- **Dual-Tab IBCC Converter:** Integrated comprehensive O-Level (8 subjects) and A-Level (3 principal subjects) equivalence converter modal with instant ineligibility banners.
+- **Top Workflow Mode Switcher:** Replaced multi-page wizard with an instant top toggle: `[ 📊 Forward Merit Calculator ]` vs `[ 🎯 Reverse Target Planner ]`, eliminating long scrolling.
+- **1200 SNC vs 1100 Marks Scheme:** Documented Punjab Quran Act 2021 / FBISE notification while maintaining backward compatibility for Sindh Boards and older repeaters.
+- **Test Suite Expansion:** Expanded Vitest suite to 50/50 passing unit tests. Built and deployed live to GitHub Pages.
+
