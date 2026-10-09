@@ -1,0 +1,16 @@
+{
+  "name": "PakMerit - Pakistani Universities Merit Calculator",
+  "short_name": "PakMerit",
+  "description": "Calculate your exact admission aggregate for NUST, FAST-NUCES, COMSATS, GIKI, PUCIT, and UET Lahore. Fully updated for 2025/2026 admissions.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#115e59",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml"
+    }
+  ]
+}
