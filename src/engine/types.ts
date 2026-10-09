@@ -28,11 +28,17 @@ export interface UniversityConfig {
   notes?: string;
 }
 
+export type InterStream = 'pre_medical' | 'pre_engineering' | 'ics' | 'icom_arts' | 'alevels';
+export type InterStage = 'complete' | 'part1';
+
 export interface AcademicInput {
   matricObtained: number;
   matricTotal: number;
   fscObtained: number;
   fscTotal: number;
+  interStream?: InterStream;
+  interStage?: InterStage;
+  isSindhOrNonQuranBoard?: boolean;
   hafizQuran: boolean;
   useSat: boolean;
   satScore: number; // out of 1600

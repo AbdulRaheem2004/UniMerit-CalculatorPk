@@ -1,6 +1,6 @@
 import React from 'react';
-import { AcademicInput, UniversityConfig, DisciplineCategory } from '../engine/types';
-import { Calculator, Sparkles, Layers, Stethoscope, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { AcademicInput, UniversityConfig, DisciplineCategory, InterStream } from '../engine/types';
+import { Calculator, Sparkles, Layers, Stethoscope, CheckCircle2, ShieldCheck, BookOpen, Info } from 'lucide-react';
 
 interface MarksInputFormProps {
   input: AcademicInput;
@@ -255,96 +255,166 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
         </div>
 
         {/* 2. Intermediate / FSc / ICS / Pre-Medical */}
-        <div className="space-y-2">
-          <div className="flex flex-wrap items-center justify-between gap-1.5">
-            <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-              {isMedicalMode
-                ? '2. FSc Pre-Medical / A-Level Marks'
-                : '2. Intermediate / FSc / ICS / A-Level'}
+        <div className="space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-1">
+            <label className="text-xs font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+              <BookOpen className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+              <span>2. What did you study in Intermediate (HSSC)?</span>
             </label>
-            <div className="flex flex-wrap items-center gap-1 text-[10px]">
-              <button
-                type="button"
-                onClick={() => {
-                  const newTotal = 1200;
-                  const newObtained =
-                    input.fscTotal > 0 && input.fscObtained > 0
-                      ? Math.min(newTotal, Math.round((input.fscObtained / input.fscTotal) * newTotal))
-                      : input.fscObtained;
-                  onChange({ ...input, fscTotal: newTotal, fscObtained: newObtained });
-                }}
-                className={`px-2 py-0.5 rounded font-medium border ${
-                  input.fscTotal === 1200
-                    ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 border-transparent'
-                    : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'
-                }`}
-                title="Full 1200 (Punjab Boards Quran Scheme)"
-              >
-                Full (1200)
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  const newTotal = 1100;
-                  const newObtained =
-                    input.fscTotal > 0 && input.fscObtained > 0
-                      ? Math.min(newTotal, Math.round((input.fscObtained / input.fscTotal) * newTotal))
-                      : input.fscObtained;
-                  onChange({ ...input, fscTotal: newTotal, fscObtained: newObtained });
-                }}
-                className={`px-2 py-0.5 rounded font-medium border ${
-                  input.fscTotal === 1100
-                    ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 border-transparent'
-                    : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'
-                }`}
-                title="Full 1100 (Standard / Sindh / KPK / Pre-2024 repeaters)"
-              >
-                Full (1100)
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  const newTotal = 550;
-                  const newObtained =
-                    input.fscTotal > 0 && input.fscObtained > 0
-                      ? Math.min(newTotal, Math.round((input.fscObtained / input.fscTotal) * newTotal))
-                      : input.fscObtained;
-                  onChange({ ...input, fscTotal: newTotal, fscObtained: newObtained });
-                }}
-                className={`px-2 py-0.5 rounded font-medium border ${
-                  input.fscTotal === 550 || input.fscTotal === 555
-                    ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 border-transparent'
-                    : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'
-                }`}
-                title="Punjab Board Part-1 (550 marks)"
-              >
-                Part-1 (550)
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  const newTotal = 520;
-                  const newObtained =
-                    input.fscTotal > 0 && input.fscObtained > 0
-                      ? Math.min(newTotal, Math.round((input.fscObtained / input.fscTotal) * newTotal))
-                      : input.fscObtained;
-                  onChange({ ...input, fscTotal: newTotal, fscObtained: newObtained });
-                }}
-                className={`px-2 py-0.5 rounded font-medium border ${
-                  input.fscTotal === 520
-                    ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 border-transparent'
-                    : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'
-                }`}
-                title="Federal Board (FBISE) Part-1 standard"
-              >
-                Part-1 (520)
-              </button>
+            <div className="text-[10px] text-zinc-500 font-medium">
+              Official 2026 Board Scale
             </div>
           </div>
 
+          {/* Inter Discipline Buttons */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1.5">
+            {[
+              { id: 'pre_medical', label: 'F.Sc Pre-Medical', icon: '🩺', badge: 'Bio / Chem' },
+              { id: 'pre_engineering', label: 'F.Sc Pre-Eng', icon: '⚙️', badge: 'Math / Phy' },
+              { id: 'ics', label: 'ICS (Comp Sci)', icon: '💻', badge: 'CS / Math' },
+              { id: 'icom_arts', label: 'I.Com / FA / Arts', icon: '📚', badge: 'General' },
+              { id: 'alevels', label: 'A-Levels', icon: '🌍', badge: 'IBCC Scale' },
+            ].map((st) => {
+              const currentStream = input.interStream || (isMedicalMode ? 'pre_medical' : 'pre_engineering');
+              const isCurrent = currentStream === st.id;
+              return (
+                <button
+                  key={st.id}
+                  type="button"
+                  onClick={() => {
+                    const nextStream = st.id as InterStream;
+                    const stage = input.interStage || 'complete';
+                    const isSindh = !!input.isSindhOrNonQuranBoard;
+                    let targetTotal = 1200;
+                    if (nextStream === 'alevels') {
+                      targetTotal = 1100;
+                    } else if (stage === 'part1') {
+                      targetTotal = isSindh ? 550 : 600;
+                    } else {
+                      targetTotal = isSindh ? 1100 : 1200;
+                    }
+
+                    const nextObtained =
+                      input.fscTotal > 0 && input.fscObtained > 0
+                        ? Math.min(targetTotal, Math.round((input.fscObtained / input.fscTotal) * targetTotal))
+                        : input.fscObtained;
+
+                    onChange({
+                      ...input,
+                      interStream: nextStream,
+                      fscTotal: targetTotal,
+                      fscObtained: nextObtained,
+                    });
+                  }}
+                  className={`px-2.5 py-1.5 rounded-lg text-left border transition-all text-xs font-semibold ${
+                    isCurrent
+                      ? 'bg-teal-700 text-white dark:bg-teal-600 border-teal-800 dark:border-teal-500 shadow-xs'
+                      : 'bg-zinc-50 dark:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700'
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span>{st.icon}</span>
+                    <span className="truncate">{st.label}</span>
+                  </div>
+                  <span className={`text-[9px] block font-normal opacity-80 mt-0.5 ${isCurrent ? 'text-teal-100' : 'text-zinc-400'}`}>
+                    {st.badge}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Examination Stage & Board Policy Selector */}
+          <div className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 text-[11px]">
+            <div className="flex items-center gap-1">
+              <span className="text-zinc-500 font-medium">Applying with:</span>
+              <button
+                type="button"
+                onClick={() => {
+                  const isSindh = !!input.isSindhOrNonQuranBoard;
+                  const targetTotal = input.interStream === 'alevels' ? 1100 : isSindh ? 1100 : 1200;
+                  const nextObtained =
+                    input.fscTotal > 0 && input.fscObtained > 0
+                      ? Math.min(targetTotal, Math.round((input.fscObtained / input.fscTotal) * targetTotal))
+                      : input.fscObtained;
+                  onChange({
+                    ...input,
+                    interStage: 'complete',
+                    fscTotal: targetTotal,
+                    fscObtained: nextObtained,
+                  });
+                }}
+                className={`px-2 py-0.5 rounded font-semibold ${
+                  (input.interStage || 'complete') === 'complete'
+                    ? 'bg-teal-700 text-white dark:bg-teal-600 shadow-xs'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
+                }`}
+              >
+                Complete HSSC (2-Years)
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const isSindh = !!input.isSindhOrNonQuranBoard;
+                  const targetTotal = isSindh ? 550 : 600;
+                  const nextObtained =
+                    input.fscTotal > 0 && input.fscObtained > 0
+                      ? Math.min(targetTotal, Math.round((input.fscObtained / input.fscTotal) * targetTotal))
+                      : input.fscObtained;
+                  onChange({
+                    ...input,
+                    interStage: 'part1',
+                    fscTotal: targetTotal,
+                    fscObtained: nextObtained,
+                  });
+                }}
+                className={`px-2 py-0.5 rounded font-semibold ${
+                  input.interStage === 'part1'
+                    ? 'bg-teal-700 text-white dark:bg-teal-600 shadow-xs'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
+                }`}
+              >
+                1st Year (Part-1)
+              </button>
+            </div>
+
+            {/* Non-Quran / Sindh Board check */}
+            <label className="flex items-center gap-1.5 cursor-pointer text-zinc-600 dark:text-zinc-400 select-none">
+              <input
+                type="checkbox"
+                checked={!!input.isSindhOrNonQuranBoard}
+                onChange={(e) => {
+                  const isSindh = e.target.checked;
+                  const stage = input.interStage || 'complete';
+                  let targetTotal = 1200;
+                  if (input.interStream === 'alevels') {
+                    targetTotal = 1100;
+                  } else if (stage === 'part1') {
+                    targetTotal = isSindh ? 550 : 600;
+                  } else {
+                    targetTotal = isSindh ? 1100 : 1200;
+                  }
+                  const nextObtained =
+                    input.fscTotal > 0 && input.fscObtained > 0
+                      ? Math.min(targetTotal, Math.round((input.fscObtained / input.fscTotal) * targetTotal))
+                      : input.fscObtained;
+                  onChange({
+                    ...input,
+                    isSindhOrNonQuranBoard: isSindh,
+                    fscTotal: targetTotal,
+                    fscObtained: nextObtained,
+                  });
+                }}
+                className="rounded text-teal-600 focus:ring-teal-500 w-3.5 h-3.5"
+              />
+              <span className="text-[10px]">Sindh Board / Non-Quran Scheme</span>
+            </label>
+          </div>
+
+          {/* Obtained & Total Inputs */}
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <span className="text-[10px] text-zinc-400 uppercase font-medium">Obtained</span>
+              <span className="text-[10px] text-zinc-400 uppercase font-medium">Obtained Marks</span>
               <input
                 type="number"
                 min={0}
@@ -358,20 +428,35 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
               />
             </div>
             <div>
-              <span className="text-[10px] text-zinc-400 uppercase font-medium">Total</span>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-zinc-400 uppercase font-medium">Board Total</span>
+                <span className="text-[9px] text-teal-600 dark:text-teal-400 font-bold">Auto-set</span>
+              </div>
               <input
                 type="number"
                 min={1}
                 value={input.fscTotal || ''}
-                onChange={(e) => updateField('fscTotal', Math.max(1, Number(e.target.value)))}
-                placeholder="1100"
-                className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 font-mono focus:outline-none focus:ring-2 focus:ring-teal-600"
+                readOnly
+                title="Automatically set based on official board curriculum"
+                className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-300 font-mono cursor-not-allowed"
               />
             </div>
           </div>
           {fscError && <p className="text-[11px] text-red-500">{fscError}</p>}
-          <div className="flex items-center justify-between text-[11px] text-zinc-500 font-mono">
-            <span>FSc Percentage:</span>
+          <div className="flex items-center justify-between text-[11px] text-zinc-500 font-mono pt-0.5">
+            <span className="flex items-center gap-1">
+              <Info className="w-3 h-3 text-teal-600" />
+              <span>Board Scheme:</span>
+              <strong className="text-zinc-700 dark:text-zinc-300">
+                {input.fscTotal === 1200
+                  ? 'SNC 1200 (Tarjuma-tul-Quran 100m)'
+                  : input.fscTotal === 600
+                  ? 'Part-1 600 (Tarjuma-tul-Quran 50m)'
+                  : input.fscTotal === 1100
+                  ? 'Traditional 1100 Scale'
+                  : 'Part-1 550 Scale'}
+              </strong>
+            </span>
             <span className="font-bold text-zinc-800 dark:text-zinc-200">
               {input.fscTotal > 0 ? ((input.fscObtained / input.fscTotal) * 100).toFixed(2) : 0}%
             </span>

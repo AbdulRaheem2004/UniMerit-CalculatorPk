@@ -28,6 +28,8 @@ export const StreamPreSelector: React.FC<StreamPreSelectorProps> = ({
   onSelectCategory,
   showRomanUrdu = false,
 }) => {
+  const [earthquakeBox, setEarthquakeBox] = React.useState<string | null>(null);
+
   const options: StreamOption[] = [
     {
       id: 'medical',
@@ -120,10 +122,11 @@ export const StreamPreSelector: React.FC<StreamPreSelectorProps> = ({
       </div>
 
       {/* Grid of Selectable Stream Cards with Cartoon Mascots sitting on top */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-y-12 gap-x-3 pt-10 sm:pt-11">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-y-14 gap-x-3 pt-12 sm:pt-14">
         {options.map((opt) => {
           const Icon = opt.icon;
           const isSelected = selectedCategory === opt.id;
+          const isQuaking = earthquakeBox === opt.id;
 
           return (
             <div
@@ -131,14 +134,20 @@ export const StreamPreSelector: React.FC<StreamPreSelectorProps> = ({
               className="relative group/mascot"
             >
               {/* Mascot Sitting on Top of Box */}
-              <div className="absolute -top-11 sm:-top-12 right-3.5 z-20">
-                <CartoonMascot stream={opt.id} isSelected={isSelected} />
+              <div className="absolute -top-14 sm:-top-16 right-2 sm:right-3 z-20">
+                <CartoonMascot
+                  stream={opt.id}
+                  isSelected={isSelected}
+                  onEarthquakeTriggered={(quaking) => setEarthquakeBox(quaking ? opt.id : null)}
+                />
               </div>
 
               <button
                 type="button"
                 onClick={() => onSelectCategory(opt.id)}
                 className={`w-full h-full relative flex flex-col justify-between text-left p-3.5 rounded-xl border-2 transition-all duration-200 cursor-pointer overflow-visible ${
+                  isQuaking ? 'animate-box-earthquake shadow-lg ring-2 ring-amber-400/50' : ''
+                } ${
                   isSelected
                     ? `${opt.borderColor} bg-gradient-to-b ${opt.accentColor} text-white shadow-md transform -translate-y-0.5`
                     : 'border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-800/40 text-zinc-800 dark:text-zinc-200 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100/70 dark:hover:bg-zinc-800/70'
