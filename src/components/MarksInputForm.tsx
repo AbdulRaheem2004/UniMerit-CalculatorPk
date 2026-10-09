@@ -1,6 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AcademicInput, UniversityConfig, DisciplineCategory, InterStream } from '../engine/types';
-import { Calculator, Sparkles, Layers, Stethoscope, CheckCircle2, ShieldCheck, BookOpen, Info } from 'lucide-react';
+import { calculatePercentage } from '../engine/calculator';
+import {
+  Calculator,
+  Sparkles,
+  Layers,
+  Stethoscope,
+  CheckCircle2,
+  ShieldCheck,
+  BookOpen,
+  Info,
+  Building2,
+  ChevronDown,
+  ChevronUp,
+  ShieldAlert,
+} from 'lucide-react';
 
 interface MarksInputFormProps {
   input: AcademicInput;
@@ -8,7 +22,7 @@ interface MarksInputFormProps {
   universities: UniversityConfig[];
   selectedDisciplineCategory: DisciplineCategory | 'all';
   onSelectDisciplineCategory: (category: DisciplineCategory | 'all') => void;
-  onOpenIBCC: () => void;
+  onOpenIBCC: (tab?: 'olevel' | 'alevel') => void;
   showRomanUrdu: boolean;
 }
 
@@ -21,6 +35,8 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
   onOpenIBCC,
   showRomanUrdu,
 }) => {
+  const [showDualLocalTests, setShowDualLocalTests] = useState<boolean>(false);
+
   const updateField = <K extends keyof AcademicInput>(field: K, value: AcademicInput[K]) => {
     onChange({
       ...input,
@@ -38,11 +54,29 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
     });
   };
 
-  const matricError = input.matricObtained > input.matricTotal ? 'Obtained marks cannot exceed total' : null;
-  const fscError = input.fscObtained > input.fscTotal ? 'Obtained marks cannot exceed total' : null;
+  const matricError =
+    input.matricObtained < 0
+      ? 'Obtained marks cannot be negative'
+      : input.matricTotal <= 0
+      ? 'Total marks must be greater than zero'
+      : input.matricObtained > input.matricTotal
+      ? 'Obtained marks cannot exceed total marks'
+      : null;
+
+  const fscError =
+    input.fscObtained < 0
+      ? 'Obtained marks cannot be negative'
+      : input.fscTotal <= 0
+      ? 'Total marks must be greater than zero'
+      : input.fscObtained > input.fscTotal
+      ? 'Obtained marks cannot exceed total marks'
+      : null;
+
   const satError =
-    input.useSat && (input.satScore > 1600 || input.satScore < 400) && input.satScore > 0
-      ? 'SAT score is typically between 400 and 1600'
+    input.useSat && input.satScore < 0
+      ? 'SAT score cannot be negative'
+      : input.useSat && (input.satScore > 1600 || input.satScore < 400) && input.satScore > 0
+      ? 'Digital SAT score is typically between 400 and 1600'
       : null;
 
   // Filter universities for entry tests display based on selected category
@@ -52,10 +86,25 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
     return uni.disciplineCategory === selectedDisciplineCategory;
   });
 
+  // Filter universities that support Digital SAT
+  const satSupportedUnis = universities.filter((uni) => {
+    if (!uni.satSupported) return false;
+    if (selectedDisciplineCategory === 'all') return true;
+    if (uni.categories && uni.categories.includes(selectedDisciplineCategory)) return true;
+    return uni.disciplineCategory === selectedDisciplineCategory;
+  });
+
   const isMedicalMode = selectedDisciplineCategory === 'medical';
   const mdcatScore = input.entryTestScores['mdcat'] ?? 0;
   const numsScore = input.entryTestScores['nums'] ?? 0;
   const akuScore = input.entryTestScores['aku'] ?? 0;
+
+  const matricPct = calculatePercentage(input.matricObtained, input.matricTotal);
+  const effectiveFscObtained = input.hafizQuran && isMedicalMode
+    ? Math.min(input.fscTotal, input.fscObtained + 20)
+    : input.fscObtained;
+  const fscPct = calculatePercentage(effectiveFscObtained, input.fscTotal);
+  const satPct = calculatePercentage(input.satScore, 1600);
 
   return (
     <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-6 shadow-sm space-y-6">
@@ -92,7 +141,7 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
               key={tab.id}
               type="button"
               onClick={() => onSelectDisciplineCategory(tab.id as DisciplineCategory | 'all')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 selectedDisciplineCategory === tab.id
                   ? 'bg-teal-700 text-white dark:bg-teal-600 shadow-sm'
                   : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700'
@@ -103,6 +152,31 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
           ))}
         </div>
       </div>
+
+      {/* Critical Failed Subject Ineligibility Alert */}
+      {input.hasFailedSubject && (
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/40 rounded-xl border-2 border-rose-300 dark:border-rose-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-rose-900 dark:text-rose-200 animate-in fade-in">
+          <div className="flex items-start gap-2.5">
+            <ShieldAlert className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+            <div className="space-y-0.5">
+              <span className="font-bold text-rose-950 dark:text-rose-100 text-xs block">
+                🚨 Ineligibility Alert: Profile Contains a Failed Subject ('U' / Ungraded)
+              </span>
+              <p className="text-[11px] leading-relaxed text-rose-800 dark:text-rose-300">
+                {input.failedSubjectDetails ||
+                  "Under official IBCC regulations and admission criteria across all Pakistani universities, failing any subject means an Equivalence Certificate cannot be issued. You are not eligible for admission until cleared."}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => onOpenIBCC('olevel')}
+            className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-rose-700 text-white hover:bg-rose-800 transition-colors shrink-0 self-start sm:self-auto cursor-pointer"
+          >
+            Fix Grades in IBCC
+          </button>
+        </div>
+      )}
 
       {/* Stream-Specific Official Guideline Banner */}
       <div className="p-3.5 rounded-xl border text-xs leading-relaxed space-y-1 bg-zinc-50 dark:bg-zinc-800/60 border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300">
@@ -156,7 +230,7 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
         <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-[11px] text-amber-800 dark:text-amber-300">
           {isMedicalMode
             ? '💡 PMDC ke mutabiq merit formula: 50% MDCAT + 40% FSc Pre-Medical + 10% Matric hai. Hafiz-e-Quran ko 20 number FSc mein diye jatay hain. MBBS ke liye 55% aur BDS ke liye 50% MDCAT marks zaroori hain.'
-            : '💡 Apnay Matric aur FSc ke number darj karein. Agar aap ne university test diya hai to uske number likhein, ya Digital SAT ka score likhein. Naye Quran syllabus ke sath total 1200 hai jabke puraane repeaters 1100 istemal karein.'}
+            : '💡 Apnay Matric aur FSc ke number darj karein. Agar aap ne university test diya hai to uske number likhein, ya Digital SAT ka score likhein. Naye Quran syllabus ke sath total 1200 hai jabke Sindh Boards aur IBCC equivalence 1100 istemal karte hain.'}
         </div>
       )}
 
@@ -172,25 +246,6 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
               <button
                 type="button"
                 onClick={() => {
-                  const newTotal = 1100;
-                  const newObtained =
-                    input.matricTotal > 0 && input.matricObtained > 0
-                      ? Math.min(newTotal, Math.round((input.matricObtained / input.matricTotal) * newTotal))
-                      : input.matricObtained;
-                  onChange({ ...input, matricTotal: newTotal, matricObtained: newObtained });
-                }}
-                className={`px-2 py-0.5 rounded font-medium border ${
-                  input.matricTotal === 1100
-                    ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 border-transparent'
-                    : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'
-                }`}
-                title="Traditional total (FBISE, Sindh, KPK, Pre-2023)"
-              >
-                1100 (Standard)
-              </button>
-              <button
-                type="button"
-                onClick={() => {
                   const newTotal = 1200;
                   const newObtained =
                     input.matricTotal > 0 && input.matricObtained > 0
@@ -198,19 +253,38 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
                       : input.matricObtained;
                   onChange({ ...input, matricTotal: newTotal, matricObtained: newObtained });
                 }}
-                className={`px-2 py-0.5 rounded font-medium border ${
+                className={`px-2 py-0.5 rounded font-medium border cursor-pointer ${
                   input.matricTotal === 1200
                     ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 border-transparent'
                     : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'
                 }`}
-                title="Punjab Boards with Tarjuma-tul-Quran"
+                title="SNC / Punjab Boards with 100m Tarjuma-tul-Quran (Punjab Quran Act 2021 & FBISE 2022)"
               >
-                1200 (Punjab Quran)
+                1200 (SNC / 2026 Quran Syllabus)
               </button>
               <button
                 type="button"
-                onClick={onOpenIBCC}
-                className="text-[11px] font-semibold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1 ml-1"
+                onClick={() => {
+                  const newTotal = 1100;
+                  const newObtained =
+                    input.matricTotal > 0 && input.matricObtained > 0
+                      ? Math.min(newTotal, Math.round((input.matricObtained / input.matricTotal) * newTotal))
+                      : input.matricObtained;
+                  onChange({ ...input, matricTotal: newTotal, matricObtained: newObtained });
+                }}
+                className={`px-2 py-0.5 rounded font-medium border cursor-pointer ${
+                  input.matricTotal === 1100
+                    ? 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 border-transparent'
+                    : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'
+                }`}
+                title="Sindh Boards (BIEK/BISE), IBCC O-Level Standard Scale, or Pre-2023 Repeaters"
+              >
+                1100 (Sindh / IBCC / Repeaters)
+              </button>
+              <button
+                type="button"
+                onClick={() => onOpenIBCC('olevel')}
+                className="text-[11px] font-semibold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1 ml-1 cursor-pointer"
               >
                 <Sparkles className="w-3 h-3" />
                 IBCC
@@ -226,30 +300,40 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
                 min={0}
                 max={input.matricTotal}
                 value={input.matricObtained || ''}
-                onChange={(e) => updateField('matricObtained', Math.max(0, Number(e.target.value)))}
-                placeholder="e.g. 980"
+                onChange={(e) => updateField('matricObtained', e.target.value === '' ? 0 : Number(e.target.value))}
+                placeholder="e.g. 1050"
                 className={`w-full px-3 py-2 text-sm rounded-lg border bg-zinc-50 dark:bg-zinc-800 font-mono ${
                   matricError ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-700'
                 } focus:outline-none focus:ring-2 focus:ring-teal-600`}
               />
             </div>
             <div>
-              <span className="text-[10px] text-zinc-400 uppercase font-medium">Total</span>
+              <span className="text-[10px] text-zinc-400 uppercase font-medium">Total Marks</span>
               <input
                 type="number"
                 min={1}
                 value={input.matricTotal || ''}
-                onChange={(e) => updateField('matricTotal', Math.max(1, Number(e.target.value)))}
-                placeholder="1100"
+                onChange={(e) => updateField('matricTotal', e.target.value === '' ? 0 : Number(e.target.value))}
+                placeholder="1200"
                 className="w-full px-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 font-mono focus:outline-none focus:ring-2 focus:ring-teal-600"
               />
             </div>
           </div>
           {matricError && <p className="text-[11px] text-red-500">{matricError}</p>}
-          <div className="flex items-center justify-between text-[11px] text-zinc-500 font-mono">
-            <span>Matric Percentage:</span>
-            <span className="font-bold text-zinc-800 dark:text-zinc-200">
-              {input.matricTotal > 0 ? ((input.matricObtained / input.matricTotal) * 100).toFixed(2) : 0}%
+          <div className="flex items-center justify-between text-[11px] text-zinc-500 font-mono pt-0.5">
+            <span className="flex items-center gap-1">
+              <Info className="w-3 h-3 text-teal-600 shrink-0" />
+              <span>Board Scheme:</span>
+              <strong className="text-zinc-700 dark:text-zinc-300">
+                {input.matricTotal === 1200
+                  ? 'SNC 1200 (Tarjuma-tul-Quran 100m)'
+                  : input.matricTotal === 1100
+                  ? 'Sindh / IBCC 1100 Scale'
+                  : `Custom ${input.matricTotal} Total`}
+              </strong>
+            </span>
+            <span>
+              Matric: <strong className="text-zinc-800 dark:text-zinc-200">{matricPct.toFixed(2)}%</strong>
             </span>
           </div>
         </div>
@@ -306,7 +390,7 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
                       fscObtained: nextObtained,
                     });
                   }}
-                  className={`px-2.5 py-1.5 rounded-lg text-left border transition-all text-xs font-semibold ${
+                  className={`px-2.5 py-1.5 rounded-lg text-left border transition-all text-xs font-semibold cursor-pointer ${
                     isCurrent
                       ? 'bg-teal-700 text-white dark:bg-teal-600 border-teal-800 dark:border-teal-500 shadow-xs'
                       : 'bg-zinc-50 dark:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700'
@@ -323,6 +407,23 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
               );
             })}
           </div>
+
+          {/* Direct IBCC Converter Trigger for A-Levels */}
+          {input.interStream === 'alevels' && (
+            <div className="p-2.5 rounded-lg bg-teal-50/80 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-teal-950 dark:text-teal-200 animate-in fade-in">
+              <span className="flex items-center gap-1.5 font-medium text-[11px]">
+                <Sparkles className="w-3.5 h-3.5 text-teal-600 shrink-0" />
+                <span>Calculate your official HSSC equivalent marks from your 3 A-Level subjects:</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => onOpenIBCC('alevel')}
+                className="px-3 py-1 rounded-md text-[11px] font-bold bg-teal-700 hover:bg-teal-800 text-white transition-colors shadow-xs shrink-0 cursor-pointer"
+              >
+                Open A-Level IBCC Calculator
+              </button>
+            </div>
+          )}
 
           {/* Examination Stage & Board Policy Selector */}
           <div className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 text-[11px]">
@@ -344,7 +445,7 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
                     fscObtained: nextObtained,
                   });
                 }}
-                className={`px-2 py-0.5 rounded font-semibold ${
+                className={`px-2 py-0.5 rounded font-semibold cursor-pointer ${
                   (input.interStage || 'complete') === 'complete'
                     ? 'bg-teal-700 text-white dark:bg-teal-600 shadow-xs'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
@@ -368,7 +469,7 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
                     fscObtained: nextObtained,
                   });
                 }}
-                className={`px-2 py-0.5 rounded font-semibold ${
+                className={`px-2 py-0.5 rounded font-semibold cursor-pointer ${
                   input.interStage === 'part1'
                     ? 'bg-teal-700 text-white dark:bg-teal-600 shadow-xs'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
@@ -420,8 +521,8 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
                 min={0}
                 max={input.fscTotal}
                 value={input.fscObtained || ''}
-                onChange={(e) => updateField('fscObtained', Math.max(0, Number(e.target.value)))}
-                placeholder="e.g. 920"
+                onChange={(e) => updateField('fscObtained', e.target.value === '' ? 0 : Number(e.target.value))}
+                placeholder="e.g. 1020"
                 className={`w-full px-3 py-2 text-sm rounded-lg border bg-zinc-50 dark:bg-zinc-800 font-mono ${
                   fscError ? 'border-red-500' : 'border-zinc-200 dark:border-zinc-700'
                 } focus:outline-none focus:ring-2 focus:ring-teal-600`}
@@ -445,7 +546,7 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
           {fscError && <p className="text-[11px] text-red-500">{fscError}</p>}
           <div className="flex items-center justify-between text-[11px] text-zinc-500 font-mono pt-0.5">
             <span className="flex items-center gap-1">
-              <Info className="w-3 h-3 text-teal-600" />
+              <Info className="w-3 h-3 text-teal-600 shrink-0" />
               <span>Board Scheme:</span>
               <strong className="text-zinc-700 dark:text-zinc-300">
                 {input.fscTotal === 1200
@@ -458,7 +559,7 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
               </strong>
             </span>
             <span className="font-bold text-zinc-800 dark:text-zinc-200">
-              {input.fscTotal > 0 ? ((input.fscObtained / input.fscTotal) * 100).toFixed(2) : 0}%
+              {fscPct.toFixed(2)}%
             </span>
           </div>
         </div>
@@ -618,14 +719,14 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
           </div>
         ) : (
           /* NON-MEDICAL: Computing, Engineering, Business, All */
-          <div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <label className="text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-wider">
                   3. Admission Test Mode
                 </label>
                 <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                  Choose whether you are applying via university entry tests or Digital SAT.
+                  Select your test path: Local University Tests (NET/NU/ECAT/NAT) or Digital SAT (1600).
                 </p>
               </div>
 
@@ -633,95 +734,230 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
                 <button
                   type="button"
                   onClick={() => updateField('useSat', false)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                  className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
                     !input.useSat
-                      ? 'bg-white dark:bg-zinc-900 text-teal-800 dark:text-teal-300 shadow-sm'
+                      ? 'bg-white dark:bg-zinc-900 text-teal-800 dark:text-teal-300 shadow-sm font-bold'
                       : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
                   }`}
                 >
-                  🏛️ University Tests (NET / NU / ECAT / NAT)
+                  🏛️ Local University Tests
                 </button>
                 <button
                   type="button"
                   onClick={() => updateField('useSat', true)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                  className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
                     input.useSat
-                      ? 'bg-white dark:bg-zinc-900 text-teal-800 dark:text-teal-300 shadow-sm'
+                      ? 'bg-white dark:bg-zinc-900 text-teal-800 dark:text-teal-300 shadow-sm font-bold'
                       : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
                   }`}
                 >
-                  🎯 Digital SAT (1600)
+                  🎯 Digital SAT (1600 Scale)
                 </button>
               </div>
             </div>
 
-            {/* SAT Mode Input */}
+            {/* SAT Mode Enhanced Display */}
             {input.useSat ? (
-              <div className="p-4 bg-teal-50/60 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800 rounded-xl space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-teal-900 dark:text-teal-200 flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-teal-600" />
-                    Digital SAT Score (out of 1600)
-                  </span>
-                  <span className="text-[11px] font-mono text-teal-700 dark:text-teal-300 font-bold">
-                    {input.satScore > 0 ? `${((input.satScore / 1600) * 100).toFixed(2)}%` : '0.00%'}
-                  </span>
+              <div className="space-y-4">
+                {/* Score Input Card */}
+                <div className="p-4 bg-teal-50/70 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800 rounded-xl space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span className="text-xs font-bold text-teal-950 dark:text-teal-200 flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-teal-600" />
+                      <span>Digital SAT Score (out of 1600)</span>
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono font-bold text-teal-800 dark:text-teal-300">
+                        {input.satScore > 0 ? `${satPct.toFixed(2)}%` : '0.00%'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="w-48">
+                      <input
+                        type="number"
+                        min={400}
+                        max={1600}
+                        value={input.satScore || ''}
+                        onChange={(e) => updateField('satScore', e.target.value === '' ? 0 : Number(e.target.value))}
+                        placeholder="e.g. 1350"
+                        className={`w-full px-3 py-2 text-base font-bold font-mono rounded-lg border bg-white dark:bg-zinc-900 ${
+                          satError ? 'border-red-500' : 'border-teal-300 dark:border-teal-700'
+                        } focus:outline-none focus:ring-2 focus:ring-teal-600`}
+                      />
+                    </div>
+                    {/* Presets */}
+                    <div className="flex items-center gap-1.5 text-xs">
+                      <span className="text-[10px] text-zinc-500 font-medium">Quick presets:</span>
+                      {[1100, 1200, 1300, 1400, 1500].map((score) => (
+                        <button
+                          key={score}
+                          type="button"
+                          onClick={() => updateField('satScore', score)}
+                          className={`px-2 py-1 rounded text-[11px] font-mono font-semibold border cursor-pointer ${
+                            input.satScore === score
+                              ? 'bg-teal-700 text-white border-transparent'
+                              : 'bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100'
+                          }`}
+                        >
+                          {score}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {satError && <p className="text-[11px] text-red-500">{satError}</p>}
+
+                  {/* Why Inter & Matric Matter with SAT Banner */}
+                  <div className="p-3 rounded-lg bg-white/90 dark:bg-zinc-900/90 border border-teal-200 dark:border-teal-900 text-xs text-zinc-700 dark:text-zinc-300 space-y-1">
+                    <div className="font-bold text-teal-900 dark:text-teal-200 flex items-center gap-1.5">
+                      <Info className="w-3.5 h-3.5 text-teal-600 shrink-0" />
+                      <span>Why your Intermediate & Matric marks determine 15% to 50% of your SAT Merit:</span>
+                    </div>
+                    <p className="text-[11px] leading-relaxed">
+                      In Pakistan, SAT does <strong>not</strong> substitute your academic qualification. Universities integrate your SAT score with your Matric ({matricPct.toFixed(1)}%) and FSc ({fscPct.toFixed(1)}%) using official weightages:
+                      <strong className="text-zinc-900 dark:text-white"> NUST (75% SAT + 15% FSc + 10% Matric)</strong>,
+                      <strong className="text-zinc-900 dark:text-white"> FAST (50% SAT + 40% FSc + 10% Matric)</strong>,
+                      <strong className="text-zinc-900 dark:text-white"> GIKI (85% SAT + 15% SSC)</strong>,
+                      <strong className="text-zinc-900 dark:text-white"> COMSATS (50% SAT + 40% FSc + 10% Matric)</strong>, and
+                      <strong className="text-zinc-900 dark:text-white"> LUMS & IBA (SAT + Mandatory FSc eligibility)</strong>.
+                    </p>
+                  </div>
                 </div>
 
-                <div className="max-w-xs">
-                  <input
-                    type="number"
-                    min={400}
-                    max={1600}
-                    value={input.satScore || ''}
-                    onChange={(e) => updateField('satScore', Math.min(1600, Math.max(0, Number(e.target.value))))}
-                    placeholder="e.g. 1350"
-                    className={`w-full px-3 py-2 text-sm rounded-lg border bg-white dark:bg-zinc-900 font-mono ${
-                      satError ? 'border-red-500' : 'border-teal-300 dark:border-teal-700'
-                    } focus:outline-none focus:ring-2 focus:ring-teal-600`}
-                  />
+                {/* Interactive Target Universities with SAT Breakdown */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                      <Building2 className="w-4 h-4 text-teal-600" />
+                      <span>Universities Accepting SAT & Their Combined Formula Breakdown:</span>
+                    </span>
+                    <span className="text-[11px] text-zinc-500 font-medium">
+                      {satSupportedUnis.length} Programs Available
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {satSupportedUnis.map((uni) => {
+                      const weights = uni.weights ?? { matric: 0.1, fsc: 0.4, test: 0.5 };
+                      const matricContrib = (matricPct * weights.matric);
+                      const fscContrib = (fscPct * weights.fsc);
+                      const satContrib = (satPct * weights.test);
+                      const agg = (matricContrib + fscContrib + satContrib).toFixed(2);
+                      const minScore = uni.satMinScore || 0;
+                      const meetsThreshold = input.satScore >= minScore;
+                      const meetsFsc = fscPct >= uni.eligibilityMinAcademicPct;
+
+                      return (
+                        <div
+                          key={uni.id}
+                          className="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/60 hover:border-teal-400 dark:hover:border-teal-600 transition-all space-y-2"
+                        >
+                          <div className="flex items-start justify-between gap-1.5">
+                            <div>
+                              <h4 className="text-xs font-bold text-zinc-900 dark:text-white leading-tight">
+                                {uni.shortName}
+                              </h4>
+                              <span className="text-[10px] text-zinc-500 font-medium block">
+                                {uni.disciplines[0]}
+                              </span>
+                            </div>
+                            <span
+                              className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${
+                                meetsThreshold && meetsFsc
+                                  ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
+                                  : 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800'
+                              }`}
+                            >
+                              {meetsThreshold ? `Min ${minScore}+ Met` : `Requires ${minScore}`}
+                            </span>
+                          </div>
+
+                          {/* Live Combined Formula Breakdown */}
+                          <div className="bg-white dark:bg-zinc-900 p-2.5 rounded-lg border border-zinc-200/80 dark:border-zinc-800 space-y-1 font-mono text-[11px]">
+                            <div className="flex justify-between text-zinc-500">
+                              <span>Matric ({Math.round(weights.matric * 100)}%):</span>
+                              <span className="font-semibold text-zinc-800 dark:text-zinc-200">
+                                {matricContrib.toFixed(2)}%
+                              </span>
+                            </div>
+                            <div className="flex justify-between text-zinc-500">
+                              <span>FSc ({Math.round(weights.fsc * 100)}%):</span>
+                              <span className="font-semibold text-zinc-800 dark:text-zinc-200">
+                                {fscContrib.toFixed(2)}%
+                              </span>
+                            </div>
+                            <div className="flex justify-between text-zinc-500">
+                              <span>SAT ({Math.round(weights.test * 100)}%):</span>
+                              <span className="font-semibold text-zinc-800 dark:text-zinc-200">
+                                {satContrib.toFixed(2)}%
+                              </span>
+                            </div>
+                            <div className="pt-1 border-t border-zinc-100 dark:border-zinc-800 flex justify-between font-bold text-teal-700 dark:text-teal-400 text-xs">
+                              <span>Combined Merit:</span>
+                              <span>{agg}%</span>
+                            </div>
+                          </div>
+
+                          {/* Policy note */}
+                          <p className="text-[10px] text-zinc-500 dark:text-zinc-400 line-clamp-2">
+                            {uni.notes || uni.formulaDisplay}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-                {satError && <p className="text-[11px] text-red-500">{satError}</p>}
 
-                {/* University SAT Policy Evaluation Status */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
-                  <div className="p-2.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-1">
-                    <span className="font-bold text-zinc-900 dark:text-white">FAST-NUCES Policy:</span>
-                    {input.satScore >= 1200 ? (
-                      <p className="text-emerald-700 dark:text-emerald-400 font-medium">
-                        ✅ Eligible for Computing & Engineering (Met 1200+ threshold)
+                {/* Dual Option: Expand Local Test Inputs as Well */}
+                <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800">
+                  <button
+                    type="button"
+                    onClick={() => setShowDualLocalTests(!showDualLocalTests)}
+                    className="flex items-center justify-between w-full p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Sparkles className="w-3.5 h-3.5 text-teal-600" />
+                      <span>Also applying to some universities via local tests (NET, ECAT, NAT)?</span>
+                    </span>
+                    <span className="flex items-center gap-1 text-[11px] text-teal-700 dark:text-teal-400 font-bold">
+                      {showDualLocalTests ? 'Hide Local Test Fields' : 'Enter Local Test Scores'}
+                      {showDualLocalTests ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                    </span>
+                  </button>
+
+                  {showDualLocalTests && (
+                    <div className="mt-3 p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 space-y-3">
+                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                        Enter your university-specific entry test scores below if taking both SAT and domestic tests:
                       </p>
-                    ) : input.satScore >= 1000 ? (
-                      <p className="text-amber-700 dark:text-amber-400 font-medium">
-                        ⚠️ Eligible for Business (1000+), but below CS/Eng minimum (1200)
-                      </p>
-                    ) : (
-                      <p className="text-red-600 dark:text-red-400 font-medium">
-                        ❌ Ineligible for FAST SAT route (Min 1200 for CS/Eng, 1000 for Business)
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="p-2.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-1">
-                    <span className="font-bold text-zinc-900 dark:text-white">LUMS & IBA Karachi:</span>
-                    <p className="text-zinc-600 dark:text-zinc-300">
-                      LUMS accepts SAT (typically 1350+ competitive for CS/Eng, 1300+ for SDSB). IBA offers exemption for 1400+ (CS) and 1270+ (BBA).
-                    </p>
-                  </div>
-
-                  <div className="p-2.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-1">
-                    <span className="font-bold text-zinc-900 dark:text-white">NUST National Seats:</span>
-                    <p className="text-zinc-600 dark:text-zinc-300">
-                      75% SAT + 15% FSc + 10% SSC (Min 550 per section in Math & Physics).
-                    </p>
-                  </div>
-
-                  <div className="p-2.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-1">
-                    <span className="font-bold text-zinc-900 dark:text-white">GIKI, COMSATS, FCCU & BNU:</span>
-                    <p className="text-zinc-600 dark:text-zinc-300">
-                      Accepted in lieu of internal test. GIKI: 85% SAT. COMSATS: 50% SAT. FCCU & BNU accept 1000+ SAT.
-                    </p>
-                  </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {relevantUnisForTests.map((uni) => {
+                          const currentScore = input.entryTestScores[uni.id] ?? '';
+                          return (
+                            <div
+                              key={uni.id}
+                              className="p-2.5 bg-white dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-lg space-y-1"
+                            >
+                              <div className="flex items-center justify-between text-xs font-semibold">
+                                <span className="truncate">{uni.shortName}</span>
+                                <span className="text-[10px] text-zinc-400 font-mono">Max: {uni.testTotal}</span>
+                              </div>
+                              <input
+                                type="number"
+                                min={0}
+                                max={uni.testTotal}
+                                value={currentScore}
+                                onChange={(e) => updateTestScore(uni.id, Math.max(0, Number(e.target.value)))}
+                                placeholder={`Score (/${uni.testTotal})`}
+                                className="w-full px-2 py-1 text-xs rounded border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 font-mono focus:outline-none focus:ring-1 focus:ring-teal-600"
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (

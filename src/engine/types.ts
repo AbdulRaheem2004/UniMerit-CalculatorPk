@@ -43,6 +43,8 @@ export interface AcademicInput {
   useSat: boolean;
   satScore: number; // out of 1600
   entryTestScores: Record<string, number>; // keyed by universityId e.g. "nust": 155
+  hasFailedSubject?: boolean; // Cambridge O/A-Level or HSSC subject failure flag
+  failedSubjectDetails?: string; // Reason or details of failed subject
 }
 
 export interface UniversityCalculationResult {

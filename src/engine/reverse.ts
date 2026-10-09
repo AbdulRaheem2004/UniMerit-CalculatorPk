@@ -26,6 +26,64 @@ export function solveRequiredTestScore(
   const maxScore = isSat ? (uni.satTotal ?? 1600) : uni.testTotal;
   const testType: 'local' | 'sat' = isSat ? 'sat' : 'local';
 
+  // 1. Check for failed Cambridge O/A-Level or HSSC subject
+  if (input.hasFailedSubject) {
+    return {
+      targetScore: 0,
+      targetPercentage: 0,
+      maxScore,
+      testType,
+      status: 'impossible',
+      message: 'Ineligible: Candidate has a recorded failed subject in Cambridge O/A-Levels or Intermediate. An IBCC equivalence certificate cannot be issued.'
+    };
+  }
+
+  // 2. Validate Target Aggregate bounds
+  if (targetAggregate <= 0) {
+    return {
+      targetScore: 0,
+      targetPercentage: 0,
+      maxScore,
+      testType,
+      status: 'impossible',
+      message: 'Invalid target aggregate: Desired aggregate must be greater than 0%.'
+    };
+  }
+
+  if (targetAggregate > 100) {
+    return {
+      targetScore: 0,
+      targetPercentage: 0,
+      maxScore,
+      testType,
+      status: 'impossible',
+      message: 'Impossible target aggregate: Target aggregate cannot exceed 100%.'
+    };
+  }
+
+  // 3. Validate Academic Input marks
+  if (input.matricObtained < 0 || input.fscObtained < 0 || input.matricTotal <= 0 || input.fscTotal <= 0) {
+    return {
+      targetScore: 0,
+      targetPercentage: 0,
+      maxScore,
+      testType,
+      status: 'impossible',
+      message: 'Invalid academic marks: Marks cannot be negative and total marks must be greater than zero.'
+    };
+  }
+
+  if (input.matricObtained > input.matricTotal || input.fscObtained > input.fscTotal) {
+    return {
+      targetScore: 0,
+      targetPercentage: 0,
+      maxScore,
+      testType,
+      status: 'impossible',
+      message: 'Invalid academic marks: Obtained marks cannot exceed total marks.'
+    };
+  }
+
   const matricPct = calculatePercentage(input.matricObtained, input.matricTotal);
   const fscMarksEffective = (input.hafizQuran && uni.disciplineCategory === 'medical')
     ? Math.min(input.fscTotal, input.fscObtained + 20)

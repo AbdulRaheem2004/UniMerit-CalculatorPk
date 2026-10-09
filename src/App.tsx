@@ -3,7 +3,7 @@ import universitiesData from '../data/universities.json';
 import { UniversityConfig, AcademicInput } from './engine/types';
 import { calculateUniversityAggregate } from './engine/calculator';
 import { Header } from './components/Header';
-import { NavigationStrip, NavSection, ViewMode } from './components/NavigationStrip';
+import { NavigationStrip, NavSection, WorkflowMode } from './components/NavigationStrip';
 import { StreamPreSelector } from './components/StreamPreSelector';
 import { MarksInputForm } from './components/MarksInputForm';
 import { UniversityResults } from './components/UniversityResults';
@@ -13,7 +13,7 @@ import { SourceAuditModal } from './components/SourceAuditModal';
 import { WhatsAppShareModal } from './components/WhatsAppShareModal';
 import { AdmissionFaqSection } from './components/AdmissionFaqSection';
 import { Footer } from './components/Footer';
-import { Share2, ShieldCheck, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Share2, ShieldCheck, Target, Calculator } from 'lucide-react';
 
 const universities = universitiesData as UniversityConfig[];
 
@@ -26,12 +26,13 @@ export function App() {
   // Roman Urdu guide toggle
   const [showRomanUrdu, setShowRomanUrdu] = useState<boolean>(false);
 
-  // Navigation & Multi-Page View Mode
+  // Navigation & Top-Level Workflow Mode ('calculator' vs 'reverse')
   const [activeNavSection, setActiveNavSection] = useState<NavSection>('stream');
-  const [viewMode, setViewMode] = useState<ViewMode>('full');
+  const [workflowMode, setWorkflowMode] = useState<WorkflowMode>('calculator');
 
   // Modals state
   const [isIBCCModalOpen, setIsIBCCModalOpen] = useState<boolean>(false);
+  const [ibccModalTab, setIbccModalTab] = useState<'olevel' | 'alevel'>('olevel');
   const [isAuditModalOpen, setIsAuditModalOpen] = useState<boolean>(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
   const [activeAuditUniId, setActiveAuditUniId] = useState<string | undefined>(undefined);
@@ -43,11 +44,11 @@ export function App() {
   // Selected discipline stream (all, medical, computing, engineering, business)
   const [selectedDisciplineCategory, setSelectedDisciplineCategory] = useState<import('./engine/types').DisciplineCategory | 'all'>('computing');
 
-  // Student Input State with realistic prefilled defaults
+  // Student Input State with realistic 2026 prefilled defaults (1200 SNC standard)
   const [input, setInput] = useState<AcademicInput>({
-    matricObtained: 980,
-    matricTotal: 1100,
-    fscObtained: 920,
+    matricObtained: 1050,
+    matricTotal: 1200,
+    fscObtained: 1020,
     fscTotal: 1200,
     interStream: 'pre_engineering',
     interStage: 'complete',
@@ -98,13 +99,9 @@ export function App() {
     if (targetAggregate) {
       setReverseDefaultTarget(targetAggregate);
     }
+    setWorkflowMode('reverse');
     setActiveNavSection('planner');
-    if (viewMode === 'full') {
-      const elem = document.getElementById('section-planner');
-      if (elem) {
-        elem.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleOpenAuditForUni = (uniId?: string) => {
@@ -112,12 +109,30 @@ export function App() {
     setIsAuditModalOpen(true);
   };
 
-  const handleApplyIBCCMarks = (marks: number) => {
-    setInput((prev) => ({
-      ...prev,
-      matricObtained: marks,
-      matricTotal: 1100,
-    }));
+  const handleApplyIBCCMarks = (
+    marks: number,
+    target: 'matric' | 'fsc' = 'matric',
+    hasFailedSubject: boolean = false,
+    failureDetails?: string
+  ) => {
+    if (target === 'fsc') {
+      setInput((prev) => ({
+        ...prev,
+        fscObtained: marks,
+        fscTotal: 1100,
+        interStream: 'alevels',
+        hasFailedSubject,
+        failedSubjectDetails: failureDetails,
+      }));
+    } else {
+      setInput((prev) => ({
+        ...prev,
+        matricObtained: marks,
+        matricTotal: 1100,
+        hasFailedSubject,
+        failedSubjectDetails: failureDetails,
+      }));
+    }
   };
 
   return (
@@ -131,12 +146,12 @@ export function App() {
         onOpenAudit={() => handleOpenAuditForUni()}
       />
 
-      {/* Sticky Top Border Navigation Strip with Jump Tabs & Multi-Page Toggle */}
+      {/* Sticky Top Border Navigation Strip with Mode Switcher & Jump Tabs */}
       <NavigationStrip
         activeSection={activeNavSection}
         onSelectSection={(sec) => setActiveNavSection(sec)}
-        viewMode={viewMode}
-        onToggleViewMode={(mode) => setViewMode(mode)}
+        workflowMode={workflowMode}
+        onSelectWorkflowMode={(mode) => setWorkflowMode(mode)}
       />
 
       {/* Main Content Container */}
@@ -171,152 +186,127 @@ export function App() {
           </button>
         </div>
 
-        {/* SECTION 1: Step 1 - Pre-Selection Stream Menu */}
-        {(viewMode === 'full' || activeNavSection === 'stream') && (
-          <section id="section-stream" className="scroll-mt-16 space-y-3">
-            <StreamPreSelector
-              selectedCategory={selectedDisciplineCategory}
-              onSelectCategory={(cat) => {
-                setSelectedDisciplineCategory(cat);
-                if (viewMode === 'step') {
-                  setActiveNavSection('marks');
-                }
-              }}
-              showRomanUrdu={showRomanUrdu}
-            />
-            {viewMode === 'step' && (
-              <div className="flex justify-end pt-2">
-                <button
-                  type="button"
-                  onClick={() => setActiveNavSection('marks')}
-                  className="px-4 py-2.5 rounded-xl text-xs font-bold bg-teal-700 text-white hover:bg-teal-800 transition-all flex items-center gap-2 shadow-xs cursor-pointer"
-                >
-                  <span>Continue to Academic Marks (Step 2)</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+        {/* SECTION 1: Target Stream Pre-Selector (Always accessible at top) */}
+        <section id="section-stream" className="scroll-mt-16 space-y-3">
+          <StreamPreSelector
+            selectedCategory={selectedDisciplineCategory}
+            onSelectCategory={(cat) => setSelectedDisciplineCategory(cat)}
+            showRomanUrdu={showRomanUrdu}
+          />
+        </section>
+
+        {/* WORKFLOW VIEW: REVERSE TARGET PLANNER AT TOP */}
+        {workflowMode === 'reverse' && (
+          <div className="space-y-8 animate-in fade-in duration-200">
+            {/* Top Prompt Banner for Reverse Mode */}
+            <div className="p-4 rounded-xl bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2 text-teal-950 dark:text-teal-200 font-medium">
+                <Target className="w-5 h-5 text-teal-600 shrink-0" />
+                <span>
+                  <strong>🎯 Reverse Target Mode Active:</strong> Planning required entry test / SAT score directly at the top. You can adjust your Matric & FSc marks below to update targets in real-time.
+                </span>
               </div>
-            )}
-          </section>
+              <button
+                type="button"
+                onClick={() => setWorkflowMode('calculator')}
+                className="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-zinc-800 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-700 hover:bg-teal-100 transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer"
+              >
+                <Calculator className="w-3.5 h-3.5" />
+                <span>Switch to Forward Calculator</span>
+              </button>
+            </div>
+
+            {/* Reverse Planner RENDERED IMMEDIATELY AT TOP */}
+            <section id="section-planner" className="scroll-mt-16 space-y-3">
+              <ReversePlanner
+                input={input}
+                universities={universities}
+                selectedUniId={reverseTargetUniId}
+                defaultTarget={reverseDefaultTarget}
+                showRomanUrdu={showRomanUrdu}
+              />
+            </section>
+
+            {/* Academic Marks Form (for tweaking background marks) */}
+            <section id="section-marks" className="scroll-mt-16 space-y-3">
+              <MarksInputForm
+                input={input}
+                onChange={setInput}
+                universities={universities}
+                selectedDisciplineCategory={selectedDisciplineCategory}
+                onSelectDisciplineCategory={setSelectedDisciplineCategory}
+                onOpenIBCC={(tab) => {
+                  setIbccModalTab(tab || 'olevel');
+                  setIsIBCCModalOpen(true);
+                }}
+                showRomanUrdu={showRomanUrdu}
+              />
+            </section>
+
+            {/* University Results Cards */}
+            <section id="section-results" className="scroll-mt-16 space-y-3">
+              <UniversityResults
+                results={calculationResults}
+                selectedDisciplineCategory={selectedDisciplineCategory}
+                onSelectForReverse={handleSelectForReverse}
+                onOpenAudit={handleOpenAuditForUni}
+                showRomanUrdu={showRomanUrdu}
+              />
+            </section>
+
+            {/* Policies & SEO FAQs */}
+            <section id="section-policies" className="scroll-mt-16 space-y-3">
+              <AdmissionFaqSection />
+            </section>
+          </div>
         )}
 
-        {/* SECTION 2: Step 2 - Academic & Test Marks Input Form */}
-        {(viewMode === 'full' || activeNavSection === 'marks') && (
-          <section id="section-marks" className="scroll-mt-16 space-y-3">
-            <MarksInputForm
-              input={input}
-              onChange={setInput}
-              universities={universities}
-              selectedDisciplineCategory={selectedDisciplineCategory}
-              onSelectDisciplineCategory={setSelectedDisciplineCategory}
-              onOpenIBCC={() => setIsIBCCModalOpen(true)}
-              showRomanUrdu={showRomanUrdu}
-            />
-            {viewMode === 'step' && (
-              <div className="flex items-center justify-between pt-2">
-                <button
-                  type="button"
-                  onClick={() => setActiveNavSection('stream')}
-                  className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-all flex items-center gap-1.5 cursor-pointer"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Back to Streams</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveNavSection('results')}
-                  className="px-4 py-2.5 rounded-xl text-xs font-bold bg-teal-700 text-white hover:bg-teal-800 transition-all flex items-center gap-2 shadow-xs cursor-pointer"
-                >
-                  <span>Calculate & View University Merits (Step 3)</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            )}
-          </section>
-        )}
+        {/* WORKFLOW VIEW: FORWARD MERIT CALCULATOR (Standard Layout) */}
+        {workflowMode === 'calculator' && (
+          <div className="space-y-8 animate-in fade-in duration-200">
+            {/* SECTION 2: Academic & Test Marks Input Form */}
+            <section id="section-marks" className="scroll-mt-16 space-y-3">
+              <MarksInputForm
+                input={input}
+                onChange={setInput}
+                universities={universities}
+                selectedDisciplineCategory={selectedDisciplineCategory}
+                onSelectDisciplineCategory={setSelectedDisciplineCategory}
+                onOpenIBCC={(tab) => {
+                  setIbccModalTab(tab || 'olevel');
+                  setIsIBCCModalOpen(true);
+                }}
+                showRomanUrdu={showRomanUrdu}
+              />
+            </section>
 
-        {/* SECTION 3: Step 3 - Multi-University Aggregate Results */}
-        {(viewMode === 'full' || activeNavSection === 'results') && (
-          <section id="section-results" className="scroll-mt-16 space-y-3">
-            <UniversityResults
-              results={calculationResults}
-              selectedDisciplineCategory={selectedDisciplineCategory}
-              onSelectForReverse={handleSelectForReverse}
-              onOpenAudit={handleOpenAuditForUni}
-              showRomanUrdu={showRomanUrdu}
-            />
-            {viewMode === 'step' && (
-              <div className="flex items-center justify-between pt-2">
-                <button
-                  type="button"
-                  onClick={() => setActiveNavSection('marks')}
-                  className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-all flex items-center gap-1.5 cursor-pointer"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Back to Marks</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveNavSection('planner')}
-                  className="px-4 py-2.5 rounded-xl text-xs font-bold bg-teal-700 text-white hover:bg-teal-800 transition-all flex items-center gap-2 shadow-xs cursor-pointer"
-                >
-                  <span>Plan Required Entry Test Score (Step 4)</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            )}
-          </section>
-        )}
+            {/* SECTION 3: Multi-University Aggregate Results */}
+            <section id="section-results" className="scroll-mt-16 space-y-3">
+              <UniversityResults
+                results={calculationResults}
+                selectedDisciplineCategory={selectedDisciplineCategory}
+                onSelectForReverse={handleSelectForReverse}
+                onOpenAudit={handleOpenAuditForUni}
+                showRomanUrdu={showRomanUrdu}
+              />
+            </section>
 
-        {/* SECTION 4: Step 4 - Reverse Target Score Planner */}
-        {(viewMode === 'full' || activeNavSection === 'planner') && (
-          <section id="section-planner" className="scroll-mt-16 space-y-3">
-            <ReversePlanner
-              input={input}
-              universities={universities}
-              selectedUniId={reverseTargetUniId}
-              defaultTarget={reverseDefaultTarget}
-              showRomanUrdu={showRomanUrdu}
-            />
-            {viewMode === 'step' && (
-              <div className="flex items-center justify-between pt-2">
-                <button
-                  type="button"
-                  onClick={() => setActiveNavSection('results')}
-                  className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-all flex items-center gap-1.5 cursor-pointer"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Back to Merits</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveNavSection('policies')}
-                  className="px-4 py-2.5 rounded-xl text-xs font-bold bg-teal-700 text-white hover:bg-teal-800 transition-all flex items-center gap-2 shadow-xs cursor-pointer"
-                >
-                  <span>Official Policies & FAQs (Step 5)</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            )}
-          </section>
-        )}
+            {/* SECTION 4: Reverse Target Score Planner */}
+            <section id="section-planner" className="scroll-mt-16 space-y-3">
+              <ReversePlanner
+                input={input}
+                universities={universities}
+                selectedUniId={reverseTargetUniId}
+                defaultTarget={reverseDefaultTarget}
+                showRomanUrdu={showRomanUrdu}
+              />
+            </section>
 
-        {/* SECTION 5: Step 5 - Official Admissions Policy & SEO FAQ Guide */}
-        {(viewMode === 'full' || activeNavSection === 'policies') && (
-          <section id="section-policies" className="scroll-mt-16 space-y-3">
-            <AdmissionFaqSection />
-            {viewMode === 'step' && (
-              <div className="flex justify-start pt-2">
-                <button
-                  type="button"
-                  onClick={() => setActiveNavSection('stream')}
-                  className="px-4 py-2.5 rounded-xl text-xs font-bold bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-700 transition-all flex items-center gap-1.5 cursor-pointer"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span>Recalculate (Back to Step 1)</span>
-                </button>
-              </div>
-            )}
-          </section>
+            {/* SECTION 5: Official Admissions Policy & SEO FAQ Guide */}
+            <section id="section-policies" className="scroll-mt-16 space-y-3">
+              <AdmissionFaqSection />
+            </section>
+          </div>
         )}
       </main>
 
@@ -336,6 +326,7 @@ export function App() {
         isOpen={isIBCCModalOpen}
         onClose={() => setIsIBCCModalOpen(false)}
         onApply={handleApplyIBCCMarks}
+        initialTab={ibccModalTab}
       />
 
       <SourceAuditModal

@@ -16,6 +16,122 @@ export function calculateUniversityAggregate(
   input: AcademicInput,
   uni: UniversityConfig
 ): UniversityCalculationResult {
+  const testType: 'local' | 'sat' = input.useSat && !!uni.satSupported ? 'sat' : 'local';
+
+  // 1. Critical Check: Failed subject in Cambridge O/A-Levels or HSSC
+  if (input.hasFailedSubject) {
+    return {
+      university: uni,
+      aggregate: 0,
+      isEligible: false,
+      eligibilityMessage: input.failedSubjectDetails ||
+        "Ineligible for admission: Candidate has a failed ('U'/Ungraded) subject in Cambridge O/A-Levels or Intermediate. IBCC equivalence and Pakistani university admission strictly require passing all subjects.",
+      breakdown: {
+        matricPct: 0,
+        matricContribution: 0,
+        fscPct: 0,
+        fscContribution: 0,
+        testPct: 0,
+        testContribution: 0,
+        testType
+      }
+    };
+  }
+
+  // 2. Negative Values Validation
+  if (input.matricObtained < 0 || input.fscObtained < 0) {
+    return {
+      university: uni,
+      aggregate: 0,
+      isEligible: false,
+      eligibilityMessage: 'Invalid input: Academic obtained marks cannot be negative.',
+      breakdown: {
+        matricPct: 0,
+        matricContribution: 0,
+        fscPct: 0,
+        fscContribution: 0,
+        testPct: 0,
+        testContribution: 0,
+        testType
+      }
+    };
+  }
+
+  // 3. Total Marks <= 0 Validation
+  if (input.matricTotal <= 0 || input.fscTotal <= 0) {
+    return {
+      university: uni,
+      aggregate: 0,
+      isEligible: false,
+      eligibilityMessage: 'Invalid input: Total marks must be greater than zero.',
+      breakdown: {
+        matricPct: 0,
+        matricContribution: 0,
+        fscPct: 0,
+        fscContribution: 0,
+        testPct: 0,
+        testContribution: 0,
+        testType
+      }
+    };
+  }
+
+  // 4. Obtained > Total Marks Validation
+  if (input.matricObtained > input.matricTotal) {
+    return {
+      university: uni,
+      aggregate: 0,
+      isEligible: false,
+      eligibilityMessage: `Invalid input: Matric obtained marks (${input.matricObtained}) cannot exceed total marks (${input.matricTotal}).`,
+      breakdown: {
+        matricPct: 0,
+        matricContribution: 0,
+        fscPct: 0,
+        fscContribution: 0,
+        testPct: 0,
+        testContribution: 0,
+        testType
+      }
+    };
+  }
+
+  if (input.fscObtained > input.fscTotal) {
+    return {
+      university: uni,
+      aggregate: 0,
+      isEligible: false,
+      eligibilityMessage: `Invalid input: Intermediate obtained marks (${input.fscObtained}) cannot exceed total marks (${input.fscTotal}).`,
+      breakdown: {
+        matricPct: 0,
+        matricContribution: 0,
+        fscPct: 0,
+        fscContribution: 0,
+        testPct: 0,
+        testContribution: 0,
+        testType
+      }
+    };
+  }
+
+  // 5. SAT Score Bounds Validation
+  if (input.useSat && (input.satScore < 0 || input.satScore > 1600)) {
+    return {
+      university: uni,
+      aggregate: 0,
+      isEligible: false,
+      eligibilityMessage: `Invalid SAT score: Score must be between 400 and 1600 (received ${input.satScore}).`,
+      breakdown: {
+        matricPct: 0,
+        matricContribution: 0,
+        fscPct: 0,
+        fscContribution: 0,
+        testPct: 0,
+        testContribution: 0,
+        testType: 'sat'
+      }
+    };
+  }
+
   const matricPct = calculatePercentage(input.matricObtained, input.matricTotal);
   const fscMarksEffective = (input.hafizQuran && uni.disciplineCategory === 'medical')
     ? Math.min(input.fscTotal, input.fscObtained + 20)
@@ -31,7 +147,6 @@ export function calculateUniversityAggregate(
   // Test score evaluation: Local test vs Digital SAT
   const isUsingSat = input.useSat && !!uni.satSupported && input.satScore > 0;
   let testPct = 0;
-  const testType: 'local' | 'sat' = input.useSat && !!uni.satSupported ? 'sat' : 'local';
 
   // Specific SAT validations
   if (input.useSat && !uni.satSupported) {

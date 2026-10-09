@@ -108,4 +108,74 @@ describe('Reverse Target Score Solver Engine', () => {
     expect(result.status).toBe('impossible');
     expect(result.message).toContain('does not accept Digital SAT');
   });
+
+  it('REV-06: returns impossible status when candidate has a failed subject', () => {
+    const input: AcademicInput = {
+      matricObtained: 980,
+      matricTotal: 1100,
+      fscObtained: 920,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: false,
+      satScore: 0,
+      entryTestScores: {},
+      hasFailedSubject: true
+    };
+
+    const result = solveRequiredTestScore(input, nust, 75.0);
+    expect(result.status).toBe('impossible');
+    expect(result.message).toContain('failed subject');
+  });
+
+  it('REV-07: rejects target aggregate <= 0 with an impossible status', () => {
+    const input: AcademicInput = {
+      matricObtained: 980,
+      matricTotal: 1100,
+      fscObtained: 920,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: false,
+      satScore: 0,
+      entryTestScores: {}
+    };
+
+    const result = solveRequiredTestScore(input, nust, -10.0);
+    expect(result.status).toBe('impossible');
+    expect(result.message).toContain('greater than 0%');
+  });
+
+  it('REV-08: rejects target aggregate > 100 with an impossible status', () => {
+    const input: AcademicInput = {
+      matricObtained: 980,
+      matricTotal: 1100,
+      fscObtained: 920,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: false,
+      satScore: 0,
+      entryTestScores: {}
+    };
+
+    const result = solveRequiredTestScore(input, nust, 105.0);
+    expect(result.status).toBe('impossible');
+    expect(result.message).toContain('cannot exceed 100%');
+  });
+
+  it('REV-09: rejects negative academic marks with an impossible status', () => {
+    const input: AcademicInput = {
+      matricObtained: -100,
+      matricTotal: 1100,
+      fscObtained: 920,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: false,
+      satScore: 0,
+      entryTestScores: {}
+    };
+
+    const result = solveRequiredTestScore(input, nust, 75.0);
+    expect(result.status).toBe('impossible');
+    expect(result.message).toContain('cannot be negative');
+  });
 });
+

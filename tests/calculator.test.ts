@@ -397,4 +397,92 @@ describe('Forward Aggregate Calculator Engine', () => {
     expect(result.aggregate).toBeCloseTo(84.0, 1);
     expect(result.isEligible).toBe(true);
   });
+
+  it('ENG-20: flags ineligibility and sets aggregate to 0 when hasFailedSubject is true', () => {
+    const input: AcademicInput = {
+      matricObtained: 950,
+      matricTotal: 1100,
+      fscObtained: 900,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: false,
+      satScore: 0,
+      entryTestScores: { nust: 160 },
+      hasFailedSubject: true,
+      failedSubjectDetails: 'Failed Mathematics in A-Levels'
+    };
+    const result = calculateUniversityAggregate(input, nust);
+    expect(result.isEligible).toBe(false);
+    expect(result.aggregate).toBe(0);
+    expect(result.eligibilityMessage).toContain('Failed Mathematics in A-Levels');
+  });
+
+  it('ENG-21: rejects negative marks with an explicit error', () => {
+    const input: AcademicInput = {
+      matricObtained: -50,
+      matricTotal: 1100,
+      fscObtained: 900,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: false,
+      satScore: 0,
+      entryTestScores: { nust: 160 }
+    };
+    const result = calculateUniversityAggregate(input, nust);
+    expect(result.isEligible).toBe(false);
+    expect(result.aggregate).toBe(0);
+    expect(result.eligibilityMessage).toContain('cannot be negative');
+  });
+
+  it('ENG-22: rejects total marks <= 0 with an explicit error', () => {
+    const input: AcademicInput = {
+      matricObtained: 800,
+      matricTotal: 0,
+      fscObtained: 900,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: false,
+      satScore: 0,
+      entryTestScores: { nust: 160 }
+    };
+    const result = calculateUniversityAggregate(input, nust);
+    expect(result.isEligible).toBe(false);
+    expect(result.aggregate).toBe(0);
+    expect(result.eligibilityMessage).toContain('must be greater than zero');
+  });
+
+  it('ENG-23: rejects obtained marks exceeding total marks', () => {
+    const input: AcademicInput = {
+      matricObtained: 1250,
+      matricTotal: 1100,
+      fscObtained: 900,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: false,
+      satScore: 0,
+      entryTestScores: { nust: 160 }
+    };
+    const result = calculateUniversityAggregate(input, nust);
+    expect(result.isEligible).toBe(false);
+    expect(result.aggregate).toBe(0);
+    expect(result.eligibilityMessage).toContain('cannot exceed total marks');
+  });
+
+  it('ENG-24: rejects negative SAT score', () => {
+    const input: AcademicInput = {
+      matricObtained: 1000,
+      matricTotal: 1100,
+      fscObtained: 900,
+      fscTotal: 1100,
+      hafizQuran: false,
+      useSat: true,
+      satScore: -50,
+      entryTestScores: {}
+    };
+    const result = calculateUniversityAggregate(input, fastCs);
+    expect(result.isEligible).toBe(false);
+    expect(result.aggregate).toBe(0);
+    expect(result.eligibilityMessage).toContain('Invalid SAT score');
+  });
 });
+
