@@ -94,6 +94,32 @@ export function App() {
     return universities.map((uni) => calculateUniversityAggregate(input, uni));
   }, [input]);
 
+  const handleSelectDisciplineCategory = (cat: import('./engine/types').DisciplineCategory | 'all') => {
+    setSelectedDisciplineCategory(cat);
+    if (cat === 'medical') {
+      setInput((prev) => ({
+        ...prev,
+        useSat: false,
+        interStream: prev.interStream === 'pre_engineering' ? 'pre_medical' : prev.interStream,
+      }));
+    }
+  };
+
+  const handleSwitchWorkflowMode = (mode: WorkflowMode) => {
+    setWorkflowMode(mode);
+    if (mode === 'reverse') {
+      setActiveNavSection('planner');
+      setTimeout(() => {
+        document.getElementById('section-planner')?.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    } else {
+      setActiveNavSection('marks');
+      setTimeout(() => {
+        document.getElementById('section-marks')?.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    }
+  };
+
   const handleSelectForReverse = (uniId: string, targetAggregate?: number) => {
     setReverseTargetUniId(uniId);
     if (targetAggregate) {
@@ -151,7 +177,7 @@ export function App() {
         activeSection={activeNavSection}
         onSelectSection={(sec) => setActiveNavSection(sec)}
         workflowMode={workflowMode}
-        onSelectWorkflowMode={(mode) => setWorkflowMode(mode)}
+        onSelectWorkflowMode={handleSwitchWorkflowMode}
       />
 
       {/* Main Content Container */}
@@ -176,21 +202,27 @@ export function App() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsShareModalOpen(true)}
-            className="self-start sm:self-auto px-4 py-2.5 rounded-xl text-xs font-bold bg-white text-teal-950 hover:bg-teal-50 transition-colors shadow-sm flex items-center gap-2 shrink-0 cursor-pointer"
-          >
-            <Share2 className="w-4 h-4 text-emerald-600" />
-            <span>Generate WhatsApp Card</span>
-          </button>
+          <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+            <a
+              href="#section-marks"
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveNavSection('marks');
+                document.getElementById('section-marks')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="px-4 py-2.5 rounded-xl text-xs font-bold bg-white text-teal-950 hover:bg-teal-50 transition-colors shadow-sm flex items-center gap-2 cursor-pointer"
+            >
+              <Calculator className="w-4 h-4 text-emerald-600" />
+              <span>Calculate My Merit</span>
+            </a>
+          </div>
         </div>
 
         {/* SECTION 1: Target Stream Pre-Selector (Always accessible at top) */}
         <section id="section-stream" className="scroll-mt-16 space-y-3">
           <StreamPreSelector
             selectedCategory={selectedDisciplineCategory}
-            onSelectCategory={(cat) => setSelectedDisciplineCategory(cat)}
+            onSelectCategory={handleSelectDisciplineCategory}
             showRomanUrdu={showRomanUrdu}
           />
         </section>
@@ -254,6 +286,29 @@ export function App() {
               />
             </section>
 
+            {/* Share Verified Merit Card */}
+            <div className="bg-gradient-to-r from-teal-900 via-teal-800 to-emerald-900 text-white rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5 text-xs text-emerald-300 font-bold uppercase tracking-wider">
+                  <Share2 className="w-4 h-4" /> Share Verified Results
+                </div>
+                <h3 className="text-base sm:text-lg font-bold">
+                  Share your calculated merit report with parents or mentors
+                </h3>
+                <p className="text-xs sm:text-sm text-teal-100/90 max-w-xl">
+                  Generate an official WhatsApp summary image card showing your exact aggregate scores across your targeted universities.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsShareModalOpen(true)}
+                className="px-5 py-3 rounded-xl text-xs sm:text-sm font-bold bg-white text-teal-950 hover:bg-emerald-50 transition-colors shadow-sm flex items-center justify-center gap-2 shrink-0 cursor-pointer"
+              >
+                <Share2 className="w-4 h-4 text-emerald-600" />
+                <span>Generate WhatsApp Result Card</span>
+              </button>
+            </div>
+
             {/* Policies & SEO FAQs */}
             <section id="section-policies" className="scroll-mt-16 space-y-3">
               <AdmissionFaqSection />
@@ -271,7 +326,7 @@ export function App() {
                 onChange={setInput}
                 universities={universities}
                 selectedDisciplineCategory={selectedDisciplineCategory}
-                onSelectDisciplineCategory={setSelectedDisciplineCategory}
+                onSelectDisciplineCategory={handleSelectDisciplineCategory}
                 onOpenIBCC={(tab) => {
                   setIbccModalTab(tab || 'olevel');
                   setIsIBCCModalOpen(true);
@@ -291,6 +346,29 @@ export function App() {
               />
             </section>
 
+            {/* Share Verified Merit Card */}
+            <div className="bg-gradient-to-r from-teal-900 via-teal-800 to-emerald-900 text-white rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5 text-xs text-emerald-300 font-bold uppercase tracking-wider">
+                  <Share2 className="w-4 h-4" /> Share Verified Results
+                </div>
+                <h3 className="text-base sm:text-lg font-bold">
+                  Share your calculated merit report with parents or mentors
+                </h3>
+                <p className="text-xs sm:text-sm text-teal-100/90 max-w-xl">
+                  Generate an official WhatsApp summary image card showing your exact aggregate scores across your targeted universities.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsShareModalOpen(true)}
+                className="px-5 py-3 rounded-xl text-xs sm:text-sm font-bold bg-white text-teal-950 hover:bg-emerald-50 transition-colors shadow-sm flex items-center justify-center gap-2 shrink-0 cursor-pointer"
+              >
+                <Share2 className="w-4 h-4 text-emerald-600" />
+                <span>Generate WhatsApp Result Card</span>
+              </button>
+            </div>
+
             {/* SECTION 4: Reverse Target Score Planner */}
             <section id="section-planner" className="scroll-mt-16 space-y-3">
               <ReversePlanner
@@ -309,17 +387,6 @@ export function App() {
           </div>
         )}
       </main>
-
-      {/* Floating Share Button on Mobile */}
-      <div className="fixed bottom-5 right-5 z-20 sm:hidden">
-        <button
-          onClick={() => setIsShareModalOpen(true)}
-          className="p-3.5 rounded-full bg-emerald-600 text-white shadow-lg hover:bg-emerald-700 transition-all flex items-center justify-center cursor-pointer"
-          aria-label="Share via WhatsApp"
-        >
-          <Share2 className="w-5 h-5" />
-        </button>
-      </div>
 
       {/* Modals */}
       <IBCCConverterModal
@@ -341,6 +408,7 @@ export function App() {
         onClose={() => setIsShareModalOpen(false)}
         input={input}
         results={calculationResults}
+        selectedCategory={selectedDisciplineCategory}
       />
 
       {/* Footer */}

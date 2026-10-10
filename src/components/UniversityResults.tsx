@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { UniversityCalculationResult, DisciplineCategory } from '../engine/types';
-import { Award, ArrowUpRight, AlertTriangle, ExternalLink, MapPin, Building2, Calculator, CheckCircle2 } from 'lucide-react';
+import { Award, ArrowUpRight, AlertTriangle, ExternalLink, MapPin, Building2, Calculator, CheckCircle2, Target } from 'lucide-react';
 import { NustFieldsModal } from './NustFieldsModal';
 
 interface UniversityResultsProps {
@@ -169,18 +169,18 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
                   )}
                 </div>
 
-                {/* NUST Big Box CTA Trigger */}
+                {/* NUST Multi-Field Info Indicator */}
                 {isNust && (
                   <div
                     onClick={() => setIsNustModalOpen(true)}
-                    className="my-2.5 p-2.5 rounded-xl bg-teal-800 text-white hover:bg-teal-900 cursor-pointer transition-all flex items-center justify-between text-xs font-semibold shadow-xs group/nust"
+                    className="my-2.5 p-2.5 rounded-xl bg-teal-50/80 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800/80 text-teal-900 dark:text-teal-200 hover:bg-teal-100/80 dark:hover:bg-teal-900/40 cursor-pointer transition-all flex items-center justify-between text-xs font-semibold shadow-xs group/nust"
                   >
                     <span className="flex items-center gap-1.5">
-                      <Building2 className="w-4 h-4 text-teal-300" />
-                      Click Box to Open All NUST Fields
+                      <Building2 className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                      <span>Explore 20+ NUST Engineering, CS & Business Fields</span>
                     </span>
-                    <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-md flex items-center gap-1 shrink-0">
-                      20+ Fields <ArrowUpRight className="w-3 h-3 group-hover/nust:translate-x-0.5 group-hover/nust:-translate-y-0.5 transition-transform" />
+                    <span className="text-[10px] bg-teal-700 text-white px-2 py-0.5 rounded-md flex items-center gap-1 shrink-0 font-bold">
+                      Open Fields <ArrowUpRight className="w-3 h-3 group-hover/nust:translate-x-0.5 group-hover/nust:-translate-y-0.5 transition-transform" />
                     </span>
                   </div>
                 )}
@@ -283,35 +283,37 @@ export const UniversityResults: React.FC<UniversityResultsProps> = ({
                 </button>
 
                 <div className="flex items-center gap-2">
+                  <a
+                    href={uni.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex items-center gap-1.5"
+                    title={`Visit official ${uni.shortName} admissions website`}
+                  >
+                    <span>Official Portal</span>
+                    <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+                  </a>
+
                   {isNust ? (
                     <button
                       type="button"
                       onClick={() => setIsNustModalOpen(true)}
-                      className="px-2.5 py-1 rounded-lg text-[11px] font-bold text-teal-900 dark:text-teal-200 bg-teal-100 dark:bg-teal-950 hover:bg-teal-200 transition-colors flex items-center gap-1"
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-teal-700 hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
                     >
-                      View All Fields
-                      <ArrowUpRight className="w-3 h-3" />
+                      <span>View All Fields</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
                     </button>
                   ) : (
                     <button
                       type="button"
                       onClick={() => onSelectForReverse(uni.id, 75.0)}
-                      className="text-[11px] font-semibold text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 flex items-center gap-1"
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-teal-700 hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500 transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
+                      title={`Target score solver for ${uni.shortName}`}
                     >
-                      Target Solver
+                      <Target className="w-3.5 h-3.5" />
+                      <span>Target Solver</span>
                     </button>
                   )}
-
-                  <a
-                    href={uni.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-teal-800 hover:bg-teal-900 dark:bg-teal-700 dark:hover:bg-teal-600 transition-colors flex items-center gap-1.5 shadow-xs"
-                    title={`Visit official ${uni.shortName} admissions website`}
-                  >
-                    <span>Official Portal</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
                 </div>
               </div>
             </div>

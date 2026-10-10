@@ -66,14 +66,14 @@ export const NavigationStrip: React.FC<NavigationStripProps> = ({
                 const elem = document.getElementById('section-marks');
                 if (elem) elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 workflowMode === 'calculator'
                   ? 'bg-teal-700 text-white dark:bg-teal-600 shadow-xs'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
               }`}
             >
               <Calculator className="w-3.5 h-3.5" />
-              <span>Forward Merit Calculator</span>
+              <span><span className="hidden sm:inline">Forward </span>Calculator</span>
             </button>
 
             <button
@@ -83,14 +83,14 @@ export const NavigationStrip: React.FC<NavigationStripProps> = ({
                 onSelectSection('planner');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 workflowMode === 'reverse'
                   ? 'bg-teal-700 text-white dark:bg-teal-600 shadow-xs'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
               }`}
             >
               <Target className="w-3.5 h-3.5" />
-              <span>Reverse Target Planner</span>
+              <span><span className="hidden sm:inline">Reverse </span>Planner</span>
             </button>
           </div>
 
@@ -118,11 +118,11 @@ export const NavigationStrip: React.FC<NavigationStripProps> = ({
           </nav>
 
           {/* Mobile Section Jump Menu Button */}
-          <div className="flex lg:hidden items-center gap-2">
+          <div className="flex lg:hidden items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 cursor-pointer"
             >
               <Menu className="w-3.5 h-3.5 text-teal-600" />
               <span>

@@ -62,7 +62,8 @@ export const Header: React.FC<HeaderProps> = ({
             title="Toggle Roman Urdu student explanations"
           >
             <Languages className="w-3.5 h-3.5" />
-            <span>{showRomanUrdu ? 'Roman Urdu: ON' : 'Roman Urdu: OFF'}</span>
+            <span className="hidden sm:inline">{showRomanUrdu ? 'Roman Urdu: ON' : 'Roman Urdu: OFF'}</span>
+            <span className="sm:hidden">{showRomanUrdu ? 'Urdu: ON' : 'Urdu: OFF'}</span>
           </button>
 
           {/* Dark Mode Toggle */}

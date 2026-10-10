@@ -14,6 +14,8 @@ import {
   ChevronDown,
   ChevronUp,
   ShieldAlert,
+  Wand2,
+  RotateCcw,
 } from 'lucide-react';
 
 interface MarksInputFormProps {
@@ -26,16 +28,66 @@ interface MarksInputFormProps {
   showRomanUrdu: boolean;
 }
 
+const SAMPLE_TEST_SCORES: Record<string, number> = {
+  mdcat: 172,
+  nums: 125,
+  aku: 78,
+  nust: 154,
+  nust_eng: 154,
+  nust_business: 154,
+  fast_cs: 74,
+  fast_eng: 74,
+  fast_bba: 74,
+  comsats: 84,
+  comsats_eng: 84,
+  comsats_business: 84,
+  giki: 158,
+  pucit: 82,
+  uet: 288,
+  ned: 78,
+  pieas: 76,
+  fccu: 75,
+  bnu: 72,
+  ssuet: 70,
+  iba_cs: 80,
+  iba_business: 80,
+  lums_cs: 80,
+  lums_eng: 80,
+  lums_business: 80,
+};
+
+const SECONDARY_UNI_IDS = new Set(['ned', 'pieas', 'fccu', 'bnu', 'ssuet']);
+
 export const MarksInputForm: React.FC<MarksInputFormProps> = ({
   input,
   onChange,
   universities,
   selectedDisciplineCategory,
-  onSelectDisciplineCategory,
+  onSelectDisciplineCategory: _onSelectDisciplineCategory,
   onOpenIBCC,
   showRomanUrdu,
 }) => {
   const [showDualLocalTests, setShowDualLocalTests] = useState<boolean>(false);
+  const [showAdditionalTests, setShowAdditionalTests] = useState<boolean>(false);
+
+  const handlePrefillSampleScores = () => {
+    onChange({
+      ...input,
+      satScore: input.useSat ? 1350 : input.satScore,
+      entryTestScores: {
+        ...input.entryTestScores,
+        ...SAMPLE_TEST_SCORES,
+      },
+    });
+  };
+
+  const handleClearScores = () => {
+    onChange({
+      ...input,
+      satScore: 0,
+      entryTestScores: {},
+    });
+  };
 
   const updateField = <K extends keyof AcademicInput>(field: K, value: AcademicInput[K]) => {
     onChange({
@@ -86,6 +138,10 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
     return uni.disciplineCategory === selectedDisciplineCategory;
   });
 
+  const primaryUnis = relevantUnisForTests.filter((uni) => !SECONDARY_UNI_IDS.has(uni.id));
+  const secondaryUnis = relevantUnisForTests.filter((uni) => SECONDARY_UNI_IDS.has(uni.id));
+  const hasSecondaryScore = secondaryUnis.some((uni) => (input.entryTestScores[uni.id] ?? 0) > 0);
+
   // Filter universities that support Digital SAT
   const satSupportedUnis = universities.filter((uni) => {
     if (!uni.satSupported) return false;
@@ -125,31 +181,29 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
           </p>
         </div>
 
-        {/* Stream Filter Pills */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 flex items-center gap-1 mr-1">
-            <Layers className="w-3.5 h-3.5" /> Target:
-          </span>
-          {[
-            { id: 'all', label: 'All Streams' },
-            { id: 'medical', label: '🩺 Medical (MDCAT)' },
-            { id: 'computing', label: '💻 Computing' },
-            { id: 'engineering', label: '⚙️ Engineering' },
-            { id: 'business', label: '📊 Business' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => onSelectDisciplineCategory(tab.id as DisciplineCategory | 'all')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                selectedDisciplineCategory === tab.id
-                  ? 'bg-teal-700 text-white dark:bg-teal-600 shadow-sm'
-                  : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        {/* Stream Context Indicator */}
+        <div className="flex items-center gap-2 self-start md:self-auto bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800/80 px-3 py-1.5 rounded-xl">
+          <Layers className="w-4 h-4 text-teal-600 dark:text-teal-400 shrink-0" />
+          <div className="text-xs">
+            <span className="text-zinc-500 dark:text-zinc-400">Target Field: </span>
+            <strong className="text-teal-900 dark:text-teal-200">
+              {selectedDisciplineCategory === 'medical'
+                ? '🩺 Medical (MBBS & BDS)'
+                : selectedDisciplineCategory === 'computing'
+                ? '💻 Computing & Software'
+                : selectedDisciplineCategory === 'engineering'
+                ? '⚙️ Engineering (PEC)'
+                : selectedDisciplineCategory === 'business'
+                ? '📊 Business & Management'
+                : '🌐 All Disciplines'}
+            </strong>
+          </div>
+          <a
+            href="#section-stream"
+            className="text-[11px] font-bold text-teal-700 dark:text-teal-400 hover:underline ml-1"
+          >
+            Change
+          </a>
         </div>
       </div>
 
@@ -284,10 +338,11 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
               <button
                 type="button"
                 onClick={() => onOpenIBCC('olevel')}
-                className="text-[11px] font-semibold text-teal-700 dark:text-teal-400 hover:underline flex items-center gap-1 ml-1 cursor-pointer"
+                className="px-2 py-0.5 rounded font-bold text-[10px] bg-teal-50 dark:bg-teal-950 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-700 hover:bg-teal-100 dark:hover:bg-teal-900 transition-colors flex items-center gap-1 ml-1 cursor-pointer shadow-xs"
+                title="Convert Cambridge O-Level letter grades (A*, A, B) to Pakistani IBCC equivalent marks"
               >
-                <Sparkles className="w-3 h-3" />
-                IBCC
+                <Sparkles className="w-3 h-3 text-teal-600 dark:text-teal-400" />
+                <span>O-Level IBCC Converter</span>
               </button>
             </div>
           </div>
@@ -353,11 +408,11 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
           {/* Inter Discipline Buttons */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-1.5">
             {[
-              { id: 'pre_medical', label: 'F.Sc Pre-Medical', icon: '🩺', badge: 'Bio / Chem' },
-              { id: 'pre_engineering', label: 'F.Sc Pre-Eng', icon: '⚙️', badge: 'Math / Phy' },
-              { id: 'ics', label: 'ICS (Comp Sci)', icon: '💻', badge: 'CS / Math' },
+              { id: 'pre_medical', label: 'F.Sc Pre-Medical', icon: '🩺', badge: 'Bio & Chem' },
+              { id: 'pre_engineering', label: 'F.Sc Pre-Eng', icon: '⚙️', badge: 'Math & Physics' },
+              { id: 'ics', label: 'ICS Comp Sci', icon: '💻', badge: 'CS & Math' },
               { id: 'icom_arts', label: 'I.Com / FA / Arts', icon: '📚', badge: 'General' },
-              { id: 'alevels', label: 'A-Levels', icon: '🌍', badge: 'IBCC Scale' },
+              { id: 'alevels', label: 'Cambridge A-Levels', icon: '🌍', badge: 'IBCC Scale' },
             ].map((st) => {
               const currentStream = input.interStream || (isMedicalMode ? 'pre_medical' : 'pre_engineering');
               const isCurrent = currentStream === st.id;
@@ -397,8 +452,8 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
                   }`}
                 >
                   <div className="flex items-center gap-1.5">
-                    <span>{st.icon}</span>
-                    <span className="truncate">{st.label}</span>
+                    <span className="shrink-0">{st.icon}</span>
+                    <span className="leading-tight font-semibold">{st.label}</span>
                   </div>
                   <span className={`text-[9px] block font-normal opacity-80 mt-0.5 ${isCurrent ? 'text-teal-100' : 'text-zinc-400'}`}>
                     {st.badge}
@@ -605,6 +660,27 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
                   Your MDCAT score applies universally to all PMDC affiliated public & private medical colleges (UHS, Dow, KMU, Shifa).
                 </p>
               </div>
+
+              <div className="flex items-center gap-2 self-start sm:self-auto">
+                <button
+                  type="button"
+                  onClick={handlePrefillSampleScores}
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800 hover:bg-rose-100 dark:hover:bg-rose-900 transition-colors flex items-center gap-1 cursor-pointer"
+                  title="Fill realistic sample medical scores (MDCAT: 172, NUMS: 125, AKU: 78)"
+                >
+                  <Wand2 className="w-3 h-3 text-rose-600" />
+                  <span>Sample Scores</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClearScores}
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-medium text-zinc-600 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors flex items-center gap-1 cursor-pointer"
+                  title="Clear medical test scores"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Clear</span>
+                </button>
+              </div>
             </div>
 
             {/* Primary: MDCAT Box */}
@@ -630,15 +706,27 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
                   <label className="text-[10px] uppercase font-bold text-rose-800 dark:text-rose-300 block mb-1">
                     Your MDCAT Score (out of 200)
                   </label>
-                  <input
-                    type="number"
-                    min={0}
-                    max={200}
-                    value={mdcatScore || ''}
-                    onChange={(e) => updateTestScore('mdcat', Math.min(200, Math.max(0, Number(e.target.value))))}
-                    placeholder="e.g. 175"
-                    className="w-full px-3 py-2 text-base font-bold font-mono rounded-lg border border-rose-300 dark:border-rose-700 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-rose-500"
-                  />
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min={0}
+                      max={200}
+                      value={mdcatScore || ''}
+                      onChange={(e) => updateTestScore('mdcat', e.target.value === '' ? 0 : Math.min(200, Math.max(0, Number(e.target.value))))}
+                      placeholder="e.g. 175"
+                      className="w-full px-3 py-2 pr-7 text-base font-bold font-mono rounded-lg border border-rose-300 dark:border-rose-700 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                    />
+                    {mdcatScore > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => updateTestScore('mdcat', 0)}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer text-sm"
+                        title="Clear MDCAT score"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Real-time PMDC Eligibility Status */}
@@ -680,15 +768,27 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
                   </span>
                   <span className="text-[10px] text-zinc-400 font-mono">Max: 150</span>
                 </div>
-                <input
-                  type="number"
-                  min={0}
-                  max={150}
-                  value={numsScore || ''}
-                  onChange={(e) => updateTestScore('nums', Math.min(150, Math.max(0, Number(e.target.value))))}
-                  placeholder="e.g. 125 (/150)"
-                  className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 font-mono focus:outline-none focus:ring-2 focus:ring-teal-600"
-                />
+                <div className="relative">
+                  <input
+                    type="number"
+                    min={0}
+                    max={150}
+                    value={numsScore || ''}
+                    onChange={(e) => updateTestScore('nums', e.target.value === '' ? 0 : Math.min(150, Math.max(0, Number(e.target.value))))}
+                    placeholder="e.g. 125 (/150)"
+                    className="w-full px-2.5 py-1.5 pr-6 text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 font-mono focus:outline-none focus:ring-2 focus:ring-teal-600"
+                  />
+                  {numsScore > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => updateTestScore('nums', 0)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer text-xs"
+                      title="Clear NUMS score"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
                 <p className="text-[10px] text-zinc-500 dark:text-zinc-400">
                   Required for AMC Rawalpindi & CMH constituent medical colleges. Falls back to MDCAT if not taken.
                 </p>
@@ -702,15 +802,27 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
                   </span>
                   <span className="text-[10px] text-zinc-400 font-mono">Max: 100</span>
                 </div>
-                <input
-                  type="number"
-                  min={0}
-                  max={100}
-                  value={akuScore || ''}
-                  onChange={(e) => updateTestScore('aku', Math.min(100, Math.max(0, Number(e.target.value))))}
-                  placeholder="e.g. 78 (/100)"
-                  className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 font-mono focus:outline-none focus:ring-2 focus:ring-teal-600"
-                />
+                <div className="relative">
+                  <input
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={akuScore || ''}
+                    onChange={(e) => updateTestScore('aku', e.target.value === '' ? 0 : Math.min(100, Math.max(0, Number(e.target.value))))}
+                    placeholder="e.g. 78 (/100)"
+                    className="w-full px-2.5 py-1.5 pr-6 text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 font-mono focus:outline-none focus:ring-2 focus:ring-teal-600"
+                  />
+                  {akuScore > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => updateTestScore('aku', 0)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer text-xs"
+                      title="Clear AKU score"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
                 <p className="text-[10px] text-zinc-500 dark:text-zinc-400">
                   AKU internal admission test percentile score.
                 </p>
@@ -943,15 +1055,27 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
                                 <span className="truncate">{uni.shortName}</span>
                                 <span className="text-[10px] text-zinc-400 font-mono">Max: {uni.testTotal}</span>
                               </div>
-                              <input
-                                type="number"
-                                min={0}
-                                max={uni.testTotal}
-                                value={currentScore}
-                                onChange={(e) => updateTestScore(uni.id, Math.max(0, Number(e.target.value)))}
-                                placeholder={`Score (/${uni.testTotal})`}
-                                className="w-full px-2 py-1 text-xs rounded border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 font-mono focus:outline-none focus:ring-1 focus:ring-teal-600"
-                              />
+                              <div className="relative">
+                                <input
+                                  type="number"
+                                  min={0}
+                                  max={uni.testTotal}
+                                  value={currentScore}
+                                  onChange={(e) => updateTestScore(uni.id, e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)))}
+                                  placeholder={`Score (/${uni.testTotal})`}
+                                  className="w-full px-2 py-1 pr-6 text-xs rounded border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 font-mono focus:outline-none focus:ring-1 focus:ring-teal-600"
+                                />
+                                {Number(currentScore) > 0 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => updateTestScore(uni.id, 0)}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer text-xs"
+                                    title="Clear score"
+                                  >
+                                    ×
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           );
                         })}
@@ -963,8 +1087,37 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
             ) : (
               /* Local University Test Inputs */
               <div className="space-y-3">
+                {/* Quick Action Toolbar */}
+                <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200 dark:border-zinc-700/60 text-xs">
+                  <div className="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400 text-[11px]">
+                    <Info className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400 shrink-0" />
+                    <span>Enter scores only for universities you are targeting. Unchecked tests remain neutral.</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handlePrefillSampleScores}
+                      className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800 hover:bg-teal-100 dark:hover:bg-teal-900 transition-colors flex items-center gap-1 cursor-pointer"
+                      title="Prefill sample realistic test scores across all institutions"
+                    >
+                      <Wand2 className="w-3 h-3 text-teal-600" />
+                      <span>Sample Scores</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleClearScores}
+                      className="px-2.5 py-1 rounded-lg text-[11px] font-medium text-zinc-600 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors flex items-center gap-1 cursor-pointer"
+                      title="Clear all domestic entry test scores"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      <span>Clear</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Primary National University Tests Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {relevantUnisForTests.map((uni) => {
+                  {primaryUnis.map((uni) => {
                     const currentScore = input.entryTestScores[uni.id] ?? '';
                     return (
                       <div
@@ -979,16 +1132,26 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
                             Max: {uni.testTotal}
                           </span>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="relative">
                           <input
                             type="number"
                             min={0}
                             max={uni.testTotal}
                             value={currentScore}
-                            onChange={(e) => updateTestScore(uni.id, Math.max(0, Number(e.target.value)))}
+                            onChange={(e) => updateTestScore(uni.id, e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)))}
                             placeholder={`Score (/${uni.testTotal})`}
-                            className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 font-mono focus:outline-none focus:ring-2 focus:ring-teal-600"
+                            className="w-full px-2.5 py-1.5 pr-6 text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 font-mono focus:outline-none focus:ring-2 focus:ring-teal-600"
                           />
+                          {Number(currentScore) > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => updateTestScore(uni.id, 0)}
+                              className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer text-xs"
+                              title="Clear score"
+                            >
+                              ×
+                            </button>
+                          )}
                         </div>
                         <p className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">
                           {uni.testName}
@@ -997,6 +1160,77 @@ export const MarksInputForm: React.FC<MarksInputFormProps> = ({
                     );
                   })}
                 </div>
+
+                {/* Collapsible Secondary / Regional University Tests */}
+                {secondaryUnis.length > 0 && (() => {
+                  const isAdditionalTestsOpen = showAdditionalTests || hasSecondaryScore;
+                  return (
+                    <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                      <button
+                        type="button"
+                        onClick={() => setShowAdditionalTests(!isAdditionalTestsOpen)}
+                        className="flex items-center justify-between w-full p-2.5 rounded-xl bg-zinc-100/80 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/80 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                      >
+                        <span className="flex items-center gap-2">
+                          <Building2 className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+                          <span>
+                            Additional Institutions ({secondaryUnis.map((u) => u.shortName.split(' ')[0]).join(', ')})
+                          </span>
+                        </span>
+                        <span className="flex items-center gap-1 text-[11px] text-teal-700 dark:text-teal-400 font-bold shrink-0">
+                          {isAdditionalTestsOpen ? 'Collapse' : `+ Show ${secondaryUnis.length} More`}
+                          {isAdditionalTestsOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                        </span>
+                      </button>
+                      {isAdditionalTestsOpen && (
+                        <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 animate-in fade-in">
+                          {secondaryUnis.map((uni) => {
+                            const currentScore = input.entryTestScores[uni.id] ?? '';
+                            return (
+                              <div
+                                key={uni.id}
+                                className="p-3 bg-zinc-50 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700 rounded-xl space-y-1.5"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs font-semibold text-zinc-900 dark:text-white truncate">
+                                    {uni.shortName}
+                                  </span>
+                                  <span className="text-[10px] text-zinc-400 font-mono">
+                                    Max: {uni.testTotal}
+                                  </span>
+                                </div>
+                                <div className="relative">
+                                  <input
+                                    type="number"
+                                    min={0}
+                                    max={uni.testTotal}
+                                    value={currentScore}
+                                    onChange={(e) => updateTestScore(uni.id, e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)))}
+                                    placeholder={`Score (/${uni.testTotal})`}
+                                    className="w-full px-2.5 py-1.5 pr-6 text-xs rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 font-mono focus:outline-none focus:ring-2 focus:ring-teal-600"
+                                  />
+                                  {Number(currentScore) > 0 && (
+                                    <button
+                                      type="button"
+                                      onClick={() => updateTestScore(uni.id, 0)}
+                                      className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer text-xs"
+                                      title="Clear score"
+                                    >
+                                      ×
+                                    </button>
+                                  )}
+                                </div>
+                                <p className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">
+                                  {uni.testName}
+                                </p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             )}
           </div>

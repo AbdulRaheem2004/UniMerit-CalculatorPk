@@ -149,12 +149,28 @@ export function calculateUniversityAggregate(
   let testPct = 0;
 
   // Specific SAT validations
-  if (input.useSat && !uni.satSupported) {
-    isEligible = false;
-    eligibilityMessage = `${uni.shortName} does not accept Digital SAT for regular domestic seats. Admission requires ${uni.testName}.`;
-  } else if (input.useSat && uni.satSupported && uni.satMinScore && input.satScore > 0 && input.satScore < uni.satMinScore) {
-    isEligible = false;
-    eligibilityMessage = `SAT score (${input.satScore}/1600) is below ${uni.shortName}'s minimum eligibility threshold of ${uni.satMinScore}/1600.`;
+  if (input.useSat) {
+    if (uni.satSupported) {
+      if (uni.satMinScore && input.satScore > 0 && input.satScore < uni.satMinScore) {
+        isEligible = false;
+        eligibilityMessage = `SAT score (${input.satScore}/1600) is below ${uni.shortName}'s minimum eligibility threshold of ${uni.satMinScore}/1600.`;
+      }
+    } else {
+      // University does not accept SAT. Check if student has a valid local test score.
+      let localScore = input.entryTestScores[uni.id];
+      if (localScore === undefined || localScore === 0) {
+        if (uni.disciplineCategory === 'medical' || ['uhs', 'duhs', 'kmu', 'stmu', 'aku'].includes(uni.id)) {
+          localScore = input.entryTestScores['mdcat'] ?? 0;
+        } else if (uni.id === 'nums') {
+          localScore = input.entryTestScores['nums'] ?? input.entryTestScores['mdcat'] ?? 0;
+        }
+      }
+
+      if (!localScore || localScore <= 0) {
+        isEligible = false;
+        eligibilityMessage = `${uni.shortName} does not accept Digital SAT for regular domestic seats. Admission requires ${uni.testName}.`;
+      }
+    }
   }
 
   if (isUsingSat) {

@@ -121,20 +121,21 @@ export const StreamPreSelector: React.FC<StreamPreSelectorProps> = ({
         </div>
       </div>
 
-      {/* Grid of Selectable Stream Cards with Cartoon Mascots sitting on top */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-y-14 gap-x-3 pt-12 sm:pt-14">
-        {options.map((opt) => {
+      {/* Grid of Selectable Stream Cards with Cartoon Mascots sitting comfortably on top */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-y-8 gap-x-3 pt-7 sm:pt-8">
+        {options.map((opt, idx) => {
           const Icon = opt.icon;
           const isSelected = selectedCategory === opt.id;
           const isQuaking = earthquakeBox === opt.id;
+          const isLastOnMobile = idx === options.length - 1;
 
           return (
             <div
               key={opt.id}
-              className="relative group/mascot"
+              className={`relative group/mascot ${isLastOnMobile ? 'col-span-2 sm:col-span-1' : ''}`}
             >
               {/* Mascot Sitting on Top of Box */}
-              <div className="absolute -top-14 sm:-top-16 right-2 sm:right-3 z-20">
+              <div className="absolute -top-7 sm:-top-8 right-2 sm:right-3 z-20">
                 <CartoonMascot
                   stream={opt.id}
                   isSelected={isSelected}

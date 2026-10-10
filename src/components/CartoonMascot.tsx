@@ -182,9 +182,9 @@ export const CartoonMascot: React.FC<CartoonMascotProps> = ({
         </div>
       )}
 
-      {/* Main Mascot Container (Enlarged and Expressive) */}
+      {/* Main Mascot Container (Comfortably Proportioned) */}
       <div
-        className={`w-20 h-20 sm:w-24 sm:h-24 transition-transform duration-200 ${animationClass}`}
+        className={`w-12 h-12 sm:w-14 sm:h-14 transition-transform duration-200 ${animationClass}`}
       >
         {stream === 'medical' && (
           <ExpressiveDoctorMascot isSelected={isSelected} isJumping={isJumping} isInside={isInsideBox} />
