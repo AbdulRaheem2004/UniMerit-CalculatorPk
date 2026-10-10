@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://unimerit-calculator-pk.vercel.app/sitemap.xml
+Sitemap: https://abdulraheem2004.github.io/UniMerit-CalculatorPk/sitemap.xml
